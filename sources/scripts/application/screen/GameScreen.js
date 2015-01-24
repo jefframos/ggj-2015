@@ -129,6 +129,17 @@ var GameScreen = AbstractScreen.extend({
         }, 100);
         // }
     },
+    change:function(){
+        var temp = this.first;
+        this.first = this.second;
+        this.second = temp;
+        console.log(this.firstPos, this.secondPos);
+        var tempPos = this.first.getPosition().x;
+        // this.first.spritesheet.position.x = this.second.getPosition().x;
+        // this.second.spritesheet.position.x = tempPos;
+        TweenLite.to(this.first.spritesheet.position, 0.5, {x:this.firstPos, ease:'easeOutCubic'});
+        TweenLite.to(this.second.spritesheet.position, 0.5, {x:this.secondPos, ease:'easeInCubic'});
+    },
     jump:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
@@ -216,7 +227,9 @@ var GameScreen = AbstractScreen.extend({
         this.cow.setScale( scale,scale);
 
         var refPos = windowHeight - 75  - this.cow.getContent().height / 2;
-        this.cow.setPosition(windowWidth * 0.5,refPos);
+        this.firstPos = windowWidth * 0.5;
+        console.log(this.firstPos);
+        this.cow.setPosition(this.firstPos,refPos);
         this.cow.floorPos = refPos;
 
         this.first = this.cow;
@@ -226,7 +239,8 @@ var GameScreen = AbstractScreen.extend({
         var refPosPig = windowHeight - 80  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
-        this.pig.setPosition(windowWidth * 0.5 -this.pig.getContent().width,refPosPig);
+        this.secondPos = windowWidth * 0.5 -this.pig.getContent().width;
+        this.pig.setPosition(this.secondPos,refPosPig);
         this.pig.floorPos = refPosPig;
 
         this.second = this.pig;
@@ -245,14 +259,14 @@ var GameScreen = AbstractScreen.extend({
         this.energyBar.setPosition(250 + posHelper * 2 + this.bulletBar.width, posHelper);
 
 
-        this.returnButton = new DefaultButton('simpleButtonUp.png', 'simpleButtonOver.png');
-        this.returnButton.build(60, 50);
-        this.returnButton.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 65);
-        this.addChild(this.returnButton);
-        this.returnButton.addLabel(new PIXI.Text('<', {font:'40px Arial'}),5,5);
-        this.returnButton.clickCallback = function(){
-            self.screenManager.prevScreen();
-        };
+        // this.returnButton = new DefaultButton('simpleButtonUp.png', 'simpleButtonOver.png');
+        // this.returnButton.build(60, 50);
+        // this.returnButton.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 65);
+        // this.addChild(this.returnButton);
+        // this.returnButton.addLabel(new PIXI.Text('<', {font:'40px Arial'}),5,5);
+        // this.returnButton.clickCallback = function(){
+        //     self.screenManager.prevScreen();
+        // };
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
         this.addListenners();
@@ -271,6 +285,10 @@ var GameScreen = AbstractScreen.extend({
 
         hammer.on('swiperight', function() {
             self.dash();
+        });
+
+        hammer.on('swipeleft', function() {
+            self.change();
         });
 
         document.body.addEventListener('keyup', function(e){

@@ -661,6 +661,18 @@ var Application = AbstractApplication.extend({
             }, 100);
         }
     },
+    change: function() {
+        var temp = this.first;
+        this.first = this.second, this.second = temp, console.log(this.firstPos, this.secondPos);
+        this.first.getPosition().x;
+        TweenLite.to(this.first.spritesheet.position, .5, {
+            x: this.firstPos,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.second.spritesheet.position, .5, {
+            x: this.secondPos,
+            ease: "easeInCubic"
+        });
+    },
     jump: function() {
         if (!this.onDash) {
             this.first.jump();
@@ -688,22 +700,18 @@ var Application = AbstractApplication.extend({
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 75 - this.cow.getContent().height / 2;
-        this.cow.setPosition(.5 * windowWidth, refPos), this.cow.floorPos = refPos, this.first = this.cow, 
-        this.pig = new Pig(this.playerModel), this.pig.build(this);
+        this.firstPos = .5 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
+        this.cow.floorPos = refPos, this.first = this.cow, this.pig = new Pig(this.playerModel), 
+        this.pig.build(this);
         var refPosPig = windowHeight - 80 - this.pig.getContent().height / 2;
-        this.layer.addChild(this.pig), this.pig.rotation = -1, this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, refPosPig), 
-        this.pig.floorPos = refPosPig, this.second = this.pig, this.gameOver = !1;
-        var self = this, posHelper = .05 * windowHeight;
+        this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = .5 * windowWidth - this.pig.getContent().width, 
+        this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
+        this.second = this.pig, this.gameOver = !1;
+        var posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
         this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
         this.addChild(this.energyBar), this.energyBar.setPosition(250 + 2 * posHelper + this.bulletBar.width, posHelper), 
-        this.returnButton = new DefaultButton("simpleButtonUp.png", "simpleButtonOver.png"), 
-        this.returnButton.build(60, 50), this.returnButton.setPosition(.95 * windowWidth - 20, .95 * windowHeight - 65), 
-        this.addChild(this.returnButton), this.returnButton.addLabel(new PIXI.Text("<", {
-            font: "40px Arial"
-        }), 5, 5), this.returnButton.clickCallback = function() {
-            self.screenManager.prevScreen();
-        }, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners();
+        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners();
     },
     addListenners: function() {
         function tapLeft() {
@@ -719,6 +727,8 @@ var Application = AbstractApplication.extend({
             self.jump();
         }), hammer.on("swiperight", function() {
             self.dash();
+        }), hammer.on("swipeleft", function() {
+            self.change();
         }), document.body.addEventListener("keyup", function(e) {
             87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
         }), document.body.addEventListener("keydown", function(e) {
