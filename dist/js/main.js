@@ -613,13 +613,6 @@ var Application = AbstractApplication.extend({
         this._super();
     },
     build: function() {
-        function tapLeft() {
-            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel, self.testJump(), self.tapAccum = 0);
-        }
-        function tapRight() {
-            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel, self.testJump(), 
-            self.tapAccum = 0);
-        }
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
@@ -633,20 +626,7 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
         this.particleAccum = 50, this.gameOver = !1;
-        var self = this;
-        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, document.body.addEventListener("keyup", function(e) {
-            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
-        }), document.body.addEventListener("keydown", function(e) {
-            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
-        }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
-            tapLeft();
-        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {
-            self.leftDown = !1;
-        }, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
-            tapRight();
-        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
-            self.rightDown = !1;
-        }, this.textAcc.setText(this.textAcc.text + "\nbuild");
+        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0;
     },
     onProgress: function() {
         this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
@@ -659,8 +639,8 @@ var Application = AbstractApplication.extend({
         this.vel < 0 && (this.vel = 0)), this.environment.velocity.x = -this.vel, this.tapAccum++, 
         this.tapAccum > 8 && (this.tapAccum = 8));
     },
-    testJump: function() {
-        this.leftDown && this.rightDown && (this.red.jump(), console.log("jump"));
+    testJump: function(self) {
+        console.log(self), self.red.jump();
     },
     updateParticles: function() {},
     initApplication: function() {
@@ -684,7 +664,32 @@ var Application = AbstractApplication.extend({
             font: "40px Arial"
         }), 5, 5), this.returnButton.clickCallback = function() {
             self.screenManager.prevScreen();
-        }, this.initBench = !1, this.textAcc.setText(this.textAcc.text + "\nendinitApplication");
+        }, this.initBench = !1, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), 
+        this.addListenners();
+    },
+    addListenners: function() {
+        function tapLeft() {
+            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel, self.tapAccum = 0);
+        }
+        function tapRight() {
+            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel, self.tapAccum = 0);
+        }
+        var self = this, swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
+        hammer.add(swipe), hammer.on("swipeup", function() {
+            self.testJump(self);
+        }), document.body.addEventListener("keyup", function(e) {
+            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
+        }), document.body.addEventListener("keydown", function(e) {
+            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
+        }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
+            tapLeft();
+        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {
+            self.leftDown = !1;
+        }, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
+            tapRight();
+        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
+            self.rightDown = !1;
+        }, this.textAcc.setText(this.textAcc.text + "\nbuild");
     },
     benchmark: function() {
         function addEntity() {
