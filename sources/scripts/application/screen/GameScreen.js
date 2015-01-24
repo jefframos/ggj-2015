@@ -35,7 +35,7 @@ var GameScreen = AbstractScreen.extend({
         this.hitTouchRight.drawRect(0,0,windowWidth, windowHeight);
         this.addChild(this.hitTouchRight);
         this.hitTouchRight.alpha = 0;
-        this.hitTouchRight.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.5, windowHeight);
+        this.hitTouchRight.hitArea = new PIXI.Rectangle(windowWidth * 0.5, 0, windowWidth, windowHeight);
 
         this.hitTouchLeft = new PIXI.Graphics();
         // this.hitTouchLeft.setInteractive(true);
@@ -44,7 +44,7 @@ var GameScreen = AbstractScreen.extend({
         this.hitTouchLeft.drawRect(0,0,windowWidth, windowHeight);
         this.addChild(this.hitTouchLeft);
         this.hitTouchLeft.alpha = 0;
-        this.hitTouchLeft.hitArea = new PIXI.Rectangle(windowWidth * 0.5, 0, windowWidth, windowHeight);
+        this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.5, windowHeight);
         
 
         
@@ -54,26 +54,52 @@ var GameScreen = AbstractScreen.extend({
         this.leftDown = false;
         this.rightDown = false;
 
+
+        document.body.addEventListener('keyup', function(e){
+            if(e.keyCode === 87 || e.keyCode === 38){
+                // self.removePosition('up');
+            }
+            else if(e.keyCode === 83 || e.keyCode === 40){
+                // self.removePosition('down');
+            }
+            else if(e.keyCode === 65 || e.keyCode === 37){
+                tapLeft();
+            }
+            else if(e.keyCode === 68 || e.keyCode === 39){
+                tapRight();
+            }
+        });
+
+
+
         this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+            tapLeft();
+        };
+        function tapLeft(){
             if(self.leftDown){
                 //shiti happens
                 return;
             }
             self.leftDown = true;
+            self.rightDown = false;
             self.vel = self.maxVel;
-        };
-         
+            console.log('tapLeft');
+        }
         this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
            
         };
 
-        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+        function tapRight(){
             if(self.rightDown){
                 //shiti happens
                 return;
             }
             self.rightDown = true;
+            self.leftDown = false;
             self.vel = self.maxVel;
+        }
+        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+            tapRight();
         };
          
         this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
@@ -101,8 +127,11 @@ var GameScreen = AbstractScreen.extend({
         }
 
         this.updateParticles();
-        if(this.vel - this.accel >= 0){
+        if(this.vel > 0){
             this.vel -= this.accel;
+            if(this.vel < 0){
+                this.vel = 0;
+            }
         }
         this.environment.velocity.x = -this.vel;
         // this.textAcc.setText(this.childs.length);

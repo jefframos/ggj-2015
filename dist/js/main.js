@@ -613,6 +613,13 @@ var Application = AbstractApplication.extend({
         this._super();
     },
     build: function() {
+        function tapLeft() {
+            self.leftDown || (self.leftDown = !0, self.rightDown = !1, self.vel = self.maxVel, 
+            console.log("tapLeft"));
+        }
+        function tapRight() {
+            self.rightDown || (self.rightDown = !0, self.leftDown = !1, self.vel = self.maxVel);
+        }
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
@@ -621,16 +628,18 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
         this.hitTouchRight.beginFill(0), this.hitTouchRight.drawRect(0, 0, windowWidth, windowHeight), 
-        this.addChild(this.hitTouchRight), this.hitTouchRight.alpha = 0, this.hitTouchRight.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
+        this.addChild(this.hitTouchRight), this.hitTouchRight.alpha = 0, this.hitTouchRight.hitArea = new PIXI.Rectangle(.5 * windowWidth, 0, windowWidth, windowHeight), 
         this.hitTouchLeft = new PIXI.Graphics(), this.hitTouchLeft.interactive = !0, this.hitTouchLeft.beginFill(0), 
         this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
-        this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(.5 * windowWidth, 0, windowWidth, windowHeight), 
+        this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
         this.particleAccum = 50, this.gameOver = !1;
         var self = this;
-        this.leftDown = !1, this.rightDown = !1, this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
-            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel);
+        this.leftDown = !1, this.rightDown = !1, document.body.addEventListener("keyup", function(e) {
+            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
+        }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
+            tapLeft();
         }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {}, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
-            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel);
+            tapRight();
         }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {}, this.textAcc.setText(this.textAcc.text + "\nbuild");
     },
     onProgress: function() {
@@ -640,8 +649,8 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super(), this.playerModel && (this.updateParticles(), this.vel - this.accel >= 0 && (this.vel -= this.accel), 
-        this.environment.velocity.x = -this.vel);
+        this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
+        this.vel < 0 && (this.vel = 0)), this.environment.velocity.x = -this.vel);
     },
     updateParticles: function() {},
     initApplication: function() {
