@@ -99,6 +99,8 @@ var GameScreen = AbstractScreen.extend({
         // console.log(self);
         this.vel = this.maxVel * 4;
         this.onDash = true;
+        this.leftDown = false;
+        this.rightDown = false;
         this.red.dash();
         // }
     },
@@ -235,7 +237,9 @@ var GameScreen = AbstractScreen.extend({
                 return;
             }
             self.leftDown = true;
-            self.vel = self.maxVel;
+            if(!self.onDash || self.onDash && self.vel < self.maxVel){
+                self.vel = self.maxVel;
+            }
             // self.testJump();
             self.tapAccum = 0;
             // self.rightDown = false;
@@ -245,7 +249,9 @@ var GameScreen = AbstractScreen.extend({
                 return;
             }
             self.rightDown = true;
-            self.vel = self.maxVel;
+            if(!self.onDash || self.onDash && self.vel < self.maxVel){
+                self.vel = self.maxVel;
+            }
             // self.testJump();
             self.tapAccum = 0;
             // self.leftDown = false;

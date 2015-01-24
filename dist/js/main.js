@@ -651,7 +651,8 @@ var Application = AbstractApplication.extend({
         this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8));
     },
     dash: function() {
-        this.vel = 4 * this.maxVel, this.onDash = !0, this.red.dash();
+        this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+        this.red.dash();
     },
     jump: function() {
         this.red.jump();
@@ -681,10 +682,12 @@ var Application = AbstractApplication.extend({
     },
     addListenners: function() {
         function tapLeft() {
-            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel, self.tapAccum = 0);
+            self.leftDown || (self.leftDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
+            self.tapAccum = 0);
         }
         function tapRight() {
-            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel, self.tapAccum = 0);
+            self.rightDown || (self.rightDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
+            self.tapAccum = 0);
         }
         var self = this, swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
         hammer.add(swipe), hammer.on("swipeup", function() {
