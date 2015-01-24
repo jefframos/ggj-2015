@@ -54,7 +54,7 @@ var Cow = GameEntiity.extend({
 			return;
 		}
 		this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame('dashvaca.png'));
-		this.dashGraphic.anchor.x = 0.85;
+		this.dashGraphic.anchor.x = 0.90;
 		this.dashGraphic.anchor.y = 0.5;
 		console.log(this.dashGraphic);
 		this.getContent().parent.addChild(this.dashGraphic);

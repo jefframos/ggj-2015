@@ -2,11 +2,11 @@
 
 "dashvaca.png":
 {
-	"frame": {"x":2,"y":2,"w":371,"h":165},
+	"frame": {"x":2,"y":2,"w":347,"h":148},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":165},
-	"sourceSize": {"w":371,"h":165},
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
+	"sourceSize": {"w":347,"h":148},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -14,8 +14,8 @@
 	"version": "1.0",
 	"image": "effects.png",
 	"format": "RGBA8888",
-	"size": {"w":375,"h":169},
+	"size": {"w":351,"h":152},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9f1c04f64ac56f92c682f88322b63ef9:7a0bfbdc55c278479c2bc0440795f050:05d3c1256da5d10ff4f36ef2966c3322$"
+	"smartupdate": "$TexturePacker:SmartUpdate:f0edfed33159558d88ac4f0990712970:9b246fdf3f6956b32111d0f65bf6efa4:05d3c1256da5d10ff4f36ef2966c3322$"
 }
 }

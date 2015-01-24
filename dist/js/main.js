@@ -448,6 +448,78 @@ var Application = AbstractApplication.extend({
     destroy: function() {
         this._super();
     }
+}), Dino = Entity.extend({
+    init: function() {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
+        this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = "bullet.png", 
+        this.dinoContainer = new PIXI.DisplayObjectContainer(), this.container = new PIXI.DisplayObjectContainer();
+    },
+    build: function() {
+        function repeatTimeline() {
+            tl.restart();
+        }
+        function repeatTimeline2() {
+            tlBody.restart();
+        }
+        function repeatTimeline3() {
+            tlRun.restart();
+        }
+        this.dinohead = new PIXI.Sprite.fromFrame("dino1.png"), this.dinohead.anchor.x = .1, 
+        this.dinohead.anchor.y = .1, this.dinoMouth = new PIXI.Sprite.fromFrame("dino2.png"), 
+        this.dinoMouth.anchor.x = .1, this.dinoMouth.anchor.y = .1, this.dinoContainer.addChild(this.dinoMouth), 
+        this.dinoContainer.addChild(this.dinohead), this.updateable = !0, this.collidable = !0, 
+        this.getContent().alpha = 0, TweenLite.to(this.getContent(), .5, {
+            alpha: 1
+        }), this.dinoMouth.position.x = 30, this.dinoMouth.position.y = 250;
+        var tl = new TimelineLite({
+            onComplete: repeatTimeline
+        });
+        tl.append(TweenLite.to(this.dinoMouth, 2, {
+            rotation: .05,
+            ease: "easeOutCubic"
+        })), tl.append(TweenLite.to(this.dinoMouth, 4, {
+            rotation: -.05,
+            ease: "easeInCubic"
+        })), tl.append(TweenLite.to(this.dinoMouth, 2, {
+            rotation: 0,
+            ease: "easeOutCubic"
+        }));
+        var tlBody = new TimelineLite({
+            onComplete: repeatTimeline2
+        });
+        tlBody.append(TweenLite.to(this.dinoContainer, 2, {
+            rotation: .05,
+            ease: "easeOutCubic"
+        })), tlBody.append(TweenLite.to(this.dinoContainer, 4, {
+            rotation: -.05,
+            ease: "easeInCubic"
+        })), tlBody.append(TweenLite.to(this.dinoContainer, 2, {
+            rotation: 0,
+            ease: "easeOutCubic"
+        })), tlBody.append(TweenLite.to(this.dinoContainer, 3, {
+            rotation: .05
+        }));
+        var tlRun = new TimelineLite({
+            onComplete: repeatTimeline3
+        });
+        tlRun.append(TweenLite.to(this.dinoContainer.position, .3, {
+            y: 20,
+            ease: "easeOutCubic"
+        })), tlRun.append(TweenLite.to(this.dinoContainer.position, 1.2, {
+            y: -10,
+            ease: "easeInCubic"
+        })), tlRun.append(TweenLite.to(this.dinoContainer.position, .6, {
+            y: 20,
+            ease: "easeOutCubic"
+        })), tlRun.append(TweenLite.to(this.dinoContainer.position, .6, {
+            y: -10
+        })), this.container.addChild(this.dinoContainer);
+    },
+    getContent: function() {
+        return this.container;
+    },
+    update: function() {}
 }), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0);
@@ -491,7 +563,7 @@ var Application = AbstractApplication.extend({
     },
     dash: function(isFirst) {
         this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
-        this.dashGraphic.anchor.x = .85, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
+        this.dashGraphic.anchor.x = .9, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
         this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
         this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
         this.dashGraphic.position.y = this.getPosition().y, TweenLite.to(this.dashGraphic.scale, .2, {
@@ -688,7 +760,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -774,7 +846,7 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.maxVel = 7, this.vel = this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
+        this.maxVel = 7, this.vel = .5 * this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
         this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
@@ -803,14 +875,32 @@ var Application = AbstractApplication.extend({
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
         scale = scaleConverter(this.pig.getContent().height, windowHeight, .15), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;
+        var self = this;
         this.cowEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "cowFace.png"), 
-        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70, 50), this.pigEnergyBar = new EnergyBar("energyBackBar.png", "redBar.png", "pigface.png"), 
-        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, 50), 
+        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70, -70), this.pigEnergyBar = new EnergyBar("energyBackBar.png", "redBar.png", "pigface.png"), 
+        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, -70), 
         this.cowDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(130, 100), this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, 100), 
-        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners(), 
-        this.updateable = !0;
+        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(130, -120), this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
+        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, -120), 
+        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.dino = new Dino(), 
+        this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
+        this.dino.getContent().position.y = -300, this.first.spritesheet.position.x = this.firstPos - 500, 
+        this.second.spritesheet.position.x = this.secondPos - 500, TweenLite.to(this.first.spritesheet.position, 1, {
+            delay: .5,
+            x: this.firstPos - 150,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.second.spritesheet.position, 1, {
+            delay: .5,
+            x: this.secondPos - 80,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.dino.getContent().position, 2, {
+            delay: .8,
+            x: -100,
+            ease: "easeOutCubic",
+            onComplete: function() {
+                self.addListenners();
+            }
+        }), this.updateable = !0;
     },
     addListenners: function() {
         function tapLeft() {
@@ -821,6 +911,38 @@ var Application = AbstractApplication.extend({
             self.rightDown || (self.rightDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
             self.tapAccum = 0);
         }
+        this.vel = this.maxVel, TweenLite.to(this.dino.getContent().position, 1.8, {
+            x: -600,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.first.spritesheet.position, 1, {
+            delay: .5,
+            x: this.firstPos,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.second.spritesheet.position, 1, {
+            delay: .5,
+            x: this.secondPos,
+            ease: "easeOutCubic"
+        }), TweenLite.to(this.cowEnergyBar.getContent().position, .8, {
+            delay: .2,
+            x: 70,
+            y: 50,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.pigEnergyBar.getContent().position, .8, {
+            delay: .4,
+            x: 70 + this.cowEnergyBar.getContent().width + 20,
+            y: 50,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.cowDashBar.getContent().position, .8, {
+            delay: .6,
+            x: 130,
+            y: 100,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.pigDashBar.getContent().position, .8, {
+            delay: .8,
+            x: 70 + this.cowEnergyBar.getContent().width + 80,
+            y: 100,
+            ease: "easeOutBack"
+        });
         var self = this, swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
         hammer.add(swipe), hammer.on("swipeup", function() {
             self.jump();

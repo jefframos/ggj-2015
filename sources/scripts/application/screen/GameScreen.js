@@ -19,6 +19,7 @@ var GameScreen = AbstractScreen.extend({
         'dist/img/atlas/fx2.json',
         'dist/img/atlas/pig.json',
         'dist/img/atlas/UI.json',
+        'dist/img/atlas/dino.json',
         'dist/img/atlas/environment.json'];
 
 
@@ -197,18 +198,13 @@ var GameScreen = AbstractScreen.extend({
         
     },
     initApplication:function(){
-        // var paralaxLayer1 = new Paralax(this.canvasArea.x);
-        // paralaxLayer1.build('tree2.png', 100);
-        // this.addChild(paralaxLayer1);
-        // paralaxLayer1.velocity.x = -0.5;
-        // paralaxLayer1.getContent().position.y = 420;
-        // this.textAcc.setText(this.textAcc.text+'\ninitApplication');
+
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
 
         this.accel = 0.1;
         this.maxVel = 7;
-        this.vel = this.maxVel;
+        this.vel = this.maxVel * 0.5;
         this.envArray = [];
 
         this.envArray.push(new Environment(windowWidth, windowHeight));
@@ -314,19 +310,23 @@ var GameScreen = AbstractScreen.extend({
 
         this.cowEnergyBar = new EnergyBar('energyBackBar.png', 'blueBar.png', 'cowFace.png');
         this.addChild(this.cowEnergyBar);
-        this.cowEnergyBar.setPosition(70,50);
+        this.cowEnergyBar.setPosition(70,-70);
+        // this.cowEnergyBar.setPosition(70,50);
 
         this.pigEnergyBar = new EnergyBar('energyBackBar.png', 'redBar.png', 'pigface.png');
         this.addChild(this.pigEnergyBar);
-        this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,50);
+        this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,-70);
+        // this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,50);
 
         this.cowDashBar = new EnergyBar('dashBackBar.png', 'goldBar.png', 'dashIco.png');
         this.addChild(this.cowDashBar);
-        this.cowDashBar.setPosition(130,100);
+        this.cowDashBar.setPosition(130,-120);
+        // this.cowDashBar.setPosition(130,100);
 
         this.pigDashBar = new EnergyBar('dashBackBar.png', 'goldBar.png', 'dashIco.png');
         this.addChild(this.pigDashBar);
-        this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,100);
+        this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,-120);
+        // this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,100);
 
 
 
@@ -340,11 +340,37 @@ var GameScreen = AbstractScreen.extend({
         // };
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
-        this.addListenners();
+        this.dino = new Dino();
+        this.dino.build();
+        this.addChild(this.dino);
+        this.dino.getContent().position.x = -600;
+        this.dino.getContent().position.y = -300;
+
+        this.first.spritesheet.position.x = this.firstPos - 500;
+        this.second.spritesheet.position.x = this.secondPos - 500;
+        TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos - 150, ease:'easeOutCubic'});
+        TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos - 80, ease:'easeOutCubic'});
+        TweenLite.to(this.dino.getContent().position, 2, {delay:0.8, x:-100, ease:'easeOutCubic', onComplete:function(){
+            self.addListenners();
+        }});
+        // this.addListenners();
 
         this.updateable = true;
+
     },
     addListenners:function(){
+        this.vel = this.maxVel;
+
+        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, ease:'easeOutCubic'});
+        TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});
+        TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
+        TweenLite.to(this.cowEnergyBar.getContent().position, 0.8, {delay:0.2, x:70, y:50, ease:'easeOutBack'});
+        TweenLite.to(this.pigEnergyBar.getContent().position, 0.8, {delay:0.4, x:70 + this.cowEnergyBar.getContent().width + 20, y:50, ease:'easeOutBack'});
+        TweenLite.to(this.cowDashBar.getContent().position, 0.8, {delay:0.6, x:130, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.pigDashBar.getContent().position, 0.8, {delay:0.8, x:70 + this.cowEnergyBar.getContent().width + 80, y:100, ease:'easeOutBack'});
+
+
+
         var self = this;
         var swipe     = new Hammer.Swipe();
         var hammer    = new Hammer.Manager(renderer.view);
