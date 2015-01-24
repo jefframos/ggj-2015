@@ -1,8 +1,17 @@
 {"frames": {
 
+"dashvaca.png":
+{
+	"frame": {"x":2,"y":2,"w":371,"h":165},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":165},
+	"sourceSize": {"w":371,"h":165},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "smoke1.png":
 {
-	"frame": {"x":2,"y":2,"w":21,"h":17},
+	"frame": {"x":375,"y":2,"w":21,"h":17},
 	"rotated": true,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":17},
@@ -14,8 +23,8 @@
 	"version": "1.0",
 	"image": "fx.png",
 	"format": "RGBA8888",
-	"size": {"w":21,"h":25},
+	"size": {"w":394,"h":169},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:0a9daee2716e888265de1df8fc36509f:68bb787435c7aa64eea70cb818b3d0e9:5954783b06cac67a67fd6f5e2954bf38$"
+	"smartupdate": "$TexturePacker:SmartUpdate:ed02b06a126774fe79d6033b55a604db:4a922b3daae73ec08205128a949fa300:5954783b06cac67a67fd6f5e2954bf38$"
 }
 }

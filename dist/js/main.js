@@ -349,6 +349,25 @@ var Application = AbstractApplication.extend({
     setPosition: function(x, y) {
         this.container.position.x = x, this.container.position.y = y;
     }
+}), EnergyBar = Class.extend({
+    init: function(width, height, maxValue, currentValue) {
+        this.maxValue = maxValue, this.text = "default", this.currentValue = currentValue, 
+        this.container = new PIXI.DisplayObjectContainer(), this.width = width, this.height = height, 
+        this.backShape = new SimpleSprite("energyBackBar.png"), this.container.addChild(this.backShape.container), 
+        this.frontShape = new SimpleSprite("blueBar.png"), this.container.addChild(this.frontShape.container), 
+        this.frontShape.container.position.y = this.backShape.container.height / 2 - this.frontShape.container.height / 2;
+    },
+    updateBar: function(currentValue, maxValue) {
+        (this.currentValue !== currentValue || this.maxValue !== maxValue && currentValue >= 0) && (this.currentValue = currentValue, 
+        this.maxValue = maxValue, this.frontShape.scale.x = this.currentValue / this.maxValue, 
+        this.frontShape.scale.x < 0 && (this.frontShape.scale.x = 0));
+    },
+    getContent: function() {
+        return this.container;
+    },
+    setPosition: function(x, y) {
+        this.container.position.x = x, this.container.position.y = y;
+    }
 }), Bullet = Entity.extend({
     init: function(vel, timeLive) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
@@ -437,8 +456,9 @@ var Application = AbstractApplication.extend({
         this.inJump || (this.inJump = !0, this.velocity.y = -6);
     },
     update: function() {
-        return this._super(), this.getPosition().x > windowWidth + 50 && this.preKill(), 
-        this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        return this._super(), this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        this.getPosition().x > windowWidth + 50 && this.preKill(), this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, 
+        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
         this.inJump = !1, this.spritesheet.play("idle")), void (this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
         this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
         this.spritesheet.play("jumpDown"))));
@@ -462,6 +482,26 @@ var Application = AbstractApplication.extend({
         this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
+    },
+    dash: function() {
+        this._super(), this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
+        this.dashGraphic.anchor.x = .88, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
+        this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
+        this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
+        this.dashGraphic.position.y = this.getPosition().y, TweenLite.to(this.dashGraphic.scale, .2, {
+            x: this.getContent().scale.x,
+            y: this.getContent().scale.y
+        }), TweenLite.to(this.dashGraphic.scale, .3, {
+            delay: .5,
+            x: .2,
+            y: .7 * this.dashGraphic.scale.y
+        }), TweenLite.to(this.dashGraphic.position, .3, {
+            delay: .5,
+            x: this.getPosition().x - 230
+        }), TweenLite.to(this.dashGraphic, .3, {
+            delay: .45,
+            alpha: 0
+        });
     }
 }), Pig = GameEntiity.extend({
     build: function(screen, floorPos) {
@@ -482,7 +522,7 @@ var Application = AbstractApplication.extend({
     }
 }), AppModel = Class.extend({
     init: function() {
-        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel("vaca", .04, .8, 2, 8, 1), new PlayerModel("feter.png", .05, .4, 1.5, 4, 2), new PlayerModel("neto.png", .05, .5, 2, 2, 4) ], 
+        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel("vaca", .04, .8, 2, 8, 1), new PlayerModel("feter.png", .04, .7, 1.5, 4, 2) ], 
         this.setModel(0);
     },
     setModel: function(id) {
@@ -622,7 +662,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cow.json", "dist/img/atlas/pig.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -632,7 +672,7 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
         this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
-        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0;
+        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1;
     },
     onProgress: function() {
         this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
@@ -641,18 +681,19 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super(), this.playerModel && (this.updateParticles(), this.vel > this.maxVel && (this.vel -= this.accel, 
-        this.onDash && (this.vel -= 5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
-        this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.environment.velocity.x = -this.vel, 
-        this.environment2.velocity.x = .9 * -this.vel, this.environment3.velocity.x = .6 * -this.vel, 
-        this.environment4.velocity.x = .4 * -this.vel, this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
-        this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
-        this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy));
+        if (this._super(), (this.cowDashBar || this.pigDashBar) && this.updateParticles(), 
+        this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+        this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
+        this.second.onDash = !1)), this.envArray) for (var i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+        this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+        this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
+        this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
+        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy);
     },
     dash: function() {
-        if (!(this.playerModel.currentBulletEnergy < this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast)) {
-            console.log(this.playerModel.bulletCoast), this.playerModel.currentBulletEnergy -= this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast, 
-            this.playerModel.currentBulletEnergy < 0 && (this.playerModel.currentBulletEnergy = 0), 
+        if (!(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast)) {
+            this.first.playerModel.currentBulletEnergy -= this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast, 
+            this.first.playerModel.currentBulletEnergy < 0 && (this.first.playerModel.currentBulletEnergy = 0), 
             this.vel = 6 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
             this.first.dash();
             var self = this;
@@ -706,34 +747,45 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.maxVel = 7, this.vel = this.maxVel, this.environment4 = new Environment(windowWidth, windowHeight), 
-        this.environment4.build([ "montanha2.png" ], 80, 75), this.addChild(this.environment4), 
-        this.environment3 = new Environment(windowWidth, windowHeight), this.environment3.build([ "montanha1.png" ], 50, 75), 
-        this.addChild(this.environment3), this.environment2 = new Environment(windowWidth, windowHeight), 
-        this.environment2.build([ "cacto1.png", "cacto2.png", "pedra.png", "cranio.png" ], 300, 75), 
-        this.addChild(this.environment2), this.environment = new Environment(windowWidth, windowHeight), 
-        this.environment.build([ "ground.png" ], 0, 0), this.addChild(this.environment), 
+        this.maxVel = 7, this.vel = this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
+        this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .012, 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "montanha2.png" ], 80, 75), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .4, 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "montanha1.png" ], 50, 75), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .6, 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "cacto1.png", "cacto2.png", "pedra.png", "cranio.png" ], 300, 75), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .9, 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "ground.png" ], 0, 0), 
+        this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = 1, 
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
-        this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
-        this.cow = new Cow(this.playerModel), this.cow.build(this), this.layer.addChild(this.cow), 
+        this.playerModelCow = APP.getGameModel().playerModels[0], this.playerModelCow.reset(), 
+        this.cow = new Cow(this.playerModelCow), this.cow.build(this), this.layer.addChild(this.cow), 
         this.cow.rotation = -1;
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
-        this.firstPos = .3 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
-        this.cow.floorPos = refPos, this.first = this.cow, this.pig = new Pig(this.playerModel), 
-        this.pig.build(this);
+        this.firstPos = .33 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
+        this.cow.floorPos = refPos, this.first = this.cow, this.playerModelPig = APP.getGameModel().playerModels[1], 
+        this.playerModelPig.reset(), this.pig = new Pig(this.playerModelPig), this.pig.build(this);
         var refPosPig = windowHeight - 65 - this.pig.getContent().height / 2;
-        this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = .3 * windowWidth - this.pig.getContent().width, 
+        this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = this.firstPos - 1.5 * this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
         scale = scaleConverter(this.pig.getContent().height, windowHeight, .2), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;
         var posHelper = .05 * windowHeight;
-        this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
-        this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
-        this.addChild(this.energyBar), this.energyBar.setPosition(250 + 2 * posHelper + this.bulletBar.width, posHelper), 
-        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners();
+        this.cowDashBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.cowDashBar), 
+        this.cowDashBar.setPosition(250 + posHelper, posHelper), this.cowEnergyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
+        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(250 + 2 * posHelper + this.cowDashBar.width, posHelper), 
+        this.pigDashBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.pigDashBar), 
+        this.pigDashBar.setPosition(250 + posHelper, posHelper + 40), this.pigEnergyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
+        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(250 + 2 * posHelper + this.cowDashBar.width, posHelper + 40), 
+        this.energyBar = new EnergyBar(.1 * windowWidth, 10, 1, 1), this.addChild(this.energyBar), 
+        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners(), 
+        this.updateable = !0;
     },
     addListenners: function() {
         function tapLeft() {
@@ -873,7 +925,8 @@ var Application = AbstractApplication.extend({
             y: 0
         }, this.texture = "", this.sprite = "", this.container = new PIXI.DisplayObjectContainer(), 
         this.updateable = !0, this.arraySprt = [], this.maxWidth = maxWidth, this.maxHeight = maxHeight, 
-        this.texWidth = 0, this.spacing = 0, this.totTiles = 0, this.currentSprId = 0, this.floorPos = 0;
+        this.texWidth = 0, this.spacing = 0, this.totTiles = 0, this.currentSprId = 0, this.floorPos = 0, 
+        this.velFactor = 1;
     },
     build: function(imgs, spacing, floorPos) {
         this.arraySprt = imgs, this.floorPos = floorPos, spacing && (this.spacing = spacing);

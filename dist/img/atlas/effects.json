@@ -1,0 +1,21 @@
+{"frames": {
+
+"dashvaca.png":
+{
+	"frame": {"x":2,"y":2,"w":371,"h":165},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":371,"h":165},
+	"sourceSize": {"w":371,"h":165},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "effects.png",
+	"format": "RGBA8888",
+	"size": {"w":375,"h":169},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:eb02463e48b8475daeb164c7b82f4784:7a0bfbdc55c278479c2bc0440795f050:05d3c1256da5d10ff4f36ef2966c3322$"
+}
+}

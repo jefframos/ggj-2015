@@ -37,6 +37,10 @@ var GameEntiity = SpritesheetEntity.extend({
     update:function(){
 
         this._super();
+
+        if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
+            this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
+        }
         // this.spritesheet.texture.anchor.x = 0.5;
         // this.spritesheet.texture.anchor.y = 0;
         

@@ -47,5 +47,23 @@ var Cow = GameEntiity.extend({
 
 		this.gravity = 0.2;
 		// console.log(this.spritesheet.texture);
+	},
+	dash:function(){
+		this._super();
+		this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame('dashvaca.png'));
+		this.dashGraphic.anchor.x = 0.85;
+		this.dashGraphic.anchor.y = 0.5;
+		console.log(this.dashGraphic);
+		this.getContent().parent.addChild(this.dashGraphic);
+
+		this.dashGraphic.scale.x = this.getContent().scale.x - 0.5;
+		this.dashGraphic.scale.y = this.getContent().scale.y - 0.2;
+
+		this.dashGraphic.position.x = this.getPosition().x;
+		this.dashGraphic.position.y = this.getPosition().y;
+		TweenLite.to(this.dashGraphic.scale, 0.2, {x:this.getContent().scale.x, y:this.getContent().scale.y});
+		TweenLite.to(this.dashGraphic.scale, 0.3, {delay:0.5, x:0.2, y:this.dashGraphic.scale.y * 0.7});
+		TweenLite.to(this.dashGraphic.position, 0.3, {delay:0.5, x:this.getPosition().x -230});
+		TweenLite.to(this.dashGraphic, 0.3, {delay:0.45, alpha:0});
 	}
 });

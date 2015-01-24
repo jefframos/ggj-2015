@@ -14,6 +14,7 @@ var Environment =  Class.extend({
 		this.totTiles = 0;
 		this.currentSprId = 0;
 		this.floorPos = 0;
+		this.velFactor = 1;
 	},
 	build: function(imgs, spacing, floorPos){
 		this.arraySprt = imgs;

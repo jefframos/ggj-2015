@@ -14,10 +14,10 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.y = 20;
         this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = ['dist/img/atlas/atlas.json',
-        'dist/img/atlas/cow.json',
-        // 'dist/img/atlas/fx.json',
+        var assetsToLoader = ['dist/img/atlas/cow.json',
+        'dist/img/atlas/effects.json',
         'dist/img/atlas/pig.json',
+        'dist/img/atlas/UI.json',
         'dist/img/atlas/environment.json'];
 
 
@@ -60,6 +60,7 @@ var GameScreen = AbstractScreen.extend({
         this.rightDown = false;
         this.tapAccum = 0;
 
+        this.updateable = false;
         
 
     },
@@ -75,12 +76,13 @@ var GameScreen = AbstractScreen.extend({
     },
     update:function() {
         this._super();
-        if(!this.playerModel)
-        {
-            return;
+        // if(!this.playerModel)
+        // {
+        //     return;
+        // }
+        if(this.cowDashBar || this.pigDashBar){
+            this.updateParticles();
         }
-
-        this.updateParticles();
 
         if(this.vel > this.maxVel){
             this.vel -= this.accel;
@@ -94,31 +96,36 @@ var GameScreen = AbstractScreen.extend({
                 this.second.onDash = false;
             }
         }
-        this.environment.velocity.x = -this.vel;
-        this.environment2.velocity.x = -this.vel * 0.9;
-        this.environment3.velocity.x = -this.vel * 0.6;
-        this.environment4.velocity.x = -this.vel * 0.4;
+        if(this.envArray){
+            for (var i = this.envArray.length - 1; i >= 0; i--) {
+                this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+            }
+        }
         
-        if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
-            this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
+        
+        if(this.cowDashBar){
+            this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
         }
-        if(this.bulletBar){
-            this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy);
+        if(this.cowEnergyBar){
+            this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy);
         }
-        if(this.energyBar){
-            this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy);
+
+        if(this.pigDashBar){
+            this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy);
+        }
+        if(this.pigEnergyBar){
+            this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy);
         }
         // this.textAcc.setText(this.childs.length);
     },
     dash:function(){
-        if(this.playerModel.currentBulletEnergy < this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast){
+        if(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast){
             return;
         }
-        console.log(this.playerModel.bulletCoast);
-        this.playerModel.currentBulletEnergy -= this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast;
+        this.first.playerModel.currentBulletEnergy -= this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast;
 
-        if(this.playerModel.currentBulletEnergy < 0){
-            this.playerModel.currentBulletEnergy = 0;
+        if(this.first.playerModel.currentBulletEnergy < 0){
+            this.first.playerModel.currentBulletEnergy = 0;
         }
         this.vel = this.maxVel * 6;
         this.onDash = true;
@@ -197,27 +204,51 @@ var GameScreen = AbstractScreen.extend({
         this.accel = 0.1;
         this.maxVel = 7;
         this.vel = this.maxVel;
+        this.envArray = [];
+
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['nuvem2.png'], 600, windowHeight * 0.7);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 0.01;
+
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['nuvem1.png'], 750, windowHeight * 0.6);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 0.012;
+
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['montanha2.png'], 80, 75);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 0.4;
 
 
-        this.environment4 = new Environment(windowWidth, windowHeight);
-        this.environment4.build(['montanha2.png'], 80, 75);
-        // environment4.velocity.x = -1;
-        this.addChild(this.environment4);
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['montanha1.png'], 50, 75);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 0.6;
 
-        this.environment3 = new Environment(windowWidth, windowHeight);
-        this.environment3.build(['montanha1.png'], 50, 75);
-        // environment3.velocity.x = -1;
-        this.addChild(this.environment3);
 
-        this.environment2 = new Environment(windowWidth, windowHeight);
-        this.environment2.build(['cacto1.png','cacto2.png','pedra.png','cranio.png'], 300, 75);
-        // environment2.velocity.x = -1;
-        this.addChild(this.environment2);
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['cacto1.png','cacto2.png','pedra.png','cranio.png'], 300, 75);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 0.9;
 
-        this.environment = new Environment(windowWidth, windowHeight);
-        this.environment.build(['ground.png'], 0, 0);
-        // environment.velocity.x = -1;
-        this.addChild(this.environment);
+
+        this.envArray.push(new Environment(windowWidth, windowHeight));
+        this.envArray[this.envArray.length - 1].build(['ground.png'], 0, 0);
+        this.addChild(this.envArray[this.envArray.length - 1]);
+        this.envArray[this.envArray.length - 1].velFactor = 1;
+
+
+        // this.environment2 = new Environment(windowWidth, windowHeight);
+        // this.environment2.build(['cacto1.png','cacto2.png','pedra.png','cranio.png'], 300, 75);
+        // // environment2.velocity.x = -1;
+        // this.addChild(this.environment2);
+
+        // this.environment = new Environment(windowWidth, windowHeight);
+        // this.environment.build(['ground.png'], 0, 0);
+        // // environment.velocity.x = -1;
+        // this.addChild(this.environment);
 
 
         this.layerManager = new LayerManager();
@@ -231,11 +262,11 @@ var GameScreen = AbstractScreen.extend({
         this.layerManager.addLayer(this.layer);
 
 
-        this.playerModel = APP.getGameModel().currentPlayerModel;
-        this.playerModel.reset();
+        this.playerModelCow = APP.getGameModel().playerModels[0];
+        this.playerModelCow.reset();
 
 
-        this.cow = new Cow(this.playerModel);
+        this.cow = new Cow(this.playerModelCow);
         this.cow.build(this);
        
         this.layer.addChild(this.cow);
@@ -245,19 +276,22 @@ var GameScreen = AbstractScreen.extend({
         this.cow.setScale( scale,scale);
 
         var refPos = windowHeight - 73  - this.cow.getContent().height / 2;
-        this.firstPos = windowWidth * 0.3;
+        this.firstPos = windowWidth * 0.33;
         console.log(this.firstPos);
         this.cow.setPosition(this.firstPos,refPos);
         this.cow.floorPos = refPos;
 
         this.first = this.cow;
 
-        this.pig = new Pig(this.playerModel);
+        this.playerModelPig = APP.getGameModel().playerModels[1];
+        this.playerModelPig.reset();
+
+        this.pig = new Pig(this.playerModelPig);
         this.pig.build(this);
         var refPosPig = windowHeight - 65  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
-        this.secondPos = windowWidth * 0.3 -this.pig.getContent().width;
+        this.secondPos = this.firstPos - this.pig.getContent().width * 1.5;
         this.pig.setPosition(this.secondPos,refPosPig);
         this.pig.floorPos = refPosPig;
 
@@ -271,13 +305,26 @@ var GameScreen = AbstractScreen.extend({
         // this.cow.setPosition(windowWidth * 0.1 +this.cow.getContent().width/2,windowHeight /2);
         var self = this;
         var posHelper =  windowHeight * 0.05;
-        this.bulletBar = new BarView(windowWidth * 0.1, 10, 1, 1);
-        this.addChild(this.bulletBar);
-        this.bulletBar.setPosition(250 + posHelper, posHelper);
+        this.cowDashBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.addChild(this.cowDashBar);
+        this.cowDashBar.setPosition(250 + posHelper, posHelper);
 
-        this.energyBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.cowEnergyBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.addChild(this.cowEnergyBar);
+        this.cowEnergyBar.setPosition(250 + posHelper * 2 + this.cowDashBar.width, posHelper);
+
+        this.pigDashBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.addChild(this.pigDashBar);
+        this.pigDashBar.setPosition(250 + posHelper, posHelper + 40);
+
+        this.pigEnergyBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.addChild(this.pigEnergyBar);
+        this.pigEnergyBar.setPosition(250 + posHelper * 2 + this.cowDashBar.width, posHelper + 40);
+
+
+        this.energyBar = new EnergyBar(windowWidth * 0.1, 10, 1, 1);
         this.addChild(this.energyBar);
-        this.energyBar.setPosition(250 + posHelper * 2 + this.bulletBar.width, posHelper);
+
 
 
         // this.returnButton = new DefaultButton('simpleButtonUp.png', 'simpleButtonOver.png');
@@ -292,7 +339,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.addListenners();
 
-        
+        this.updateable = true;
     },
     addListenners:function(){
         var self = this;
