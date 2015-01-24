@@ -7220,11 +7220,11 @@ var DefaultButton = Class.extend({
         };
         this.spritesheet.setPosition(temp.x, temp.y), this.spritesheet.update();
     },
-    getFramesByRange: function(label, init, end, type) {
+    getFramesByRange: function(label, init, end, type, extension) {
         for (var tempArray = new Array(), tempI = "", i = init; end >= i; i++) 10 > i ? tempI = "00" + i : 100 > i ? tempI = "0" + i : 1e3 > i && (tempI = i), 
-        tempArray.push(label + tempI);
+        extension && (tempI += extension), tempArray.push(label + tempI);
         if ("pingPong" == type) for (var i = end - 1; i > init; i--) 10 > i ? tempI = "00" + i : 100 > i ? tempI = "0" + i : 1e3 > i && (tempI = i), 
-        tempArray.push(label + tempI);
+        extension && (tempI += extension), tempArray.push(label + tempI);
         return tempArray;
     }
 }), Layer = Class.extend({

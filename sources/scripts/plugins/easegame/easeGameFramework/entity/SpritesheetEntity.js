@@ -64,7 +64,7 @@ var SpritesheetEntity =  Entity.extend({
 		this.spritesheet.setPosition(temp.x,temp.y);
 		this.spritesheet.update();
 	},
-	getFramesByRange:function (label, init, end, type){
+	getFramesByRange:function (label, init, end, type, extension){
 		var tempArray = new Array();
 		var tempI = "";
 		
@@ -75,6 +75,9 @@ var SpritesheetEntity =  Entity.extend({
 				tempI = "0" + i;
 			else if(i < 1000)
 				tempI =  i;
+			if(extension){
+				tempI += extension;
+			}
 			tempArray.push(label+tempI);
 		};
 		if(type == "pingPong")
@@ -86,6 +89,9 @@ var SpritesheetEntity =  Entity.extend({
 					tempI = "0" + i;
 				else if(i < 1000)
 					tempI =  i;
+				if(extension){
+					tempI += extension;
+				}
 				tempArray.push(label+tempI);
 			};
 		}

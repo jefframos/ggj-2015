@@ -14,7 +14,7 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.y = 20;
         this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = ['dist/img/atlas/atlas.json'];
+        var assetsToLoader = ['dist/img/atlas/atlas.json', 'dist/img/atlas/cupcake.json'];
 
 
         if(assetsToLoader.length > 0){
@@ -92,7 +92,7 @@ var GameScreen = AbstractScreen.extend({
     },
     testJump:function(self){
         // if(this.leftDown && this.rightDown){
-        console.log(self);
+        // console.log(self);
         self.red.jump();
         // }
     },
@@ -142,7 +142,7 @@ var GameScreen = AbstractScreen.extend({
 
         // this.red.setPosition(windowWidth * 0.1 +this.red.getContent().width/2,windowHeight /2);
         var scale = scaleConverter(this.red.getContent().width, windowHeight, 0.25);
-        this.red.setScale( scale,scale);
+        //this.red.setScale( scale,scale);
         var self = this;
         var posHelper =  windowHeight * 0.05;
         this.bulletBar = new BarView(windowWidth * 0.1, 10, 1, 1);
