@@ -53,7 +53,7 @@ var GameScreen = AbstractScreen.extend({
         var self = this;
         this.leftDown = false;
         this.rightDown = false;
-
+        this.tapAccum = 0;
 
         document.body.addEventListener('keyup', function(e){
             if(e.keyCode === 87 || e.keyCode === 38){
@@ -63,47 +63,71 @@ var GameScreen = AbstractScreen.extend({
                 // self.removePosition('down');
             }
             else if(e.keyCode === 65 || e.keyCode === 37){
+                self.leftDown = false;
+
+            }
+            else if(e.keyCode === 68 || e.keyCode === 39){
+                self.rightDown = false;
+
+            }
+        });
+
+        document.body.addEventListener('keydown', function(e){
+            if(e.keyCode === 87 || e.keyCode === 38){
+                // self.removePosition('up');
+            }
+            else if(e.keyCode === 83 || e.keyCode === 40){
+                // self.removePosition('down');
+            }
+            else if(e.keyCode === 65 || e.keyCode === 37){
                 tapLeft();
+
             }
             else if(e.keyCode === 68 || e.keyCode === 39){
                 tapRight();
             }
+
         });
 
+        function tapLeft(){
+            if(self.leftDown){
+                return;
+            }
+            self.leftDown = true;
+            self.vel = self.maxVel;
+            self.testJump();
+            self.tapAccum = 0;
+            // self.rightDown = false;
+        }
+        function tapRight(){
+            if(self.rightDown){
+                return;
+            }
+            self.rightDown = true;
+            self.vel = self.maxVel;
+            self.testJump();
+            self.tapAccum = 0;
+            // self.leftDown = false;
+        }
 
 
         this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
             tapLeft();
         };
-        function tapLeft(){
-            if(self.leftDown){
-                //shiti happens
-                return;
-            }
-            self.leftDown = true;
-            self.rightDown = false;
-            self.vel = self.maxVel;
-            console.log('tapLeft');
-        }
+        
         this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
-           
+            // console.log('hitTouchLeft');
+            self.leftDown = false;
         };
 
-        function tapRight(){
-            if(self.rightDown){
-                //shiti happens
-                return;
-            }
-            self.rightDown = true;
-            self.leftDown = false;
-            self.vel = self.maxVel;
-        }
+        
         this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
             tapRight();
         };
          
         this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
-           
+            // console.log('hitTouchRight');
+            self.rightDown = false;
         };
 
         this.textAcc.setText(this.textAcc.text+'\nbuild');
@@ -134,7 +158,18 @@ var GameScreen = AbstractScreen.extend({
             }
         }
         this.environment.velocity.x = -this.vel;
+        this.tapAccum++;
+        if(this.tapAccum > 8){
+            this.tapAccum = 8;
+        }
+
         // this.textAcc.setText(this.childs.length);
+    },
+    testJump:function(){
+        if(this.leftDown && this.rightDown){
+            this.red.jump();
+            console.log('jump');
+        }
     },
     updateParticles:function(){
         // if(this.particleAccum < 0){
@@ -153,7 +188,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.accel = 0.1;
         this.vel = 0;
-        this.maxVel = 2;
+        this.maxVel = 3;
         this.environment = new Environment(windowWidth, windowHeight);
         this.environment.build(['env1.png','env2.png','env3.png','env4.png']);
         // environment.velocity.x = -1;
@@ -173,16 +208,15 @@ var GameScreen = AbstractScreen.extend({
         this.playerModel = APP.getGameModel().currentPlayerModel;
         this.playerModel.reset();
         this.red = new Red(this.playerModel);
-        this.red.build(this);
+        this.red.build(this, windowHeight * 0.7);
         this.layer.addChild(this.red);
         this.red.rotation = -1;
-        this.red.setPosition(windowWidth * 0.1 -this.red.getContent().width,windowHeight * 1.2);
+        this.red.setPosition(windowWidth * 0.5 -this.red.getContent().width,windowHeight * 0.7);
 
         this.gameOver = false;
 
         // this.red.setPosition(windowWidth * 0.1 +this.red.getContent().width/2,windowHeight /2);
         var scale = scaleConverter(this.red.getContent().width, windowHeight, 0.25);
-        TweenLite.to(this.red.spritesheet.position, 1,{x:windowWidth * 0.15 +this.red.getContent().width/2, y:windowHeight /2} );
         this.red.setScale( scale,scale);
         var self = this;
         var posHelper =  windowHeight * 0.05;
@@ -195,7 +229,7 @@ var GameScreen = AbstractScreen.extend({
         this.energyBar.setPosition(250 + posHelper * 2 + this.bulletBar.width, posHelper);
 
 
-        this.returnButton = new DefaultButton('dist/img/UI/simpleButtonUp.png', 'dist/img/UI/simpleButtonOver.png');
+        this.returnButton = new DefaultButton('simpleButtonUp.png', 'simpleButtonOver.png');
         this.returnButton.build(60, 50);
         this.returnButton.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 65);
         this.addChild(this.returnButton);

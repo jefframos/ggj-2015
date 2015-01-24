@@ -448,28 +448,28 @@ var Application = AbstractApplication.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0);
     },
-    build: function(screen) {
+    build: function(screen, floorPos) {
         var self = this, motionIdle = new SpritesheetAnimation();
         console.log(this.playerModel), motionIdle.build("idle", [ this.playerModel.imgSource ], 1, !0, null);
         var motionHurt = new SpritesheetAnimation();
         motionHurt.build("hurt", this.getFramesByRange("piangers0", 2, 2), 1, !1, function() {
             self.spritesheet.play("idle");
         }), this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
-        this.spritesheet.play("idle"), this.screen = screen, this.defaultVel = 50 * gameScale, 
+        this.spritesheet.play("idle"), this.screen = screen, this.floorPos = floorPos, this.defaultVel = 50 * gameScale, 
         this.upVel = this.playerModel.velocity * gameScale, this.spritesheet.texture.anchor.x = .5, 
-        this.spritesheet.texture.anchor.y = .5, this.rotation = 0;
+        this.spritesheet.texture.anchor.y = .5, this.rotation = 0, this.gravity = .2;
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
     },
+    jump: function() {
+        this.inJump || (this.inJump = !0, this.velocity.y = -6);
+    },
     update: function() {
-        this.gameOver || (this.getPosition().y > windowHeight && this.velocity.y > 0 ? this.velocity.y = 0 : this.getPosition().y < 0 && this.velocity.y < 0 && (this.velocity.y = 0), 
-        pointDistance(0, this.getPosition().y, 0, this.target) < 4 && (this.velocity.y = 0)), 
         this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.spritesheet.texture.rotation = this.rotation, this.rotation > 360 && (this.rotation = 0), 
-        TweenLite.to(this, .3, {
-            rotation: 5 * this.velocity.y * Math.PI / 180
-        }), this.getPosition().x > windowWidth + 50 && this.preKill();
+        this.getPosition().x > windowWidth + 50 && this.preKill(), this.velocity.y += this.gravity, 
+        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        this.inJump = !1);
     },
     destroy: function() {
         this._super();
@@ -614,11 +614,11 @@ var Application = AbstractApplication.extend({
     },
     build: function() {
         function tapLeft() {
-            self.leftDown || (self.leftDown = !0, self.rightDown = !1, self.vel = self.maxVel, 
-            console.log("tapLeft"));
+            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel, self.testJump(), self.tapAccum = 0);
         }
         function tapRight() {
-            self.rightDown || (self.rightDown = !0, self.leftDown = !1, self.vel = self.maxVel);
+            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel, self.testJump(), 
+            self.tapAccum = 0);
         }
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
@@ -634,13 +634,19 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
         this.particleAccum = 50, this.gameOver = !1;
         var self = this;
-        this.leftDown = !1, this.rightDown = !1, document.body.addEventListener("keyup", function(e) {
+        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, document.body.addEventListener("keyup", function(e) {
+            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
+        }), document.body.addEventListener("keydown", function(e) {
             87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
         }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
             tapLeft();
-        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {}, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
+        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {
+            self.leftDown = !1;
+        }, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
             tapRight();
-        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {}, this.textAcc.setText(this.textAcc.text + "\nbuild");
+        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
+            self.rightDown = !1;
+        }, this.textAcc.setText(this.textAcc.text + "\nbuild");
     },
     onProgress: function() {
         this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
@@ -650,28 +656,29 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
-        this.vel < 0 && (this.vel = 0)), this.environment.velocity.x = -this.vel);
+        this.vel < 0 && (this.vel = 0)), this.environment.velocity.x = -this.vel, this.tapAccum++, 
+        this.tapAccum > 8 && (this.tapAccum = 8));
+    },
+    testJump: function() {
+        this.leftDown && this.rightDown && (this.red.jump(), console.log("jump"));
     },
     updateParticles: function() {},
     initApplication: function() {
-        this.accel = .1, this.vel = 0, this.maxVel = 2, this.environment = new Environment(windowWidth, windowHeight), 
+        this.accel = .1, this.vel = 0, this.maxVel = 3, this.environment = new Environment(windowWidth, windowHeight), 
         this.environment.build([ "env1.png", "env2.png", "env3.png", "env4.png" ]), this.addChild(this.environment), 
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
         this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
-        this.red = new Red(this.playerModel), this.red.build(this), this.layer.addChild(this.red), 
-        this.red.rotation = -1, this.red.setPosition(.1 * windowWidth - this.red.getContent().width, 1.2 * windowHeight), 
+        this.red = new Red(this.playerModel), this.red.build(this, .7 * windowHeight), this.layer.addChild(this.red), 
+        this.red.rotation = -1, this.red.setPosition(.5 * windowWidth - this.red.getContent().width, .7 * windowHeight), 
         this.gameOver = !1;
         var scale = scaleConverter(this.red.getContent().width, windowHeight, .25);
-        TweenLite.to(this.red.spritesheet.position, 1, {
-            x: .15 * windowWidth + this.red.getContent().width / 2,
-            y: windowHeight / 2
-        }), this.red.setScale(scale, scale);
+        this.red.setScale(scale, scale);
         var self = this, posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
         this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
         this.addChild(this.energyBar), this.energyBar.setPosition(250 + 2 * posHelper + this.bulletBar.width, posHelper), 
-        this.returnButton = new DefaultButton("dist/img/UI/simpleButtonUp.png", "dist/img/UI/simpleButtonOver.png"), 
+        this.returnButton = new DefaultButton("simpleButtonUp.png", "simpleButtonOver.png"), 
         this.returnButton.build(60, 50), this.returnButton.setPosition(.95 * windowWidth - 20, .95 * windowHeight - 65), 
         this.addChild(this.returnButton), this.returnButton.addLabel(new PIXI.Text("<", {
             font: "40px Arial"
