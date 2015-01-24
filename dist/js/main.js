@@ -86,12 +86,12 @@ function testMobile() {
 }
 
 function update() {
-    requestAnimFrame(update), meter.tickStart();
+    requestAnimFrame(update);
     var tempRation = window.innerHeight / windowHeight, ratioRez = resizeProportional ? tempRation < window.innerWidth / realWindowWidth ? tempRation : window.innerWidth / realWindowWidth : 1;
     windowWidthVar = realWindowWidth * ratioRez * ratio, windowHeightVar = realWindowHeight * ratioRez * ratio, 
     windowWidthVar > realWindowWidth && (windowWidthVar = realWindowWidth), windowHeightVar > realWindowHeight && (windowHeightVar = realWindowHeight), 
     renderer.view.style.width = windowWidthVar + "px", renderer.view.style.height = windowHeightVar + "px", 
-    APP.update(), renderer.render(APP.stage), meter.tick();
+    APP.update(), renderer.render(APP.stage);
 }
 
 function possibleFullscreen() {
@@ -350,17 +350,23 @@ var Application = AbstractApplication.extend({
         this.container.position.x = x, this.container.position.y = y;
     }
 }), EnergyBar = Class.extend({
-    init: function(width, height, maxValue, currentValue) {
-        this.maxValue = maxValue, this.text = "default", this.currentValue = currentValue, 
-        this.container = new PIXI.DisplayObjectContainer(), this.width = width, this.height = height, 
-        this.backShape = new SimpleSprite("energyBackBar.png"), this.container.addChild(this.backShape.container), 
-        this.frontShape = new SimpleSprite("blueBar.png"), this.container.addChild(this.frontShape.container), 
-        this.frontShape.container.position.y = this.backShape.container.height / 2 - this.frontShape.container.height / 2;
+    init: function(backBar, bar, icoSrc) {
+        this.container = new PIXI.DisplayObjectContainer(), this.barContainer = new PIXI.DisplayObjectContainer(), 
+        this.backShape = new SimpleSprite(backBar), this.container.addChild(this.barContainer), 
+        this.barContainer.addChild(this.backShape.container), this.frontShape = new SimpleSprite(bar), 
+        this.barContainer.addChild(this.frontShape.container), this.frontShape.container.position.y = this.backShape.container.height / 2 - this.frontShape.container.height / 2, 
+        this.mask = new PIXI.Graphics(), this.mask.beginFill(65280), this.mask.drawRect(0, 0, this.backShape.container.width, this.backShape.container.height), 
+        this.barContainer.addChild(this.mask), this.barContainer.mask = this.mask, this.icon = new SimpleSprite(icoSrc), 
+        this.icon.container.position.y = this.backShape.container.height / 2 - this.icon.container.height / 2, 
+        this.icon.container.position.x = -this.icon.container.width / 2, this.container.addChild(this.icon.container), 
+        console.log(this.icon.container);
     },
     updateBar: function(currentValue, maxValue) {
-        (this.currentValue !== currentValue || this.maxValue !== maxValue && currentValue >= 0) && (this.currentValue = currentValue, 
-        this.maxValue = maxValue, this.frontShape.scale.x = this.currentValue / this.maxValue, 
-        this.frontShape.scale.x < 0 && (this.frontShape.scale.x = 0));
+        if (this.currentValue !== currentValue || this.maxValue !== maxValue && currentValue >= 0) {
+            this.currentValue = currentValue, this.maxValue = maxValue;
+            var tempW = this.frontShape.container.width, pos = -tempW + this.currentValue / this.maxValue * this.frontShape.container.width;
+            this.frontShape.container.position.x = pos;
+        }
     },
     getContent: function() {
         return this.container;
@@ -485,7 +491,7 @@ var Application = AbstractApplication.extend({
     },
     dash: function() {
         this._super(), this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
-        this.dashGraphic.anchor.x = .88, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
+        this.dashGraphic.anchor.x = .85, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
         this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
         this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
         this.dashGraphic.position.y = this.getPosition().y, TweenLite.to(this.dashGraphic.scale, .2, {
@@ -688,7 +694,8 @@ var Application = AbstractApplication.extend({
         this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
         this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
         this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
-        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy);
+        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
+        this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
     },
     dash: function() {
         if (!(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast)) {
@@ -774,16 +781,14 @@ var Application = AbstractApplication.extend({
         var refPosPig = windowHeight - 65 - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = this.firstPos - 1.5 * this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
-        scale = scaleConverter(this.pig.getContent().height, windowHeight, .2), this.pig.setScale(scale, scale), 
+        scale = scaleConverter(this.pig.getContent().height, windowHeight, .15), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;
-        var posHelper = .05 * windowHeight;
-        this.cowDashBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.cowDashBar), 
-        this.cowDashBar.setPosition(250 + posHelper, posHelper), this.cowEnergyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
-        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(250 + 2 * posHelper + this.cowDashBar.width, posHelper), 
-        this.pigDashBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.pigDashBar), 
-        this.pigDashBar.setPosition(250 + posHelper, posHelper + 40), this.pigEnergyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
-        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(250 + 2 * posHelper + this.cowDashBar.width, posHelper + 40), 
-        this.energyBar = new EnergyBar(.1 * windowWidth, 10, 1, 1), this.addChild(this.energyBar), 
+        this.cowEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "cowFace.png"), 
+        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70, 50), this.pigEnergyBar = new EnergyBar("energyBackBar.png", "redBar.png", "pigface.png"), 
+        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, 50), 
+        this.cowDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
+        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(130, 100), this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
+        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, 100), 
         this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners(), 
         this.updateable = !0;
     },
@@ -994,7 +999,7 @@ var Application = AbstractApplication.extend({
     preKill: function() {
         this.updateable = !0, this.kill = !0;
     }
-}), meter = new FPSMeter(), resizeProportional = !0, windowWidth = 1136, windowHeight = 640, realWindowWidth = 1136, realWindowHeight = 640, gameScale = 1.4;
+}), resizeProportional = !0, windowWidth = 1136, windowHeight = 640, realWindowWidth = 1136, realWindowHeight = 640, gameScale = 1.4;
 
 testMobile() && (gameScale = 1.8, windowWidth = window.innerWidth * gameScale, windowHeight = window.innerHeight * gameScale, 
 realWindowWidth = windowWidth, realWindowHeight = windowHeight);

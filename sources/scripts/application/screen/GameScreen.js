@@ -116,6 +116,10 @@ var GameScreen = AbstractScreen.extend({
         if(this.pigEnergyBar){
             this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy);
         }
+
+        if(this.energyBar){
+            this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
+        }
         // this.textAcc.setText(this.childs.length);
     },
     dash:function(){
@@ -295,7 +299,7 @@ var GameScreen = AbstractScreen.extend({
         this.pig.setPosition(this.secondPos,refPosPig);
         this.pig.floorPos = refPosPig;
 
-        scale = scaleConverter(this.pig.getContent().height, windowHeight, 0.20);
+        scale = scaleConverter(this.pig.getContent().height, windowHeight, 0.15);
         this.pig.setScale( scale,scale);
 
         this.second = this.pig;
@@ -305,25 +309,23 @@ var GameScreen = AbstractScreen.extend({
         // this.cow.setPosition(windowWidth * 0.1 +this.cow.getContent().width/2,windowHeight /2);
         var self = this;
         var posHelper =  windowHeight * 0.05;
-        this.cowDashBar = new BarView(windowWidth * 0.1, 10, 1, 1);
-        this.addChild(this.cowDashBar);
-        this.cowDashBar.setPosition(250 + posHelper, posHelper);
 
-        this.cowEnergyBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+
+        this.cowEnergyBar = new EnergyBar('energyBackBar.png', 'blueBar.png', 'cowFace.png');
         this.addChild(this.cowEnergyBar);
-        this.cowEnergyBar.setPosition(250 + posHelper * 2 + this.cowDashBar.width, posHelper);
+        this.cowEnergyBar.setPosition(70,50);
 
-        this.pigDashBar = new BarView(windowWidth * 0.1, 10, 1, 1);
-        this.addChild(this.pigDashBar);
-        this.pigDashBar.setPosition(250 + posHelper, posHelper + 40);
-
-        this.pigEnergyBar = new BarView(windowWidth * 0.1, 10, 1, 1);
+        this.pigEnergyBar = new EnergyBar('energyBackBar.png', 'redBar.png', 'pigface.png');
         this.addChild(this.pigEnergyBar);
-        this.pigEnergyBar.setPosition(250 + posHelper * 2 + this.cowDashBar.width, posHelper + 40);
+        this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,50);
 
+        this.cowDashBar = new EnergyBar('dashBackBar.png', 'goldBar.png', 'dashIco.png');
+        this.addChild(this.cowDashBar);
+        this.cowDashBar.setPosition(130,100);
 
-        this.energyBar = new EnergyBar(windowWidth * 0.1, 10, 1, 1);
-        this.addChild(this.energyBar);
+        this.pigDashBar = new EnergyBar('dashBackBar.png', 'goldBar.png', 'dashIco.png');
+        this.addChild(this.pigDashBar);
+        this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,100);
 
 
 
