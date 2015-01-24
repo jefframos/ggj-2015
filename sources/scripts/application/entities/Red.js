@@ -4,7 +4,7 @@ var Red = SpritesheetEntity.extend({
 		this.playerModel = playerModel;
 		this._super( true );
 	},
-	build:function(screen){
+	build:function(screen, floorPos){
 		//the texture shoud be loaded before this class are instanced
 		//the label, is the label on the json of texture loaded
 		//the function 'getFramesByRange', is just a helper, this return one array with the labels of textures on json
@@ -26,6 +26,7 @@ var Red = SpritesheetEntity.extend({
 		this.spritesheet.play('idle');
 
 		this.screen = screen;
+		this.floorPos = floorPos;
 		this.defaultVel = 50 * gameScale;
 
 		this.upVel = this.playerModel.velocity * gameScale;
@@ -38,6 +39,8 @@ var Red = SpritesheetEntity.extend({
 		this.spritesheet.texture.anchor.x = 0.5;
 		this.spritesheet.texture.anchor.y = 0.5;
 		this.rotation = 0;
+
+		this.gravity = 0.2;
 		// console.log(this.spritesheet.texture);
 	},
 	setTarget:function(pos){
@@ -50,40 +53,41 @@ var Red = SpritesheetEntity.extend({
 		}else if(this.target > this.getPosition().y){
 			this.velocity.y = this.upVel;
 		}
+
 	},
 	// gameOver:function(){
 	// 	this.gameOver = true;
 	// },
-	update:function(){
-		if(!this.gameOver){
-			if(this.getPosition().y > windowHeight && this.velocity.y > 0){
-				this.velocity.y = 0;
-			}else if(this.getPosition().y < 0 && this.velocity.y < 0){
-				this.velocity.y = 0;
-			}
-
-			if(pointDistance(0,this.getPosition().y,0, this.target) < 4){
-				this.velocity.y = 0;
-			}
+	jump:function(){
+		if(this.inJump){
+			return;
 		}
-
+		this.inJump = true;
+		this.velocity.y = -6;
+	},
+	update:function(){
 
 		this._super();
 		this.spritesheet.texture.anchor.x = 0.5;
 		this.spritesheet.texture.anchor.y = 0.5;
-		this.spritesheet.texture.rotation  = this.rotation;//(this.velocity.y * 5) * Math.PI / 180;
-		if(this.rotation > 360){
-			this.rotation = 0;
-		}
-		// if(this.rotation < 0){
-		// 	this.rotation = 360;
+		
+		// this.spritesheet.texture.rotation  = this.rotation;//(this.velocity.y * 5) * Math.PI / 180;
+		// if(this.rotation > 360){
+		// 	this.rotation = 0;
 		// }
-		TweenLite.to(this, 0.3, {rotation:(this.velocity.y * 5) * Math.PI / 180});
+		// TweenLite.to(this, 0.3, {rotation:(this.velocity.y * 5) * Math.PI / 180});
 		// this.spritesheet.texture.rotation = this.velocity.y * Math.PI / 180;
 		// this.getContent().rotation = this.velocity.y / 10;
 		
 		if(this.getPosition().x > windowWidth + 50){
 			this.preKill();
+		}
+
+		this.velocity.y += this.gravity;
+		if(this.getPosition().y + this.velocity.y >= this.floorPos){
+			this.velocity.y = 0;
+			this.inJump = false;
+			// this.setPosition(this.getPosition().x, this.floorPos);
 		}
 	},
 	destroy:function(){

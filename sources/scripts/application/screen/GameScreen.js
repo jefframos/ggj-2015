@@ -55,82 +55,7 @@ var GameScreen = AbstractScreen.extend({
         this.rightDown = false;
         this.tapAccum = 0;
 
-        document.body.addEventListener('keyup', function(e){
-            if(e.keyCode === 87 || e.keyCode === 38){
-                // self.removePosition('up');
-            }
-            else if(e.keyCode === 83 || e.keyCode === 40){
-                // self.removePosition('down');
-            }
-            else if(e.keyCode === 65 || e.keyCode === 37){
-                self.leftDown = false;
-
-            }
-            else if(e.keyCode === 68 || e.keyCode === 39){
-                self.rightDown = false;
-
-            }
-        });
-
-        document.body.addEventListener('keydown', function(e){
-            if(e.keyCode === 87 || e.keyCode === 38){
-                // self.removePosition('up');
-            }
-            else if(e.keyCode === 83 || e.keyCode === 40){
-                // self.removePosition('down');
-            }
-            else if(e.keyCode === 65 || e.keyCode === 37){
-                tapLeft();
-
-            }
-            else if(e.keyCode === 68 || e.keyCode === 39){
-                tapRight();
-            }
-
-        });
-
-        function tapLeft(){
-            if(self.leftDown){
-                return;
-            }
-            self.leftDown = true;
-            self.vel = self.maxVel;
-            self.testJump();
-            self.tapAccum = 0;
-            // self.rightDown = false;
-        }
-        function tapRight(){
-            if(self.rightDown){
-                return;
-            }
-            self.rightDown = true;
-            self.vel = self.maxVel;
-            self.testJump();
-            self.tapAccum = 0;
-            // self.leftDown = false;
-        }
-
-
-        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
-            tapLeft();
-        };
         
-        this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
-            // console.log('hitTouchLeft');
-            self.leftDown = false;
-        };
-
-        
-        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
-            tapRight();
-        };
-         
-        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
-            // console.log('hitTouchRight');
-            self.rightDown = false;
-        };
-
-        this.textAcc.setText(this.textAcc.text+'\nbuild');
 
     },
     onProgress:function(){
@@ -165,11 +90,11 @@ var GameScreen = AbstractScreen.extend({
 
         // this.textAcc.setText(this.childs.length);
     },
-    testJump:function(){
-        if(this.leftDown && this.rightDown){
-            this.red.jump();
-            console.log('jump');
-        }
+    testJump:function(self){
+        // if(this.leftDown && this.rightDown){
+        console.log(self);
+        self.red.jump();
+        // }
     },
     updateParticles:function(){
         // if(this.particleAccum < 0){
@@ -241,7 +166,96 @@ var GameScreen = AbstractScreen.extend({
 
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
+        this.addListenners();
+
         
+    },
+    addListenners:function(){
+        var self = this;
+        var swipe     = new Hammer.Swipe();
+        var hammer    = new Hammer.Manager(renderer.view);
+        hammer.add(swipe);
+
+        hammer.on('swipeup', function() {
+            self.testJump(self);
+        });
+
+        document.body.addEventListener('keyup', function(e){
+            if(e.keyCode === 87 || e.keyCode === 38){
+                // self.removePosition('up');
+            }
+            else if(e.keyCode === 83 || e.keyCode === 40){
+                // self.removePosition('down');
+            }
+            else if(e.keyCode === 65 || e.keyCode === 37){
+                self.leftDown = false;
+
+            }
+            else if(e.keyCode === 68 || e.keyCode === 39){
+                self.rightDown = false;
+
+            }
+        });
+
+        document.body.addEventListener('keydown', function(e){
+            if(e.keyCode === 87 || e.keyCode === 38){
+                // self.removePosition('up');
+            }
+            else if(e.keyCode === 83 || e.keyCode === 40){
+                // self.removePosition('down');
+            }
+            else if(e.keyCode === 65 || e.keyCode === 37){
+                tapLeft();
+
+            }
+            else if(e.keyCode === 68 || e.keyCode === 39){
+                tapRight();
+            }
+
+        });
+
+        function tapLeft(){
+            if(self.leftDown){
+                return;
+            }
+            self.leftDown = true;
+            self.vel = self.maxVel;
+            // self.testJump();
+            self.tapAccum = 0;
+            // self.rightDown = false;
+        }
+        function tapRight(){
+            if(self.rightDown){
+                return;
+            }
+            self.rightDown = true;
+            self.vel = self.maxVel;
+            // self.testJump();
+            self.tapAccum = 0;
+            // self.leftDown = false;
+        }
+
+
+        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+            tapLeft();
+        };
+        
+        this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
+            // console.log('hitTouchLeft');
+            self.leftDown = false;
+        };
+
+        
+        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+            tapRight();
+        };
+         
+        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
+            // console.log('hitTouchRight');
+            self.rightDown = false;
+        };
+
+        this.textAcc.setText(this.textAcc.text+'\nbuild');
     },
     benchmark:function()
     {
