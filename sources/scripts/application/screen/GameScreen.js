@@ -97,11 +97,12 @@ var GameScreen = AbstractScreen.extend({
     dash:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
-        this.vel = this.maxVel * 8;
+        this.vel = this.maxVel * 4;
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
         this.red.dash();
+        this.benchmark();
         // }
     },
     jump:function(){

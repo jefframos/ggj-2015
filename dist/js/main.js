@@ -651,8 +651,8 @@ var Application = AbstractApplication.extend({
         this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8));
     },
     dash: function() {
-        this.vel = 8 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
-        this.red.dash();
+        this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+        this.red.dash(), this.benchmark();
     },
     jump: function() {
         this.red.jump();
