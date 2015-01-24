@@ -413,6 +413,47 @@ var Application = AbstractApplication.extend({
         collection.object && "environment" === collection.object.type && collection.object.fireCollide(), 
         this.preKill();
     }
+}), Cow = SpritesheetEntity.extend({
+    init: function(playerModel) {
+        this.playerModel = playerModel, this._super(!0);
+    },
+    build: function(screen, floorPos) {
+        var motionIdle = new SpritesheetAnimation();
+        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
+        var jumpUp = new SpritesheetAnimation();
+        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
+        var jumpUpStatic = new SpritesheetAnimation();
+        jumpUpStatic.build("jumpUpStatic", this.getFramesByRange("cupcake0", 26, 26, "", ".png"), 1, !1, null);
+        var jumpDown = new SpritesheetAnimation();
+        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null);
+        var jumpDownStatic = new SpritesheetAnimation();
+        jumpDownStatic.build("jumpDownStatic", this.getFramesByRange("cupcake0", 40, 40, "", ".png"), 1, !1, null), 
+        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
+        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
+        this.spritesheet.addAnimation(jumpUpStatic), this.spritesheet.addAnimation(jumpDownStatic), 
+        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
+        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
+        this.rotation = 0, this.gravity = .2;
+    },
+    setTarget: function(pos) {
+        this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
+    },
+    dash: function() {},
+    jump: function() {
+        this.inJump || (this.inJump = !0, this.velocity.y = -6);
+    },
+    update: function() {
+        this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
+        this.getPosition().x > windowWidth + 50 && this.preKill(), this.velocity.y += this.gravity, 
+        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        this.inJump = !1, this.spritesheet.play("idle")), this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
+        this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
+        this.spritesheet.play("jumpDown"));
+    },
+    destroy: function() {
+        this._super();
+    }
 }), Cupcake = SpritesheetEntity.extend({
     init: function() {
         this._super(!0);
@@ -444,7 +485,7 @@ var Application = AbstractApplication.extend({
     destroy: function() {
         this._super();
     }
-}), Red = SpritesheetEntity.extend({
+}), Pig = SpritesheetEntity.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0);
     },
@@ -487,7 +528,7 @@ var Application = AbstractApplication.extend({
     }
 }), AppModel = Class.extend({
     init: function() {
-        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel("piangersN.png", .04, .2, 2, 8, 1), new PlayerModel("feter.png", .05, .4, 1.5, 4, 2), new PlayerModel("neto.png", .05, .5, 2, 2, 4) ], 
+        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel("vaca", .04, .8, 2, 8, 1), new PlayerModel("feter.png", .05, .4, 1.5, 4, 2), new PlayerModel("neto.png", .05, .5, 2, 2, 4) ], 
         this.setModel(0);
     },
     setModel: function(id) {
@@ -648,14 +689,29 @@ var Application = AbstractApplication.extend({
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
         this.onDash && (this.vel -= 2 * this.accel), this.vel < 0 && (this.vel = 0, this.onDash = !1)), 
-        this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8));
+        this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8), 
+        this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
+        this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy));
     },
     dash: function() {
-        this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
-        this.red.dash(), this.benchmark();
+        if (!(this.playerModel.currentBulletEnergy < this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast)) {
+            console.log(this.playerModel.bulletCoast), this.playerModel.currentBulletEnergy -= this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast, 
+            this.playerModel.currentBulletEnergy < 0 && (this.playerModel.currentBulletEnergy = 0), 
+            this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+            this.first.dash();
+            var self = this;
+            setTimeout(function() {
+                self.second.dash();
+            }, 100);
+        }
     },
     jump: function() {
-        this.red.jump();
+        this.first.jump();
+        var self = this;
+        setTimeout(function() {
+            self.second.jump();
+        }, 100);
     },
     updateParticles: function() {},
     initApplication: function() {
@@ -664,10 +720,13 @@ var Application = AbstractApplication.extend({
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
         this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
-        this.red = new Red(this.playerModel), this.red.build(this, .7 * windowHeight), this.layer.addChild(this.red), 
-        this.red.rotation = -1, this.red.setPosition(.5 * windowWidth - this.red.getContent().width, .7 * windowHeight), 
-        this.gameOver = !1;
-        var self = (scaleConverter(this.red.getContent().width, windowHeight, .25), this), posHelper = .05 * windowHeight;
+        this.cow = new Cow(this.playerModel), this.cow.build(this, .7 * windowHeight), this.layer.addChild(this.cow), 
+        this.cow.rotation = -1, this.cow.setPosition(.5 * windowWidth, .7 * windowHeight);
+        scaleConverter(this.cow.getContent().width, windowHeight, .25);
+        this.first = this.cow, this.pig = new Pig(this.playerModel), this.pig.build(this, .7 * windowHeight), 
+        this.layer.addChild(this.pig), this.pig.rotation = -1, this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, .7 * windowHeight), 
+        this.second = this.pig, this.gameOver = !1;
+        var self = this, posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
         this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
         this.addChild(this.energyBar), this.energyBar.setPosition(250 + 2 * posHelper + this.bulletBar.width, posHelper), 
@@ -677,8 +736,7 @@ var Application = AbstractApplication.extend({
             font: "40px Arial"
         }), 5, 5), this.returnButton.clickCallback = function() {
             self.screenManager.prevScreen();
-        }, this.initBench = !1, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), 
-        this.addListenners();
+        }, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.addListenners();
     },
     addListenners: function() {
         function tapLeft() {
@@ -707,18 +765,6 @@ var Application = AbstractApplication.extend({
         }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
             self.rightDown = !1;
         }, this.textAcc.setText(this.textAcc.text + "\nbuild");
-    },
-    benchmark: function() {
-        function addEntity() {
-            var red = new Red();
-            red.build(), red.setPosition(-90, windowHeight * Math.random()), self.addChild(red), 
-            red.velocity.x = 1, self.accBench++, self.accBench > 300 && (self.initBench = !1, 
-            clearInterval(self.benchInterval));
-        }
-        if (!this.initBench) {
-            var self = this;
-            this.initBench = !0, this.accBench = 0, this.benchInterval = setInterval(addEntity, 50);
-        }
     }
 }), WaitScreen = AbstractScreen.extend({
     init: function(label) {

@@ -1,5 +1,5 @@
 /*jshint undef:false */
-var Red = SpritesheetEntity.extend({
+var Cow = SpritesheetEntity.extend({
 	init:function(playerModel){
 		this.playerModel = playerModel;
 		this._super( true );

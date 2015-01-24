@@ -91,24 +91,46 @@ var GameScreen = AbstractScreen.extend({
         if(this.tapAccum > 8){
             this.tapAccum = 8;
         }
-
+        if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
+            this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
+        }
+        if(this.bulletBar){
+            this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy);
+        }
+        if(this.energyBar){
+            this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy);
+        }
         // this.textAcc.setText(this.childs.length);
     },
     dash:function(){
-        // if(this.leftDown && this.rightDown){
-        // console.log(self);
+        if(this.playerModel.currentBulletEnergy < this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast){
+            return;
+        }
+        console.log(this.playerModel.bulletCoast);
+        this.playerModel.currentBulletEnergy -= this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast;
+
+        if(this.playerModel.currentBulletEnergy < 0){
+            this.playerModel.currentBulletEnergy = 0;
+        }
         this.vel = this.maxVel * 4;
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
-        this.red.dash();
-        this.benchmark();
+        this.first.dash();
+        var self = this;
+        setTimeout(function(){
+            self.second.dash();
+        }, 100);
         // }
     },
     jump:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
-        this.red.jump();
+        this.first.jump();
+        var self = this;
+        setTimeout(function(){
+            self.second.jump();
+        }, 100);
         // }
     },
     updateParticles:function(){
@@ -116,8 +138,8 @@ var GameScreen = AbstractScreen.extend({
         //     this.particleAccum = this.playerModel.currentEnergy / this.playerModel.maxEnergy * 50 + 8;
         //     var particle = new Particles({x:-0.9, y:-(Math.random() * 0.2 + 0.7)}, 110, 'smoke.png', -0.01);
         //     particle.build();
-        //     particle.setPosition(this.red.getPosition().x - this.red.getContent().width + 5,
-        //         this.red.getPosition().y- this.red.getContent().height / 2 + 25);
+        //     particle.setPosition(this.cow.getPosition().x - this.cow.getContent().width + 5,
+        //         this.cow.getPosition().y- this.cow.getContent().height / 2 + 25);
         //     this.addChild(particle);
 
         // }else{
@@ -147,17 +169,29 @@ var GameScreen = AbstractScreen.extend({
 
         this.playerModel = APP.getGameModel().currentPlayerModel;
         this.playerModel.reset();
-        this.red = new Red(this.playerModel);
-        this.red.build(this, windowHeight * 0.7);
-        this.layer.addChild(this.red);
-        this.red.rotation = -1;
-        this.red.setPosition(windowWidth * 0.5 -this.red.getContent().width,windowHeight * 0.7);
+
+
+        this.cow = new Cow(this.playerModel);
+        this.cow.build(this, windowHeight * 0.7);
+        this.layer.addChild(this.cow);
+        this.cow.rotation = -1;
+        this.cow.setPosition(windowWidth * 0.5,windowHeight * 0.7);
+        var scale = scaleConverter(this.cow.getContent().width, windowHeight, 0.25);
+        //this.cow.setScale( scale,scale);
+
+        this.first = this.cow;
+
+        this.pig = new Pig(this.playerModel);
+        this.pig.build(this, windowHeight * 0.7);
+        this.layer.addChild(this.pig);
+        this.pig.rotation = -1;
+        this.pig.setPosition(windowWidth * 0.5 -this.pig.getContent().width,windowHeight * 0.7);
+
+        this.second = this.pig;
 
         this.gameOver = false;
 
-        // this.red.setPosition(windowWidth * 0.1 +this.red.getContent().width/2,windowHeight /2);
-        var scale = scaleConverter(this.red.getContent().width, windowHeight, 0.25);
-        //this.red.setScale( scale,scale);
+        // this.cow.setPosition(windowWidth * 0.1 +this.cow.getContent().width/2,windowHeight /2);
         var self = this;
         var posHelper =  windowHeight * 0.05;
         this.bulletBar = new BarView(windowWidth * 0.1, 10, 1, 1);
@@ -177,8 +211,6 @@ var GameScreen = AbstractScreen.extend({
         this.returnButton.clickCallback = function(){
             self.screenManager.prevScreen();
         };
-        this.initBench = false;
-
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
         this.addListenners();
@@ -279,28 +311,5 @@ var GameScreen = AbstractScreen.extend({
         };
 
         this.textAcc.setText(this.textAcc.text+'\nbuild');
-    },
-    benchmark:function()
-    {
-        if(this.initBench){
-            return;
-        }
-        var self = this;
-        this.initBench = true;
-        this.accBench = 0;
-        
-        function addEntity(){
-            var red = new Red();
-            red.build();
-            red.setPosition(-90, windowHeight * Math.random());
-            self.addChild(red);
-            red.velocity.x = 1;
-            self.accBench ++;
-            if(self.accBench > 300){
-                self.initBench = false;
-                clearInterval(self.benchInterval);
-            }
-        }
-        this.benchInterval = setInterval(addEntity, 50);
     }
 });
