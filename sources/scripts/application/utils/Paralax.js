@@ -26,7 +26,7 @@ var Paralax =  Class.extend({
 			this.sprite.position.x = (this.texWidth + this.spacing) * i;
 			this.container.addChild(this.sprite);
 		}
-		console.log('this');
+		// console.log('this');
 	},
 	update: function(){
 		if(Math.abs(this.container.position.x + this.velocity.x) >= (this.texWidth + this.totTiles * this.spacing) ){

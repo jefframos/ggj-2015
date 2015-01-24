@@ -4,15 +4,17 @@ function testMobile() {
 	return Modernizr.touch;// || window.innerWidth < 600;//true;// Modernizr.touch || window.innerWidth < 600;
 }
 var resizeProportional = true;
-var windowWidth = 820,
-windowHeight = 600;
+var windowWidth = 1136,
+windowHeight = 640;
 
-var realWindowWidth = 820,
-realWindowHeight = 600;
-var gameScale = 1.8;
+var realWindowWidth = 1136,
+realWindowHeight = 640;
+var gameScale = 1.4;
 if(testMobile()){
+	gameScale = 1.8;
 	windowWidth = window.innerWidth * gameScale;//640;
 	windowHeight = window.innerHeight * gameScale;//960;
+
 	// alert(windowWidth +' - '+windowHeight);
 	// windowWidth = window.screen.height;//640;
 	// windowHeight = window.screen.width;//960;

@@ -14,7 +14,10 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.y = 20;
         this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = ['dist/img/atlas/atlas.json', 'dist/img/atlas/cupcake.json', 'dist/img/atlas/cow.json'];
+        var assetsToLoader = ['dist/img/atlas/atlas.json',
+        'dist/img/atlas/cupcake.json',
+        'dist/img/atlas/cow.json',
+        'dist/img/atlas/environment.json'];
 
 
         if(assetsToLoader.length > 0){
@@ -90,6 +93,9 @@ var GameScreen = AbstractScreen.extend({
             }
         }
         this.environment.velocity.x = -this.vel;
+        this.environment2.velocity.x = -this.vel * 0.9;
+        this.environment3.velocity.x = -this.vel * 0.6;
+        this.environment4.velocity.x = -this.vel * 0.4;
         
         if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
             this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
@@ -150,14 +156,40 @@ var GameScreen = AbstractScreen.extend({
         // }
     },
     initApplication:function(){
+        // var paralaxLayer1 = new Paralax(this.canvasArea.x);
+        // paralaxLayer1.build('tree2.png', 100);
+        // this.addChild(paralaxLayer1);
+        // paralaxLayer1.velocity.x = -0.5;
+        // paralaxLayer1.getContent().position.y = 420;
+        // this.textAcc.setText(this.textAcc.text+'\ninitApplication');
+        this.background = new SimpleSprite('sky.png');
+        this.addChild(this.background);
 
         this.accel = 0.1;
         this.vel = 0;
         this.maxVel = 5;
+
+
+        this.environment4 = new Environment(windowWidth, windowHeight);
+        this.environment4.build(['montanha2.png'], 80, 75);
+        // environment4.velocity.x = -1;
+        this.addChild(this.environment4);
+
+        this.environment3 = new Environment(windowWidth, windowHeight);
+        this.environment3.build(['montanha1.png'], 50, 75);
+        // environment3.velocity.x = -1;
+        this.addChild(this.environment3);
+
+        this.environment2 = new Environment(windowWidth, windowHeight);
+        this.environment2.build(['cacto1.png','cacto2.png','pedra.png','cranio.png'], 300, 75);
+        // environment2.velocity.x = -1;
+        this.addChild(this.environment2);
+
         this.environment = new Environment(windowWidth, windowHeight);
-        this.environment.build(['env1.png','env2.png','env3.png','env4.png']);
+        this.environment.build(['ground.png'], 0, 0);
         // environment.velocity.x = -1;
         this.addChild(this.environment);
+
 
         this.layerManager = new LayerManager();
         this.layerManager.build('Main');
@@ -175,20 +207,27 @@ var GameScreen = AbstractScreen.extend({
 
 
         this.cow = new Cow(this.playerModel);
-        this.cow.build(this, windowHeight * 0.7);
+        this.cow.build(this);
+       
         this.layer.addChild(this.cow);
         this.cow.rotation = -1;
-        this.cow.setPosition(windowWidth * 0.5,windowHeight * 0.7);
-        var scale = scaleConverter(this.cow.getContent().height, windowHeight, 0.20);
+        
+        var scale = scaleConverter(this.cow.getContent().height, windowHeight, 0.25);
         this.cow.setScale( scale,scale);
+
+        var refPos = windowHeight - 75  - this.cow.getContent().height / 2;
+        this.cow.setPosition(windowWidth * 0.5,refPos);
+        this.cow.floorPos = refPos;
 
         this.first = this.cow;
 
         this.pig = new Pig(this.playerModel);
-        this.pig.build(this, windowHeight * 0.7);
+        this.pig.build(this);
+        var refPosPig = windowHeight - 80  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
-        this.pig.setPosition(windowWidth * 0.5 -this.pig.getContent().width,windowHeight * 0.7);
+        this.pig.setPosition(windowWidth * 0.5 -this.pig.getContent().width,refPosPig);
+        this.pig.floorPos = refPosPig;
 
         this.second = this.pig;
 

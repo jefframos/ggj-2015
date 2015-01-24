@@ -437,9 +437,8 @@ var Application = AbstractApplication.extend({
         this.inJump || (this.inJump = !0, this.velocity.y = -6);
     },
     update: function() {
-        return this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = 0, 
-        this.getPosition().x > windowWidth + 50 && this.preKill(), this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, 
-        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        return this._super(), this.getPosition().x > windowWidth + 50 && this.preKill(), 
+        this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
         this.inJump = !1, this.spritesheet.play("idle")), void (this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
         this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
         this.spritesheet.play("jumpDown"))));
@@ -623,7 +622,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json", "dist/img/atlas/cow.json" ];
+        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json", "dist/img/atlas/cow.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -645,7 +644,8 @@ var Application = AbstractApplication.extend({
         this._super(), this.playerModel && (this.updateParticles(), this.vel > this.maxVel && (this.vel -= this.accel, 
         this.onDash && (this.vel -= 5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
         this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.environment.velocity.x = -this.vel, 
-        this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        this.environment2.velocity.x = .9 * -this.vel, this.environment3.velocity.x = .6 * -this.vel, 
+        this.environment4.velocity.x = .4 * -this.vel, this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
         this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
         this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy));
     },
@@ -672,18 +672,27 @@ var Application = AbstractApplication.extend({
     },
     updateParticles: function() {},
     initApplication: function() {
-        this.accel = .1, this.vel = 0, this.maxVel = 5, this.environment = new Environment(windowWidth, windowHeight), 
-        this.environment.build([ "env1.png", "env2.png", "env3.png", "env4.png" ]), this.addChild(this.environment), 
+        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
+        this.vel = 0, this.maxVel = 5, this.environment4 = new Environment(windowWidth, windowHeight), 
+        this.environment4.build([ "montanha2.png" ], 80, 75), this.addChild(this.environment4), 
+        this.environment3 = new Environment(windowWidth, windowHeight), this.environment3.build([ "montanha1.png" ], 50, 75), 
+        this.addChild(this.environment3), this.environment2 = new Environment(windowWidth, windowHeight), 
+        this.environment2.build([ "cacto1.png", "cacto2.png", "pedra.png", "cranio.png" ], 300, 75), 
+        this.addChild(this.environment2), this.environment = new Environment(windowWidth, windowHeight), 
+        this.environment.build([ "ground.png" ], 0, 0), this.addChild(this.environment), 
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
         this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
-        this.cow = new Cow(this.playerModel), this.cow.build(this, .7 * windowHeight), this.layer.addChild(this.cow), 
-        this.cow.rotation = -1, this.cow.setPosition(.5 * windowWidth, .7 * windowHeight);
-        var scale = scaleConverter(this.cow.getContent().height, windowHeight, .2);
-        this.cow.setScale(scale, scale), this.first = this.cow, this.pig = new Pig(this.playerModel), 
-        this.pig.build(this, .7 * windowHeight), this.layer.addChild(this.pig), this.pig.rotation = -1, 
-        this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, .7 * windowHeight), 
-        this.second = this.pig, this.gameOver = !1;
+        this.cow = new Cow(this.playerModel), this.cow.build(this), this.layer.addChild(this.cow), 
+        this.cow.rotation = -1;
+        var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
+        this.cow.setScale(scale, scale);
+        var refPos = windowHeight - 75 - this.cow.getContent().height / 2;
+        this.cow.setPosition(.5 * windowWidth, refPos), this.cow.floorPos = refPos, this.first = this.cow, 
+        this.pig = new Pig(this.playerModel), this.pig.build(this);
+        var refPosPig = windowHeight - 80 - this.pig.getContent().height / 2;
+        this.layer.addChild(this.pig), this.pig.rotation = -1, this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, refPosPig), 
+        this.pig.floorPos = refPosPig, this.second = this.pig, this.gameOver = !1;
         var self = this, posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
         this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
@@ -832,18 +841,18 @@ var Application = AbstractApplication.extend({
             y: 0
         }, this.texture = "", this.sprite = "", this.container = new PIXI.DisplayObjectContainer(), 
         this.updateable = !0, this.arraySprt = [], this.maxWidth = maxWidth, this.maxHeight = maxHeight, 
-        this.texWidth = 0, this.spacing = 0, this.totTiles = 0, this.currentSprId = 0;
+        this.texWidth = 0, this.spacing = 0, this.totTiles = 0, this.currentSprId = 0, this.floorPos = 0;
     },
-    build: function(imgs, spacing) {
-        this.arraySprt = imgs, spacing && (this.spacing = spacing);
+    build: function(imgs, spacing, floorPos) {
+        this.arraySprt = imgs, this.floorPos = floorPos, spacing && (this.spacing = spacing);
         for (var i = 0; i < this.arraySprt.length && !(this.container.width > this.maxWidth); i++) this.currentSprId = i, 
         this.addEnv();
     },
     addEnv: function() {
         this.sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(this.arraySprt[this.currentSprId]));
         var last = this.container.children[this.container.children.length - 1];
-        last && (this.sprite.position.x = last.position.x + last.width - 2), this.sprite.position.y = this.maxHeight - this.sprite.height, 
-        this.container.addChild(this.sprite);
+        last && (this.sprite.position.x = last.position.x + last.width + this.velocity.x - 2 + this.spacing), 
+        this.sprite.position.y = this.maxHeight - this.sprite.height - this.floorPos, this.container.addChild(this.sprite);
     },
     update: function() {
         if (!this.container.children) return void console.log(this.container);
@@ -870,7 +879,6 @@ var Application = AbstractApplication.extend({
         this.texWidth = this.texture.width, this.totTiles = Math.ceil(this.maxWidth / this.texWidth) + 1;
         for (var i = 0; i < this.totTiles; i++) this.sprite = new PIXI.Sprite(this.texture), 
         this.sprite.position.x = (this.texWidth + this.spacing) * i, this.container.addChild(this.sprite);
-        console.log("this");
     },
     update: function() {
         Math.abs(this.container.position.x + this.velocity.x) >= this.texWidth + this.totTiles * this.spacing ? this.container.position.x = 0 : this.container.position.x += this.velocity.x, 
@@ -901,9 +909,9 @@ var Application = AbstractApplication.extend({
     preKill: function() {
         this.updateable = !0, this.kill = !0;
     }
-}), meter = new FPSMeter(), resizeProportional = !0, windowWidth = 820, windowHeight = 600, realWindowWidth = 820, realWindowHeight = 600, gameScale = 1.8;
+}), meter = new FPSMeter(), resizeProportional = !0, windowWidth = 1136, windowHeight = 640, realWindowWidth = 1136, realWindowHeight = 640, gameScale = 1.4;
 
-testMobile() && (windowWidth = window.innerWidth * gameScale, windowHeight = window.innerHeight * gameScale, 
+testMobile() && (gameScale = 1.8, windowWidth = window.innerWidth * gameScale, windowHeight = window.innerHeight * gameScale, 
 realWindowWidth = windowWidth, realWindowHeight = windowHeight);
 
 var windowWidthVar = window.innerWidth, windowHeightVar = window.innerHeight, renderer = PIXI.autoDetectRenderer(realWindowWidth, realWindowHeight, null, !1, !0);

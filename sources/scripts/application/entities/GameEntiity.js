@@ -37,8 +37,8 @@ var GameEntiity = SpritesheetEntity.extend({
     update:function(){
 
         this._super();
-        this.spritesheet.texture.anchor.x = 0.5;
-        this.spritesheet.texture.anchor.y = 0;
+        // this.spritesheet.texture.anchor.x = 0.5;
+        // this.spritesheet.texture.anchor.y = 0;
         
         // this.spritesheet.texture.rotation  = this.rotation;//(this.velocity.y * 5) * Math.PI / 180;
         // if(this.rotation > 360){

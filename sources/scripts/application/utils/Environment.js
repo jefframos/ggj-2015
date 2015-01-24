@@ -13,10 +13,11 @@ var Environment =  Class.extend({
 		this.spacing = 0;
 		this.totTiles = 0;
 		this.currentSprId = 0;
+		this.floorPos = 0;
 	},
-	build: function(imgs, spacing){
+	build: function(imgs, spacing, floorPos){
 		this.arraySprt = imgs;
-
+		this.floorPos = floorPos;
 		if(spacing){
 			this.spacing = spacing;
 		}
@@ -38,10 +39,10 @@ var Environment =  Class.extend({
 		this.sprite = new PIXI.Sprite(PIXI.Texture.fromFrame(this.arraySprt[this.currentSprId]));
 		var last = this.container.children[this.container.children.length - 1];
 		if(last){
-			this.sprite.position.x = last.position.x + last.width - 2;
+			this.sprite.position.x = last.position.x + last.width + this.velocity.x - 2 + this.spacing;
 		}
 		
-		this.sprite.position.y = this.maxHeight - this.sprite.height;
+		this.sprite.position.y = this.maxHeight - this.sprite.height - this.floorPos;
 		this.container.addChild(this.sprite);
 	},
 	update: function(){
