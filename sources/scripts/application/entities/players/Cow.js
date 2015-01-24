@@ -12,14 +12,14 @@ var Cow = GameEntiity.extend({
 		// motionIdle.build('idle',['cupcake0001.png'], 1, true, null);
 		
 		var jumpUp = new SpritesheetAnimation();
-		jumpUp.build('jumpUp', this.getFramesByRange('cupcake0', 24, 26,'', '.png'), 4, false ,null);
+		jumpUp.build('jumpUp', ['cowup.png'], 4, false ,null);
 
 		var dashMotion = new SpritesheetAnimation();
-		dashMotion.build('dash', ['dash.png'], 1, false, null);
+		dashMotion.build('dash', ['cowdash.png'], 1, false, null);
 
 
 		var jumpDown = new SpritesheetAnimation();
-		jumpDown.build('jumpDown', this.getFramesByRange('cupcake0', 26, 40,'', '.png'), 4, false, null);
+		jumpDown.build('jumpDown', ['cowndown.png'], 4, false, null);
 
 
 		this.spritesheet = new Spritesheet();

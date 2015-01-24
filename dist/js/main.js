@@ -452,15 +452,15 @@ var Application = AbstractApplication.extend({
         var motionIdle = new SpritesheetAnimation();
         motionIdle.build("idle", this.getFramesByRange("cow0", 1, 30, "", ".png"), 0, !0, null);
         var jumpUp = new SpritesheetAnimation();
-        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
+        jumpUp.build("jumpUp", [ "cowup.png" ], 4, !1, null);
         var dashMotion = new SpritesheetAnimation();
-        dashMotion.build("dash", [ "dash.png" ], 1, !1, null);
+        dashMotion.build("dash", [ "cowdash.png" ], 1, !1, null);
         var jumpDown = new SpritesheetAnimation();
-        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null), 
-        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
-        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
-        this.spritesheet.addAnimation(dashMotion), this.spritesheet.play("jumpUp"), this.screen = screen, 
-        this.floorPos = floorPos, this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        jumpDown.build("jumpDown", [ "cowndown.png" ], 4, !1, null), this.spritesheet = new Spritesheet(), 
+        this.spritesheet.addAnimation(motionIdle), this.spritesheet.addAnimation(jumpDown), 
+        this.spritesheet.addAnimation(jumpUp), this.spritesheet.addAnimation(dashMotion), 
+        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
+        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
     }
