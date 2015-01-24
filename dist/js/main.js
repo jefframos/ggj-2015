@@ -1,4 +1,4 @@
-/*! jefframos 22-01-2015 */
+/*! jefframos 24-01-2015 */
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
     var h, s, max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
@@ -304,7 +304,7 @@ var Application = AbstractApplication.extend({
         this.endGameScreen = new EndGameScreen("EndGame"), this.choicePlayerScreen = new ChoicePlayerScreen("Choice"), 
         this.screenManager.addScreen(this.waitScreen), this.screenManager.addScreen(this.gameScreen), 
         this.screenManager.addScreen(this.endGameScreen), this.screenManager.addScreen(this.choicePlayerScreen), 
-        this.screenManager.change("Wait");
+        this.screenManager.change("Game");
     },
     onAssetsLoaded: function() {
         this.initApplication();
@@ -602,7 +602,7 @@ var Application = AbstractApplication.extend({
         this.addChild(this.btnBenchmark), this.btnBenchmark.addLabel(new PIXI.Text("REINIT", {
             font: "50px Arial"
         }), 25, 15), this.btnBenchmark.clickCallback = function() {
-            self.screenManager.change("Choice");
+            self.screenManager.change("Game");
         };
     }
 }), GameScreen = AbstractScreen.extend({
@@ -619,39 +619,18 @@ var Application = AbstractApplication.extend({
         var assetsToLoader = [ "dist/img/atlas/atlas.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
-        this.accelerometer = {}, this.hitTouch = new PIXI.Graphics(), this.hitTouch.interactive = !0, 
-        this.hitTouch.beginFill(0), this.hitTouch.drawRect(0, 0, windowWidth, windowHeight), 
-        this.addChild(this.hitTouch), this.hitTouch.alpha = 0, this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, .7 * windowWidth, windowHeight), 
-        this.hitTouchAttack = new PIXI.Graphics(), this.hitTouchAttack.interactive = !0, 
-        this.hitTouchAttack.beginFill(0), this.hitTouchAttack.drawRect(0, 0, windowWidth, windowHeight), 
-        this.addChild(this.hitTouchAttack), this.hitTouchAttack.alpha = 0, this.hitTouchAttack.hitArea = new PIXI.Rectangle(.3 * windowWidth, 0, windowWidth, windowHeight), 
+        this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
+        this.hitTouchRight.beginFill(0), this.hitTouchRight.drawRect(0, 0, windowWidth, windowHeight), 
+        this.addChild(this.hitTouchRight), this.hitTouchRight.alpha = 0, this.hitTouchRight.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
+        this.hitTouchLeft = new PIXI.Graphics(), this.hitTouchLeft.interactive = !0, this.hitTouchLeft.beginFill(0), 
+        this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
+        this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(.5 * windowWidth, 0, windowWidth, windowHeight), 
         this.particleAccum = 50, this.gameOver = !1;
         var self = this;
-        this.hitTouchAttack.mousedown = this.hitTouchAttack.touchstart = function() {
-            self.gameOver || self.playerModel.currentBulletEnergy < self.playerModel.maxBulletEnergy * self.playerModel.bulletCoast || (self.touchstart = !0, 
-            self.onBulletTouch = !0);
-        }, this.hitTouchAttack.mouseup = this.hitTouchAttack.touchend = function() {
-            if (self.touchstart && !self.gameOver) {
-                self.touchstart = !1, self.onBulletTouch = !1;
-                var percent = self.playerModel.currentBulletForce / self.playerModel.maxBulletEnergy, fireForce = percent * self.playerModel.range, timeLive = self.red.getContent().width / self.playerModel.bulletVel + fireForce, vel = self.playerModel.bulletVel + self.playerModel.bulletVel * percent, angle = self.red.rotation, bullet = new Bullet({
-                    x: Math.cos(angle) * vel,
-                    y: Math.sin(angle) * vel
-                }, timeLive);
-                bullet.build(), bullet.setPosition(.8 * self.red.getPosition().x, .8 * self.red.getPosition().y), 
-                self.layer.addChild(bullet);
-                {
-                    scaleConverter(self.red.getContent().height, bullet.getContent().height, .8 * gameScale);
-                }
-                self.playerModel.currentBulletEnergy -= self.playerModel.maxBulletEnergy * self.playerModel.bulletCoast, 
-                self.playerModel.currentBulletEnergy < 0 && (self.playerModel.currentBulletEnergy = 0);
-            }
-        }, this.hitTouch.touchstart = function(touchData) {
-            self.gameOver || self.red && self.red.setTarget(touchData.global.y);
-        }, this.hitTouch.touchend = function() {
-            self.gameOver;
-        }, this.hitTouch.touchmove = function(touchData) {
-            self.gameOver || self.red && self.red.setTarget(touchData.global.y);
-        }, this.textAcc.setText(this.textAcc.text + "\nbuild"), this.spawner = 5;
+        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
+            self.vel = self.maxVel;
+        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {}, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {}, 
+        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {}, this.textAcc.setText(this.textAcc.text + "\nbuild");
     },
     onProgress: function() {
         this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
@@ -660,40 +639,18 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        if (this._super(), this.playerModel) {
-            if (this.playerModel && this.onBulletTouch && this.playerModel.currentBulletEnergy > 0, 
-            this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
-            this.playerModel && this.playerModel.currentEnergy > 1.1 * this.playerModel.energyCoast ? this.playerModel.currentEnergy -= this.playerModel.energyCoast : this.gameOver = !0, 
-            this.gameOver && (this.red.gameOver = !0, this.red.velocity.y += .05, this.red.getPosition().y > windowHeight + this.red.getContent().height && this.screenManager.change("EndGame")), 
-            this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
-            this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy), 
-            this.spawner <= 0) {
-                var bird = new Bird();
-                bird.build(), this.layer.addChild(bird), bird.setPosition(windowWidth / 2 + 100 * Math.random(), windowHeight), 
-                this.spawner = 500;
-            } else this.spawner--;
-            this.updateParticles();
-        }
+        this._super(), this.playerModel && (this.updateParticles(), this.vel + this.accel > 0 && (this.vel -= this.accel), 
+        this.environment.velocity.x = -this.vel);
     },
-    updateParticles: function() {
-        if (this.particleAccum < 0) {
-            this.particleAccum = this.playerModel.currentEnergy / this.playerModel.maxEnergy * 50 + 8;
-            var particle = new Particles({
-                x: -.9,
-                y: -(.2 * Math.random() + .7)
-            }, 110, "smoke.png", -.01);
-            particle.build(), particle.setPosition(this.red.getPosition().x - this.red.getContent().width + 5, this.red.getPosition().y - this.red.getContent().height / 2 + 25), 
-            this.addChild(particle);
-        } else this.particleAccum--;
-    },
+    updateParticles: function() {},
     initApplication: function() {
-        var environment = new Environment(windowWidth, windowHeight);
-        environment.build([ "env1.png", "env2.png", "env3.png", "env4.png" ]), environment.velocity.x = -1, 
-        this.addChild(environment), this.layerManager = new LayerManager(), this.layerManager.build("Main"), 
-        this.addChild(this.layerManager), this.layer = new Layer(), this.layer.build("EntityLayer"), 
-        this.layerManager.addLayer(this.layer), this.playerModel = APP.getGameModel().currentPlayerModel, 
-        this.playerModel.reset(), this.red = new Red(this.playerModel), this.red.build(this), 
-        this.layer.addChild(this.red), this.red.rotation = -1, this.red.setPosition(.1 * windowWidth - this.red.getContent().width, 1.2 * windowHeight), 
+        this.accel = .1, this.vel = 0, this.maxVel = 2, this.environment = new Environment(windowWidth, windowHeight), 
+        this.environment.build([ "env1.png", "env2.png", "env3.png", "env4.png" ]), this.addChild(this.environment), 
+        this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
+        this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
+        this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
+        this.red = new Red(this.playerModel), this.red.build(this), this.layer.addChild(this.red), 
+        this.red.rotation = -1, this.red.setPosition(.1 * windowWidth - this.red.getContent().width, 1.2 * windowHeight), 
         this.gameOver = !1;
         var scale = scaleConverter(this.red.getContent().width, windowHeight, .25);
         TweenLite.to(this.red.spritesheet.position, 1, {

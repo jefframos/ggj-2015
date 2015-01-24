@@ -38,7 +38,7 @@ var EndGameScreen = AbstractScreen.extend({
         this.addChild(this.btnBenchmark);
         this.btnBenchmark.addLabel(new PIXI.Text('REINIT', {font:'50px Arial'}),25,15);
         this.btnBenchmark.clickCallback = function(){
-            self.screenManager.change('Choice');
+            self.screenManager.change('Game');
         };
     }
 });

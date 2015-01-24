@@ -27,24 +27,24 @@ var GameScreen = AbstractScreen.extend({
        
         this.accelerometer = {};
 
-        this.hitTouch = new PIXI.Graphics();
-        // this.hitTouch.setInteractive(true);
-        this.hitTouch.interactive = true;
+        this.hitTouchRight = new PIXI.Graphics();
+        // this.hitTouchRight.setInteractive(true);
+        this.hitTouchRight.interactive = true;
 
-        this.hitTouch.beginFill(0);
-        this.hitTouch.drawRect(0,0,windowWidth, windowHeight);
-        this.addChild(this.hitTouch);
-        this.hitTouch.alpha = 0;
-        this.hitTouch.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.7, windowHeight);
+        this.hitTouchRight.beginFill(0);
+        this.hitTouchRight.drawRect(0,0,windowWidth, windowHeight);
+        this.addChild(this.hitTouchRight);
+        this.hitTouchRight.alpha = 0;
+        this.hitTouchRight.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.5, windowHeight);
 
-        this.hitTouchAttack = new PIXI.Graphics();
-        // this.hitTouchAttack.setInteractive(true);
-        this.hitTouchAttack.interactive = true;
-        this.hitTouchAttack.beginFill(0);
-        this.hitTouchAttack.drawRect(0,0,windowWidth, windowHeight);
-        this.addChild(this.hitTouchAttack);
-        this.hitTouchAttack.alpha = 0;
-        this.hitTouchAttack.hitArea = new PIXI.Rectangle(windowWidth * 0.3, 0, windowWidth, windowHeight);
+        this.hitTouchLeft = new PIXI.Graphics();
+        // this.hitTouchLeft.setInteractive(true);
+        this.hitTouchLeft.interactive = true;
+        this.hitTouchLeft.beginFill(0);
+        this.hitTouchLeft.drawRect(0,0,windowWidth, windowHeight);
+        this.addChild(this.hitTouchLeft);
+        this.hitTouchLeft.alpha = 0;
+        this.hitTouchLeft.hitArea = new PIXI.Rectangle(windowWidth * 0.5, 0, windowWidth, windowHeight);
         
 
         
@@ -53,80 +53,27 @@ var GameScreen = AbstractScreen.extend({
         var self = this;
 
 
-        this.hitTouchAttack.mousedown = this.hitTouchAttack.touchstart = function(touchData){
-            if(self.gameOver || self.playerModel.currentBulletEnergy < self.playerModel.maxBulletEnergy * self.playerModel.bulletCoast){
-                return;
-            }
-            // self.textAcc.setText('TOUCH START!');
-            self.touchstart = true;
-            self.onBulletTouch = true;
+        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+            self.vel = self.maxVel;
         };
          
-        this.hitTouchAttack.mouseup = this.hitTouchAttack.touchend = function(touchData){
-            // self.red.spritesheet.play('hurt');
-            if(!self.touchstart || self.gameOver){
-                return;
-            }
-            self.touchstart = false;
-
-            // self.textAcc.setText('TOUCH END!');
-            self.onBulletTouch = false;
-            var percent = (self.playerModel.currentBulletForce / self.playerModel.maxBulletEnergy);
-            var fireForce = percent * self.playerModel.range;
-            // self.playerModel.currentBulletForce = 0;
-            var timeLive = (self.red.getContent().width/ self.playerModel.bulletVel) + (fireForce);
-
-            var vel = self.playerModel.bulletVel + self.playerModel.bulletVel*percent;
-            var angle = self.red.rotation;
-            var bullet = new Bullet({x:Math.cos(angle) * vel,
-                y:Math.sin(angle) * vel},
-                timeLive);
-            bullet.build();
-            //UTILIZAR O ANGULO PARA CALCULAR A POSIÇÃO CORRETA DO TIRO
-            bullet.setPosition(self.red.getPosition().x * 0.8, self.red.getPosition().y * 0.8);
-            self.layer.addChild(bullet);
-
-            var scaleBullet = scaleConverter(self.red.getContent().height, bullet.getContent().height, 0.8 * gameScale);
-            // bullet.setScale(scaleBullet , scaleBullet);
-            self.playerModel.currentBulletEnergy -= self.playerModel.maxBulletEnergy * self.playerModel.bulletCoast;
-
-            if(self.playerModel.currentBulletEnergy < 0){
-                self.playerModel.currentBulletEnergy = 0;
-            }
+        this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
+           
         };
 
-
-        this.hitTouch.touchstart = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            //self.textAcc.setText('TOUCH START!' + Math.random());
-            if(self.red){
-                self.red.setTarget(touchData.global.y);
-            }
+        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+           
         };
          
-        this.hitTouch.touchend = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            //self.textAcc.setText('TOUCH END!');
+        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
+           
         };
 
-        this.hitTouch.touchmove = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            //self.textAcc.setText(touchData.global.y);
-            if(self.red){
-                self.red.setTarget(touchData.global.y);
-            }
-        };
         this.textAcc.setText(this.textAcc.text+'\nbuild');
 
-        this.spawner = 5;
     },
     onProgress:function(){
+
         this.textAcc.setText(this.textAcc.text+'\nonProgress');
         this._super();
     },
@@ -141,89 +88,36 @@ var GameScreen = AbstractScreen.extend({
         {
             return;
         }
-        // if(this.onBulletTouch && this.playerModel.currentBulletEnergy> 0){
-        //     // this.playerModel.currentBulletEnergy -= this.playerModel.chargeBullet;
-        //     this.playerModel.currentBulletForce += this.playerModel.chargeBullet;
-        // }else if(this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
-        //     this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
-        // }
-        if(this.playerModel && this.onBulletTouch && this.playerModel.currentBulletEnergy> 0){
-            // this.playerModel.currentBulletEnergy -= this.playerModel.chargeBullet;
-            // this.playerModel.currentBulletForce += this.playerModel.chargeBullet;
-        }
-        if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
-            this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
-        }
-        if(this.playerModel && this.playerModel.currentEnergy > this.playerModel.energyCoast * 1.1){
-            this.playerModel.currentEnergy -= this.playerModel.energyCoast;
-        }else{
-            this.gameOver = true;
-        }
 
-        if(this.gameOver){
-            this.red.gameOver = true;
-            this.red.velocity.y += 0.05;
-            // console.log(this.red.getPosition().y);
-            if(this.red.getPosition().y > windowHeight+ this.red.getContent().height){
-                // console.log('over');
-                this.screenManager.change('EndGame');
-            }
-        }
-        if(this.bulletBar){
-            this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy);
-        }
-        if(this.energyBar){
-            this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy);
-        }
-
-        if(this.spawner <= 0){
-            var bird = new Bird();
-            bird.build();
-            this.layer.addChild(bird);
-            bird.setPosition(windowWidth/2 + (100 * Math.random()),windowHeight);
-            this.spawner = 500;
-        }else{
-            this.spawner --;
-        }
-        // if(this.layer){
-        //     this.layer.collide
-        // }
         this.updateParticles();
-
+        if(this.vel + this.accel > 0){
+            this.vel -= this.accel;
+        }
+        this.environment.velocity.x = -this.vel;
         // this.textAcc.setText(this.childs.length);
     },
     updateParticles:function(){
-        if(this.particleAccum < 0){
-            this.particleAccum = this.playerModel.currentEnergy / this.playerModel.maxEnergy * 50 + 8;
-            var particle = new Particles({x:-0.9, y:-(Math.random() * 0.2 + 0.7)}, 110, 'smoke.png', -0.01);
-            particle.build();
-            particle.setPosition(this.red.getPosition().x - this.red.getContent().width + 5,
-                this.red.getPosition().y- this.red.getContent().height / 2 + 25);
-            this.addChild(particle);
+        // if(this.particleAccum < 0){
+        //     this.particleAccum = this.playerModel.currentEnergy / this.playerModel.maxEnergy * 50 + 8;
+        //     var particle = new Particles({x:-0.9, y:-(Math.random() * 0.2 + 0.7)}, 110, 'smoke.png', -0.01);
+        //     particle.build();
+        //     particle.setPosition(this.red.getPosition().x - this.red.getContent().width + 5,
+        //         this.red.getPosition().y- this.red.getContent().height / 2 + 25);
+        //     this.addChild(particle);
 
-        }else{
-            this.particleAccum --;
-        }
+        // }else{
+        //     this.particleAccum --;
+        // }
     },
     initApplication:function(){
 
-        // var paralaxLayer1 = new Paralax(this.canvasArea.x);
-        // paralaxLayer1.build('tree2.png', 100);
-        // this.addChild(paralaxLayer1);
-        // paralaxLayer1.velocity.x = -0.5;
-        // paralaxLayer1.getContent().position.y = 420;
-        // this.textAcc.setText(this.textAcc.text+'\ninitApplication');
-
-        // var paralaxLayer2 = new Paralax(this.canvasArea.x);
-        // paralaxLayer2.build('tree3.png', 150);
-        // this.addChild(paralaxLayer2);
-        // paralaxLayer2.velocity.x = -0.2;
-        // paralaxLayer2.getContent().position.y = 460;
-        // this.textAcc.setText(this.textAcc.text+'\ninitApplication');
-        var environment = new Environment(windowWidth, windowHeight);
-        environment.build(['env1.png','env2.png','env3.png','env4.png']);
-        environment.velocity.x = -1;
-        this.addChild(environment);
+        this.accel = 0.1;
+        this.vel = 0;
+        this.maxVel = 2;
+        this.environment = new Environment(windowWidth, windowHeight);
+        this.environment.build(['env1.png','env2.png','env3.png','env4.png']);
+        // environment.velocity.x = -1;
+        this.addChild(this.environment);
 
         this.layerManager = new LayerManager();
         this.layerManager.build('Main');
@@ -269,18 +163,6 @@ var GameScreen = AbstractScreen.extend({
         this.returnButton.clickCallback = function(){
             self.screenManager.prevScreen();
         };
-
-        // if(possibleFullscreen()){
-        //     this.fullScreen = new DefaultButton('dist/img/UI/simpleButtonUp.png', 'dist/img/UI/simpleButtonOver.png');
-        //     this.fullScreen.build(40, 20);
-        //     this.fullScreen.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 35);
-        //     this.addChild(this.fullScreen);
-        //     this.fullScreen.addLabel(new PIXI.Text('Full', {font:'10px Arial'}),5,5);
-        //     this.fullScreen.clickCallback = function(){
-        //         fullscreen();
-        //     };
-        // }
-
         this.initBench = false;
 
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
