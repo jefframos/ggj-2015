@@ -48,8 +48,11 @@ var Cow = GameEntiity.extend({
 		this.gravity = 0.2;
 		// console.log(this.spritesheet.texture);
 	},
-	dash:function(){
+	dash:function(isFirst){
 		this._super();
+		if(!isFirst){
+			return;
+		}
 		this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame('dashvaca.png'));
 		this.dashGraphic.anchor.x = 0.85;
 		this.dashGraphic.anchor.y = 0.5;

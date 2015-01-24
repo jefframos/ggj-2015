@@ -489,8 +489,8 @@ var Application = AbstractApplication.extend({
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
     },
-    dash: function() {
-        this._super(), this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
+    dash: function(isFirst) {
+        this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
         this.dashGraphic.anchor.x = .85, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
         this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
         this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
@@ -507,7 +507,7 @@ var Application = AbstractApplication.extend({
         }), TweenLite.to(this.dashGraphic, .3, {
             delay: .45,
             alpha: 0
-        });
+        }));
     }
 }), Pig = GameEntiity.extend({
     build: function(screen, floorPos) {
@@ -525,6 +525,26 @@ var Application = AbstractApplication.extend({
         this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
+    },
+    dash: function(isFirst) {
+        this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashpig.png")), 
+        this.dashGraphic.anchor.x = .95, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
+        this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
+        this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
+        this.dashGraphic.position.y = this.getPosition().y, TweenLite.to(this.dashGraphic.scale, .2, {
+            x: this.getContent().scale.x,
+            y: this.getContent().scale.y
+        }), TweenLite.to(this.dashGraphic.scale, .3, {
+            delay: .5,
+            x: .2,
+            y: .7 * this.dashGraphic.scale.y
+        }), TweenLite.to(this.dashGraphic.position, .3, {
+            delay: .5,
+            x: this.getPosition().x - 230
+        }), TweenLite.to(this.dashGraphic, .3, {
+            delay: .45,
+            alpha: 0
+        }));
     }
 }), AppModel = Class.extend({
     init: function() {
@@ -668,7 +688,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -702,10 +722,10 @@ var Application = AbstractApplication.extend({
             this.first.playerModel.currentBulletEnergy -= this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast, 
             this.first.playerModel.currentBulletEnergy < 0 && (this.first.playerModel.currentBulletEnergy = 0), 
             this.vel = 6 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
-            this.first.dash();
+            this.first.dash(!0);
             var self = this;
             setTimeout(function() {
-                self.second.dash();
+                self.second.dash(!1);
             }, 100);
         }
     },
@@ -778,7 +798,7 @@ var Application = AbstractApplication.extend({
         this.firstPos = .33 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
         this.cow.floorPos = refPos, this.first = this.cow, this.playerModelPig = APP.getGameModel().playerModels[1], 
         this.playerModelPig.reset(), this.pig = new Pig(this.playerModelPig), this.pig.build(this);
-        var refPosPig = windowHeight - 65 - this.pig.getContent().height / 2;
+        var refPosPig = windowHeight - 50 - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = this.firstPos - 1.5 * this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
         scale = scaleConverter(this.pig.getContent().height, windowHeight, .15), this.pig.setScale(scale, scale), 

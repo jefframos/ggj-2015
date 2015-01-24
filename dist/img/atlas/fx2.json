@@ -1,0 +1,21 @@
+{"frames": {
+
+"dashpig.png":
+{
+	"frame": {"x":2,"y":2,"w":347,"h":148},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
+	"sourceSize": {"w":347,"h":148},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "fx2.png",
+	"format": "RGBA8888",
+	"size": {"w":351,"h":152},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:ef14bbda6b1197b63b0bc6f75cbc4180:03a4cb1665f2fa660b86bb849a5f5510:8532550f21d4df02d7e6deb0158a14f0$"
+}
+}

@@ -16,6 +16,7 @@ var GameScreen = AbstractScreen.extend({
 
         var assetsToLoader = ['dist/img/atlas/cow.json',
         'dist/img/atlas/effects.json',
+        'dist/img/atlas/fx2.json',
         'dist/img/atlas/pig.json',
         'dist/img/atlas/UI.json',
         'dist/img/atlas/environment.json'];
@@ -135,10 +136,10 @@ var GameScreen = AbstractScreen.extend({
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
-        this.first.dash();
+        this.first.dash(true);
         var self = this;
         setTimeout(function(){
-            self.second.dash();
+            self.second.dash(false);
         }, 100);
         // }
     },
@@ -292,7 +293,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.pig = new Pig(this.playerModelPig);
         this.pig.build(this);
-        var refPosPig = windowHeight - 65  - this.pig.getContent().height / 2;
+        var refPosPig = windowHeight - 50  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
         this.secondPos = this.firstPos - this.pig.getContent().width * 1.5;
