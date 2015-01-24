@@ -449,15 +449,23 @@ var Application = AbstractApplication.extend({
         this.playerModel = playerModel, this._super(!0);
     },
     build: function(screen, floorPos) {
-        var self = this, motionIdle = new SpritesheetAnimation();
-        console.log(this.playerModel), motionIdle.build("idle", [ this.playerModel.imgSource ], 1, !0, null);
-        var motionHurt = new SpritesheetAnimation();
-        motionHurt.build("hurt", this.getFramesByRange("piangers0", 2, 2), 1, !1, function() {
-            self.spritesheet.play("idle");
-        }), this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
-        this.spritesheet.play("idle"), this.screen = screen, this.floorPos = floorPos, this.defaultVel = 50 * gameScale, 
-        this.upVel = this.playerModel.velocity * gameScale, this.spritesheet.texture.anchor.x = .5, 
-        this.spritesheet.texture.anchor.y = .5, this.rotation = 0, this.gravity = .2;
+        var motionIdle = new SpritesheetAnimation();
+        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
+        var jumpUp = new SpritesheetAnimation();
+        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
+        var jumpUpStatic = new SpritesheetAnimation();
+        jumpUpStatic.build("jumpUpStatic", this.getFramesByRange("cupcake0", 26, 26, "", ".png"), 1, !1, null);
+        var jumpDown = new SpritesheetAnimation();
+        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null);
+        var jumpDownStatic = new SpritesheetAnimation();
+        jumpDownStatic.build("jumpDownStatic", this.getFramesByRange("cupcake0", 40, 40, "", ".png"), 1, !1, null), 
+        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
+        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
+        this.spritesheet.addAnimation(jumpUpStatic), this.spritesheet.addAnimation(jumpDownStatic), 
+        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
+        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
+        this.rotation = 0, this.gravity = .2;
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
@@ -469,7 +477,9 @@ var Application = AbstractApplication.extend({
         this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.getPosition().x > windowWidth + 50 && this.preKill(), this.velocity.y += this.gravity, 
         this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
-        this.inJump = !1);
+        this.inJump = !1, this.spritesheet.play("idle")), this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
+        this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
+        this.spritesheet.play("jumpDown"));
     },
     destroy: function() {
         this._super();
@@ -616,7 +626,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/atlas.json" ];
+        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -640,7 +650,7 @@ var Application = AbstractApplication.extend({
         this.tapAccum > 8 && (this.tapAccum = 8));
     },
     testJump: function(self) {
-        console.log(self), self.red.jump();
+        self.red.jump();
     },
     updateParticles: function() {},
     initApplication: function() {
@@ -652,9 +662,7 @@ var Application = AbstractApplication.extend({
         this.red = new Red(this.playerModel), this.red.build(this, .7 * windowHeight), this.layer.addChild(this.red), 
         this.red.rotation = -1, this.red.setPosition(.5 * windowWidth - this.red.getContent().width, .7 * windowHeight), 
         this.gameOver = !1;
-        var scale = scaleConverter(this.red.getContent().width, windowHeight, .25);
-        this.red.setScale(scale, scale);
-        var self = this, posHelper = .05 * windowHeight;
+        var self = (scaleConverter(this.red.getContent().width, windowHeight, .25), this), posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
         this.bulletBar.setPosition(250 + posHelper, posHelper), this.energyBar = new BarView(.1 * windowWidth, 10, 1, 1), 
         this.addChild(this.energyBar), this.energyBar.setPosition(250 + 2 * posHelper + this.bulletBar.width, posHelper), 

@@ -11,19 +11,31 @@ var Red = SpritesheetEntity.extend({
 
 		var self = this;
 		var motionIdle = new SpritesheetAnimation();
-		// motionIdle.build('idle', this.getFramesByRange('piangers0', 2, 8), 1, true, null);
-		console.log(this.playerModel);
-		motionIdle.build('idle', [this.playerModel.imgSource], 1, true, null);
+		motionIdle.build('idle', this.getFramesByRange('cupcake0', 1, 23,'', '.png'), 1, true, null);
+		// console.log(this.playerModel);
+		// motionIdle.build('idle',['cupcake0001.png'], 1, true, null);
 		
-		var motionHurt = new SpritesheetAnimation();
-		motionHurt.build('hurt', this.getFramesByRange('piangers0', 2, 2), 1, false, function(){
-			self.spritesheet.play('idle');
-		});
+		var jumpUp = new SpritesheetAnimation();
+		jumpUp.build('jumpUp', this.getFramesByRange('cupcake0', 24, 26,'', '.png'), 4, false ,null);
+
+		var jumpUpStatic = new SpritesheetAnimation();
+		jumpUpStatic.build('jumpUpStatic', this.getFramesByRange('cupcake0', 26, 26,'', '.png'), 1, false, null);
+
+
+		var jumpDown = new SpritesheetAnimation();
+		jumpDown.build('jumpDown', this.getFramesByRange('cupcake0', 26, 40,'', '.png'), 4, false, null);
+
+		var jumpDownStatic = new SpritesheetAnimation();
+		jumpDownStatic.build('jumpDownStatic', this.getFramesByRange('cupcake0', 40, 40,'', '.png'), 1, false, null);
 
 		this.spritesheet = new Spritesheet();
 		this.spritesheet.addAnimation(motionIdle);
+		this.spritesheet.addAnimation(jumpDown);
+		this.spritesheet.addAnimation(jumpUp);
+		this.spritesheet.addAnimation(jumpUpStatic);
+		this.spritesheet.addAnimation(jumpDownStatic);
 		// this.spritesheet.addAnimation(motionHurt);
-		this.spritesheet.play('idle');
+		this.spritesheet.play('jumpUp');
 
 		this.screen = screen;
 		this.floorPos = floorPos;
@@ -87,7 +99,17 @@ var Red = SpritesheetEntity.extend({
 		if(this.getPosition().y + this.velocity.y >= this.floorPos){
 			this.velocity.y = 0;
 			this.inJump = false;
+			this.spritesheet.play('idle');
+			// console.log('idle');
 			// this.setPosition(this.getPosition().x, this.floorPos);
+		}
+		if(this.velocity.y < 0 && this.spritesheet.currentAnimation.label !== 'jumpUp'){
+			console.log('jumpUp');
+			this.spritesheet.play('jumpUp');
+		}else if(this.velocity.y > 0 && this.spritesheet.currentAnimation.label !== 'jumpDown'){
+			console.log('jumpDown');
+
+			this.spritesheet.play('jumpDown');
 		}
 	},
 	destroy:function(){

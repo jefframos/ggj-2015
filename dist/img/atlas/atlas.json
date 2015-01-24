@@ -36,15 +36,6 @@
 	"sourceSize": {"w":1586,"h":233},
 	"pivot": {"x":0.5,"y":0.5}
 },
-"piangersN.png":
-{
-	"frame": {"x":898,"y":404,"w":164,"h":121},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":164,"h":121},
-	"sourceSize": {"w":164,"h":121},
-	"pivot": {"x":0.5,"y":0.5}
-},
 "simpleButtonOver.png":
 {
 	"frame": {"x":781,"y":237,"w":86,"h":30},
@@ -70,6 +61,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1590,"h":558},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:d98dd8735526c764f27278ccf61cbf83:35139e5192c788086a5d298db51718f0:cbce6b53f0f49e0bf15173c25c41f876$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3e0519b77c5e250cfc8bd31fc6b2b6be:8a5063000f2738d9b7fd777a27863640:cbce6b53f0f49e0bf15173c25c41f876$"
 }
 }
