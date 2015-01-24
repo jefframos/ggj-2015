@@ -470,6 +470,7 @@ var Application = AbstractApplication.extend({
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
     },
+    dash: function() {},
     jump: function() {
         this.inJump || (this.inJump = !0, this.velocity.y = -6);
     },
@@ -646,11 +647,14 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
-        this.vel < 0 && (this.vel = 0)), this.environment.velocity.x = -this.vel, this.tapAccum++, 
-        this.tapAccum > 8 && (this.tapAccum = 8));
+        this.onDash && (this.vel -= this.accel), this.vel < 0 && (this.vel = 0, this.onDash = !1)), 
+        this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8));
     },
-    testJump: function(self) {
-        self.red.jump();
+    dash: function() {
+        this.vel = 4 * this.maxVel, this.onDash = !0, this.red.dash();
+    },
+    jump: function() {
+        this.red.jump();
     },
     updateParticles: function() {},
     initApplication: function() {
@@ -684,7 +688,9 @@ var Application = AbstractApplication.extend({
         }
         var self = this, swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
         hammer.add(swipe), hammer.on("swipeup", function() {
-            self.testJump(self);
+            self.jump();
+        }), hammer.on("swiperight", function() {
+            self.dash();
         }), document.body.addEventListener("keyup", function(e) {
             87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
         }), document.body.addEventListener("keydown", function(e) {

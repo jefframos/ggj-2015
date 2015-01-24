@@ -67,9 +67,13 @@ var Red = SpritesheetEntity.extend({
 		}
 
 	},
-	// gameOver:function(){
-	// 	this.gameOver = true;
-	// },
+	dash:function(){
+		// if(this.inJump){
+		// 	return;
+		// }
+		// this.inJump = true;
+		// this.velocity.y = -6;
+	},
 	jump:function(){
 		if(this.inJump){
 			return;

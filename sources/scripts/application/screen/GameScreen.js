@@ -78,8 +78,12 @@ var GameScreen = AbstractScreen.extend({
         this.updateParticles();
         if(this.vel > 0){
             this.vel -= this.accel;
+            if(this.onDash){
+                this.vel -= this.accel;
+            }
             if(this.vel < 0){
                 this.vel = 0;
+                this.onDash = false;
             }
         }
         this.environment.velocity.x = -this.vel;
@@ -90,10 +94,18 @@ var GameScreen = AbstractScreen.extend({
 
         // this.textAcc.setText(this.childs.length);
     },
-    testJump:function(self){
+    dash:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
-        self.red.jump();
+        this.vel = this.maxVel * 4;
+        this.onDash = true;
+        this.red.dash();
+        // }
+    },
+    jump:function(){
+        // if(this.leftDown && this.rightDown){
+        // console.log(self);
+        this.red.jump();
         // }
     },
     updateParticles:function(){
@@ -177,7 +189,11 @@ var GameScreen = AbstractScreen.extend({
         hammer.add(swipe);
 
         hammer.on('swipeup', function() {
-            self.testJump(self);
+            self.jump();
+        });
+
+        hammer.on('swiperight', function() {
+            self.dash();
         });
 
         document.body.addEventListener('keyup', function(e){
