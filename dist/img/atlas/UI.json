@@ -2,7 +2,7 @@
 
 "blueBar.png":
 {
-	"frame": {"x":2,"y":143,"w":210,"h":17},
+	"frame": {"x":466,"y":2,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -11,7 +11,7 @@
 },
 "cowFace.png":
 {
-	"frame": {"x":148,"y":2,"w":86,"h":77},
+	"frame": {"x":491,"y":21,"w":86,"h":77},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":77},
@@ -20,7 +20,7 @@
 },
 "dashBackBar.png":
 {
-	"frame": {"x":2,"y":95,"w":136,"h":27},
+	"frame": {"x":2,"y":21,"w":136,"h":27},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":27},
@@ -29,7 +29,16 @@
 },
 "dashIco.png":
 {
-	"frame": {"x":2,"y":2,"w":61,"h":52},
+	"frame": {"x":365,"y":21,"w":61,"h":52},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
+	"sourceSize": {"w":61,"h":52},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"dashIco2.png":
+{
+	"frame": {"x":428,"y":21,"w":61,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
@@ -38,7 +47,7 @@
 },
 "energyBackBar.png":
 {
-	"frame": {"x":2,"y":162,"w":223,"h":35},
+	"frame": {"x":140,"y":21,"w":223,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":223,"h":35},
@@ -47,7 +56,16 @@
 },
 "goldBar.png":
 {
-	"frame": {"x":2,"y":81,"w":124,"h":12},
+	"frame": {"x":128,"y":2,"w":124,"h":12},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":12},
+	"sourceSize": {"w":124,"h":12},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"iceBar.png":
+{
+	"frame": {"x":2,"y":2,"w":124,"h":12},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":12},
@@ -56,16 +74,16 @@
 },
 "pigface.png":
 {
-	"frame": {"x":65,"y":2,"w":81,"h":69},
+	"frame": {"x":579,"y":21,"w":84,"h":86},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":81,"h":69},
-	"sourceSize": {"w":81,"h":69},
+	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":86},
+	"sourceSize": {"w":84,"h":86},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "redBar.png":
 {
-	"frame": {"x":2,"y":124,"w":210,"h":17},
+	"frame": {"x":254,"y":2,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -77,8 +95,8 @@
 	"version": "1.0",
 	"image": "UI.png",
 	"format": "RGBA8888",
-	"size": {"w":236,"h":199},
+	"size": {"w":678,"h":109},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:9df8fd3319b8c8a94d12dff001ba0f6c:7d2044c5aca92878700fa4fdaf959fd7:4b774b923918ecd961888279dba3ffad$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3f39ae5f2300b218a4c03023933a101b:65e414f22fb4c25dedc2628e8aef98d4:4b774b923918ecd961888279dba3ffad$"
 }
 }

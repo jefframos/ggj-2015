@@ -877,13 +877,13 @@ var Application = AbstractApplication.extend({
         this.second = this.pig, this.gameOver = !1;
         var self = this;
         this.cowEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "cowFace.png"), 
-        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70, -70), this.pigEnergyBar = new EnergyBar("energyBackBar.png", "redBar.png", "pigface.png"), 
-        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, -70), 
-        this.cowDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(130, -120), this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, -120), 
-        this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.dino = new Dino(), 
-        this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
+        this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, -70), 
+        this.pigEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "pigface.png"), 
+        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70, -70), this.cowDashBar = new EnergyBar("dashBackBar.png", "iceBar.png", "dashIco2.png"), 
+        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, -120), 
+        this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
+        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(130, -120), this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), 
+        this.dino = new Dino(), this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
         this.dino.getContent().position.y = -300, this.first.spritesheet.position.x = this.firstPos - 500, 
         this.second.spritesheet.position.x = this.secondPos - 500, TweenLite.to(this.first.spritesheet.position, 1, {
             delay: .5,
@@ -924,22 +924,18 @@ var Application = AbstractApplication.extend({
             ease: "easeOutCubic"
         }), TweenLite.to(this.cowEnergyBar.getContent().position, .8, {
             delay: .2,
-            x: 70,
             y: 50,
             ease: "easeOutBack"
         }), TweenLite.to(this.pigEnergyBar.getContent().position, .8, {
             delay: .4,
-            x: 70 + this.cowEnergyBar.getContent().width + 20,
             y: 50,
             ease: "easeOutBack"
         }), TweenLite.to(this.cowDashBar.getContent().position, .8, {
             delay: .6,
-            x: 130,
             y: 100,
             ease: "easeOutBack"
         }), TweenLite.to(this.pigDashBar.getContent().position, .8, {
             delay: .8,
-            x: 70 + this.cowEnergyBar.getContent().width + 80,
             y: 100,
             ease: "easeOutBack"
         });
