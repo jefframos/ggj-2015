@@ -450,7 +450,7 @@ var Application = AbstractApplication.extend({
 }), Cow = GameEntiity.extend({
     build: function(screen, floorPos) {
         var motionIdle = new SpritesheetAnimation();
-        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
+        motionIdle.build("idle", this.getFramesByRange("cow0", 1, 30, "", ".png"), 0, !0, null);
         var jumpUp = new SpritesheetAnimation();
         jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
         var dashMotion = new SpritesheetAnimation();
@@ -623,7 +623,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json" ];
+        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json", "dist/img/atlas/cow.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -643,7 +643,7 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > this.maxVel && (this.vel -= this.accel, 
-        this.onDash && (this.vel -= 4.5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
+        this.onDash && (this.vel -= 5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
         this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.environment.velocity.x = -this.vel, 
         this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
         this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
@@ -679,9 +679,10 @@ var Application = AbstractApplication.extend({
         this.playerModel = APP.getGameModel().currentPlayerModel, this.playerModel.reset(), 
         this.cow = new Cow(this.playerModel), this.cow.build(this, .7 * windowHeight), this.layer.addChild(this.cow), 
         this.cow.rotation = -1, this.cow.setPosition(.5 * windowWidth, .7 * windowHeight);
-        scaleConverter(this.cow.getContent().width, windowHeight, .25);
-        this.first = this.cow, this.pig = new Pig(this.playerModel), this.pig.build(this, .7 * windowHeight), 
-        this.layer.addChild(this.pig), this.pig.rotation = -1, this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, .7 * windowHeight), 
+        var scale = scaleConverter(this.cow.getContent().height, windowHeight, .2);
+        this.cow.setScale(scale, scale), this.first = this.cow, this.pig = new Pig(this.playerModel), 
+        this.pig.build(this, .7 * windowHeight), this.layer.addChild(this.pig), this.pig.rotation = -1, 
+        this.pig.setPosition(.5 * windowWidth - this.pig.getContent().width, .7 * windowHeight), 
         this.second = this.pig, this.gameOver = !1;
         var self = this, posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 

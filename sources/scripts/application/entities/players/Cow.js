@@ -7,7 +7,7 @@ var Cow = GameEntiity.extend({
 
 		var self = this;
 		var motionIdle = new SpritesheetAnimation();
-		motionIdle.build('idle', this.getFramesByRange('cupcake0', 1, 23,'', '.png'), 1, true, null);
+		motionIdle.build('idle', this.getFramesByRange('cow0', 1, 30,'', '.png'), 0, true, null);
 		// console.log(this.playerModel);
 		// motionIdle.build('idle',['cupcake0001.png'], 1, true, null);
 		

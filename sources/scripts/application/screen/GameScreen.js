@@ -14,7 +14,7 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.y = 20;
         this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = ['dist/img/atlas/atlas.json', 'dist/img/atlas/cupcake.json'];
+        var assetsToLoader = ['dist/img/atlas/atlas.json', 'dist/img/atlas/cupcake.json', 'dist/img/atlas/cow.json'];
 
 
         if(assetsToLoader.length > 0){
@@ -80,7 +80,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.vel > this.maxVel){
             this.vel -= this.accel;
             if(this.onDash){
-                this.vel -= this.accel * 4.5;
+                this.vel -= this.accel * 5;
             }
             if(this.vel < this.maxVel){
                 this.vel = this.maxVel;
@@ -179,8 +179,8 @@ var GameScreen = AbstractScreen.extend({
         this.layer.addChild(this.cow);
         this.cow.rotation = -1;
         this.cow.setPosition(windowWidth * 0.5,windowHeight * 0.7);
-        var scale = scaleConverter(this.cow.getContent().width, windowHeight, 0.25);
-        //this.cow.setScale( scale,scale);
+        var scale = scaleConverter(this.cow.getContent().height, windowHeight, 0.20);
+        this.cow.setScale( scale,scale);
 
         this.first = this.cow;
 
