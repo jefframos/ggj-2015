@@ -647,11 +647,11 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
-        this.onDash && (this.vel -= this.accel), this.vel < 0 && (this.vel = 0, this.onDash = !1)), 
+        this.onDash && (this.vel -= 2 * this.accel), this.vel < 0 && (this.vel = 0, this.onDash = !1)), 
         this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8));
     },
     dash: function() {
-        this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+        this.vel = 8 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
         this.red.dash();
     },
     jump: function() {
@@ -659,7 +659,7 @@ var Application = AbstractApplication.extend({
     },
     updateParticles: function() {},
     initApplication: function() {
-        this.accel = .1, this.vel = 0, this.maxVel = 3, this.environment = new Environment(windowWidth, windowHeight), 
+        this.accel = .1, this.vel = 0, this.maxVel = 5, this.environment = new Environment(windowWidth, windowHeight), 
         this.environment.build([ "env1.png", "env2.png", "env3.png", "env4.png" ]), this.addChild(this.environment), 
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 

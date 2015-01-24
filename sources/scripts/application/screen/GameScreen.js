@@ -79,7 +79,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.vel > 0){
             this.vel -= this.accel;
             if(this.onDash){
-                this.vel -= this.accel;
+                this.vel -= this.accel * 2;
             }
             if(this.vel < 0){
                 this.vel = 0;
@@ -97,7 +97,7 @@ var GameScreen = AbstractScreen.extend({
     dash:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
-        this.vel = this.maxVel * 4;
+        this.vel = this.maxVel * 8;
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
@@ -127,7 +127,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.accel = 0.1;
         this.vel = 0;
-        this.maxVel = 3;
+        this.maxVel = 5;
         this.environment = new Environment(windowWidth, windowHeight);
         this.environment.build(['env1.png','env2.png','env3.png','env4.png']);
         // environment.velocity.x = -1;
