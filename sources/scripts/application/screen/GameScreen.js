@@ -76,14 +76,17 @@ var GameScreen = AbstractScreen.extend({
         }
 
         this.updateParticles();
-        if(this.vel > 0){
+
+        if(this.vel > this.maxVel){
             this.vel -= this.accel;
             if(this.onDash){
-                this.vel -= this.accel * 2;
+                this.vel -= this.accel * 3;
             }
-            if(this.vel < 0){
-                this.vel = 0;
+            if(this.vel < this.maxVel){
+                this.vel = this.maxVel;
                 this.onDash = false;
+                this.first.onDash = false;
+                this.second.onDash = false;
             }
         }
         this.environment.velocity.x = -this.vel;
@@ -112,7 +115,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.playerModel.currentBulletEnergy < 0){
             this.playerModel.currentBulletEnergy = 0;
         }
-        this.vel = this.maxVel * 4;
+        this.vel = this.maxVel * 6;
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
@@ -126,6 +129,9 @@ var GameScreen = AbstractScreen.extend({
     jump:function(){
         // if(this.leftDown && this.rightDown){
         // console.log(self);
+        if(this.onDash){
+            return;
+        }
         this.first.jump();
         var self = this;
         setTimeout(function(){

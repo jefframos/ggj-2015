@@ -349,27 +349,6 @@ var Application = AbstractApplication.extend({
     setPosition: function(x, y) {
         this.container.position.x = x, this.container.position.y = y;
     }
-}), Bird = Entity.extend({
-    init: function() {
-        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
-        this.height = 1, this.type = "bird", this.target = "enemy", this.fireType = "physical", 
-        this.node = null, this.velocity.y = -.8, this.velocity.x = -.2, this.power = 1, 
-        this.defaultVelocity = 1, this.imgSource = "belga.png";
-    },
-    build: function() {
-        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
-        this.sprite.anchor.y = .5, this.updateable = !0, this.collidable = !0, this.range = this.sprite.width, 
-        console.log(this.range, this.centerPosition);
-    },
-    update: function() {
-        this._super();
-    },
-    collide: function(arrayCollide) {
-        this.parent && this.parent.textAcc && this.parent.textAcc.setText("COLIDIU"), this.collidable && "bullet" === arrayCollide[0].type && this.preKill();
-    },
-    preKill: function() {
-        this.kill = !0;
-    }
 }), Bullet = Entity.extend({
     init: function(vel, timeLive) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
@@ -413,47 +392,6 @@ var Application = AbstractApplication.extend({
         collection.object && "environment" === collection.object.type && collection.object.fireCollide(), 
         this.preKill();
     }
-}), Cow = SpritesheetEntity.extend({
-    init: function(playerModel) {
-        this.playerModel = playerModel, this._super(!0);
-    },
-    build: function(screen, floorPos) {
-        var motionIdle = new SpritesheetAnimation();
-        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
-        var jumpUp = new SpritesheetAnimation();
-        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
-        var jumpUpStatic = new SpritesheetAnimation();
-        jumpUpStatic.build("jumpUpStatic", this.getFramesByRange("cupcake0", 26, 26, "", ".png"), 1, !1, null);
-        var jumpDown = new SpritesheetAnimation();
-        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null);
-        var jumpDownStatic = new SpritesheetAnimation();
-        jumpDownStatic.build("jumpDownStatic", this.getFramesByRange("cupcake0", 40, 40, "", ".png"), 1, !1, null), 
-        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
-        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
-        this.spritesheet.addAnimation(jumpUpStatic), this.spritesheet.addAnimation(jumpDownStatic), 
-        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
-        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
-        this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.rotation = 0, this.gravity = .2;
-    },
-    setTarget: function(pos) {
-        this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
-    },
-    dash: function() {},
-    jump: function() {
-        this.inJump || (this.inJump = !0, this.velocity.y = -6);
-    },
-    update: function() {
-        this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.getPosition().x > windowWidth + 50 && this.preKill(), this.velocity.y += this.gravity, 
-        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
-        this.inJump = !1, this.spritesheet.play("idle")), this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
-        this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
-        this.spritesheet.play("jumpDown"));
-    },
-    destroy: function() {
-        this._super();
-    }
 }), Cupcake = SpritesheetEntity.extend({
     init: function() {
         this._super(!0);
@@ -485,46 +423,63 @@ var Application = AbstractApplication.extend({
     destroy: function() {
         this._super();
     }
-}), Pig = SpritesheetEntity.extend({
+}), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0);
     },
+    setTarget: function(pos) {
+        this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
+    },
+    dash: function() {
+        this.spritesheet.play("dash"), this.onDash = !0;
+    },
+    jump: function() {
+        this.inJump || (this.inJump = !0, this.velocity.y = -6);
+    },
+    update: function() {
+        return this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = 0, 
+        this.getPosition().x > windowWidth + 50 && this.preKill(), this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, 
+        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        this.inJump = !1, this.spritesheet.play("idle")), void (this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
+        this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
+        this.spritesheet.play("jumpDown"))));
+    },
+    destroy: function() {
+        this._super();
+    }
+}), Cow = GameEntiity.extend({
     build: function(screen, floorPos) {
         var motionIdle = new SpritesheetAnimation();
         motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
         var jumpUp = new SpritesheetAnimation();
         jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
-        var jumpUpStatic = new SpritesheetAnimation();
-        jumpUpStatic.build("jumpUpStatic", this.getFramesByRange("cupcake0", 26, 26, "", ".png"), 1, !1, null);
+        var dashMotion = new SpritesheetAnimation();
+        dashMotion.build("dash", [ "dash.png" ], 1, !1, null);
         var jumpDown = new SpritesheetAnimation();
-        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null);
-        var jumpDownStatic = new SpritesheetAnimation();
-        jumpDownStatic.build("jumpDownStatic", this.getFramesByRange("cupcake0", 40, 40, "", ".png"), 1, !1, null), 
+        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null), 
         this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
         this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
-        this.spritesheet.addAnimation(jumpUpStatic), this.spritesheet.addAnimation(jumpDownStatic), 
-        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
-        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        this.spritesheet.addAnimation(dashMotion), this.spritesheet.play("jumpUp"), this.screen = screen, 
+        this.floorPos = floorPos, this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
-    },
-    setTarget: function(pos) {
-        this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
-    },
-    dash: function() {},
-    jump: function() {
-        this.inJump || (this.inJump = !0, this.velocity.y = -6);
-    },
-    update: function() {
-        this._super(), this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.getPosition().x > windowWidth + 50 && this.preKill(), this.velocity.y += this.gravity, 
-        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
-        this.inJump = !1, this.spritesheet.play("idle")), this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
-        this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
-        this.spritesheet.play("jumpDown"));
-    },
-    destroy: function() {
-        this._super();
+    }
+}), Pig = GameEntiity.extend({
+    build: function(screen, floorPos) {
+        var motionIdle = new SpritesheetAnimation();
+        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
+        var jumpUp = new SpritesheetAnimation();
+        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
+        var dashMotion = new SpritesheetAnimation();
+        dashMotion.build("dash", [ "dash.png" ], 1, !1, null);
+        var jumpDown = new SpritesheetAnimation();
+        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null), 
+        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
+        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
+        this.spritesheet.addAnimation(dashMotion), this.spritesheet.play("jumpUp"), this.screen = screen, 
+        this.floorPos = floorPos, this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
+        this.rotation = 0, this.gravity = .2;
     }
 }), AppModel = Class.extend({
     init: function() {
@@ -687,10 +642,10 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super(), this.playerModel && (this.updateParticles(), this.vel > 0 && (this.vel -= this.accel, 
-        this.onDash && (this.vel -= 2 * this.accel), this.vel < 0 && (this.vel = 0, this.onDash = !1)), 
-        this.environment.velocity.x = -this.vel, this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8), 
-        this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        this._super(), this.playerModel && (this.updateParticles(), this.vel > this.maxVel && (this.vel -= this.accel, 
+        this.onDash && (this.vel -= 3 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
+        this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.environment.velocity.x = -this.vel, 
+        this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8), this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
         this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
         this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy));
     },
@@ -698,7 +653,7 @@ var Application = AbstractApplication.extend({
         if (!(this.playerModel.currentBulletEnergy < this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast)) {
             console.log(this.playerModel.bulletCoast), this.playerModel.currentBulletEnergy -= this.playerModel.maxBulletEnergy * this.playerModel.bulletCoast, 
             this.playerModel.currentBulletEnergy < 0 && (this.playerModel.currentBulletEnergy = 0), 
-            this.vel = 4 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+            this.vel = 6 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
             this.first.dash();
             var self = this;
             setTimeout(function() {
@@ -707,11 +662,13 @@ var Application = AbstractApplication.extend({
         }
     },
     jump: function() {
-        this.first.jump();
-        var self = this;
-        setTimeout(function() {
-            self.second.jump();
-        }, 100);
+        if (!this.onDash) {
+            this.first.jump();
+            var self = this;
+            setTimeout(function() {
+                self.second.jump();
+            }, 100);
+        }
     },
     updateParticles: function() {},
     initApplication: function() {
