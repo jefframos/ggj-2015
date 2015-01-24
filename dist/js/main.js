@@ -631,7 +631,7 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft = new PIXI.Graphics(), this.hitTouchLeft.interactive = !0, this.hitTouchLeft.beginFill(0), 
         this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
-        this.particleAccum = 50, this.gameOver = !1;
+        this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
         this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0;
     },
     onProgress: function() {
@@ -682,7 +682,28 @@ var Application = AbstractApplication.extend({
             }, 100);
         }
     },
-    updateParticles: function() {},
+    updateParticles: function() {
+        if (this.particleAccum < 0) {
+            if (this.particleAccum = 15 + 20 * Math.random(), 0 === this.cow.velocity.y) {
+                var particle = new Particles({
+                    x: -.3,
+                    y: -(.2 * Math.random() + .3)
+                }, 50, "smoke1.png", -.01);
+                particle.build(), particle.setPosition(this.cow.getPosition().x, windowHeight - 80), 
+                this.addChild(particle), particle.velocity.x = -this.vel / 2;
+            }
+        } else this.particleAccum--;
+        if (this.particleAccum2 < 0) {
+            if (this.particleAccum2 = 15 + 20 * Math.random(), 0 === this.pig.velocity.y) {
+                var particle2 = new Particles({
+                    x: -.3,
+                    y: -(.2 * Math.random() + .3)
+                }, 50, "smoke1.png", -.01);
+                particle2.build(), particle2.setPosition(this.pig.getPosition().x, windowHeight - 80), 
+                this.addChild(particle2), particle2.velocity.x = -this.vel / 2;
+            }
+        } else this.particleAccum2--;
+    },
     initApplication: function() {
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
         this.vel = 0, this.maxVel = 5, this.environment4 = new Environment(windowWidth, windowHeight), 
@@ -700,11 +721,11 @@ var Application = AbstractApplication.extend({
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
-        this.firstPos = .5 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
+        this.firstPos = .3 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
         this.cow.floorPos = refPos, this.first = this.cow, this.pig = new Pig(this.playerModel), 
         this.pig.build(this);
-        var refPosPig = windowHeight - 67 - this.pig.getContent().height / 2;
-        this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = .5 * windowWidth - this.pig.getContent().width, 
+        var refPosPig = windowHeight - 65 - this.pig.getContent().height / 2;
+        this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = .3 * windowWidth - this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
         scale = scaleConverter(this.pig.getContent().height, windowHeight, .2), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;

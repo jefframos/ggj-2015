@@ -1,0 +1,21 @@
+{"frames": {
+
+"smoke1.png":
+{
+	"frame": {"x":2,"y":2,"w":21,"h":17},
+	"rotated": true,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":21,"h":17},
+	"sourceSize": {"w":21,"h":17},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "fx.png",
+	"format": "RGBA8888",
+	"size": {"w":21,"h":25},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:0a9daee2716e888265de1df8fc36509f:68bb787435c7aa64eea70cb818b3d0e9:5954783b06cac67a67fd6f5e2954bf38$"
+}
+}

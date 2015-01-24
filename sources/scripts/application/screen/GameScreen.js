@@ -16,6 +16,7 @@ var GameScreen = AbstractScreen.extend({
 
         var assetsToLoader = ['dist/img/atlas/atlas.json',
         'dist/img/atlas/cow.json',
+        // 'dist/img/atlas/fx.json',
         'dist/img/atlas/pig.json',
         'dist/img/atlas/environment.json'];
 
@@ -52,6 +53,7 @@ var GameScreen = AbstractScreen.extend({
 
         
         this.particleAccum = 50;
+        this.particleAccum2 = 40;
         this.gameOver = false;
         var self = this;
         this.leftDown = false;
@@ -154,17 +156,33 @@ var GameScreen = AbstractScreen.extend({
         // }
     },
     updateParticles:function(){
-        // if(this.particleAccum < 0){
-        //     this.particleAccum = this.playerModel.currentEnergy / this.playerModel.maxEnergy * 50 + 8;
-        //     var particle = new Particles({x:-0.9, y:-(Math.random() * 0.2 + 0.7)}, 110, 'smoke.png', -0.01);
-        //     particle.build();
-        //     particle.setPosition(this.cow.getPosition().x - this.cow.getContent().width + 5,
-        //         this.cow.getPosition().y- this.cow.getContent().height / 2 + 25);
-        //     this.addChild(particle);
+        if(this.particleAccum < 0){
+            this.particleAccum = 15 + Math.random() * 20;
+            if(this.cow.velocity.y === 0){
+                var particle = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'smoke1.png', -0.01);
+                particle.build();
+                particle.setPosition(this.cow.getPosition().x,windowHeight - 80);
+                this.addChild(particle);
+                particle.velocity.x = -this.vel/2;
+            }
+        }else{
+            this.particleAccum --;
+        }
 
-        // }else{
-        //     this.particleAccum --;
-        // }
+        if(this.particleAccum2 < 0){
+            this.particleAccum2 = 15 + Math.random() * 20;
+            if(this.pig.velocity.y === 0){
+                var particle2 = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'smoke1.png', -0.01);
+                particle2.build();
+                particle2.setPosition(this.pig.getPosition().x,windowHeight - 80);
+                this.addChild(particle2);
+                particle2.velocity.x = -this.vel/2;
+            }
+        }else{
+            this.particleAccum2 --;
+        }
+
+        
     },
     initApplication:function(){
         // var paralaxLayer1 = new Paralax(this.canvasArea.x);
@@ -227,7 +245,7 @@ var GameScreen = AbstractScreen.extend({
         this.cow.setScale( scale,scale);
 
         var refPos = windowHeight - 73  - this.cow.getContent().height / 2;
-        this.firstPos = windowWidth * 0.5;
+        this.firstPos = windowWidth * 0.3;
         console.log(this.firstPos);
         this.cow.setPosition(this.firstPos,refPos);
         this.cow.floorPos = refPos;
@@ -236,10 +254,10 @@ var GameScreen = AbstractScreen.extend({
 
         this.pig = new Pig(this.playerModel);
         this.pig.build(this);
-        var refPosPig = windowHeight - 67  - this.pig.getContent().height / 2;
+        var refPosPig = windowHeight - 65  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
-        this.secondPos = windowWidth * 0.5 -this.pig.getContent().width;
+        this.secondPos = windowWidth * 0.3 -this.pig.getContent().width;
         this.pig.setPosition(this.secondPos,refPosPig);
         this.pig.floorPos = refPosPig;
 
