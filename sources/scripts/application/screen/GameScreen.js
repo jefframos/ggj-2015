@@ -80,7 +80,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.vel > this.maxVel){
             this.vel -= this.accel;
             if(this.onDash){
-                this.vel -= this.accel * 3;
+                this.vel -= this.accel * 4.5;
             }
             if(this.vel < this.maxVel){
                 this.vel = this.maxVel;
@@ -90,10 +90,7 @@ var GameScreen = AbstractScreen.extend({
             }
         }
         this.environment.velocity.x = -this.vel;
-        this.tapAccum++;
-        if(this.tapAccum > 8){
-            this.tapAccum = 8;
-        }
+        
         if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
             this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
         }

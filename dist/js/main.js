@@ -643,9 +643,9 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.playerModel && (this.updateParticles(), this.vel > this.maxVel && (this.vel -= this.accel, 
-        this.onDash && (this.vel -= 3 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
+        this.onDash && (this.vel -= 4.5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
         this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.environment.velocity.x = -this.vel, 
-        this.tapAccum++, this.tapAccum > 8 && (this.tapAccum = 8), this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
         this.bulletBar && this.bulletBar.updateBar(this.playerModel.currentBulletEnergy, this.playerModel.maxBulletEnergy), 
         this.energyBar && this.energyBar.updateBar(this.playerModel.currentEnergy, this.playerModel.maxEnergy));
     },
