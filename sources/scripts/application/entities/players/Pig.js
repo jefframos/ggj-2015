@@ -7,19 +7,19 @@ var Pig = GameEntiity.extend({
 
 		var self = this;
 		var motionIdle = new SpritesheetAnimation();
-		motionIdle.build('idle', this.getFramesByRange('cupcake0', 1, 23,'', '.png'), 1, true, null);
+		motionIdle.build('idle', this.getFramesByRange('pig0', 1, 23,'', '.png'), 0, true, null);
 		// console.log(this.playerModel);
-		// motionIdle.build('idle',['cupcake0001.png'], 1, true, null);
+		// motionIdle.build('idle',['pig0001.png'], 1, true, null);
 		
 		var jumpUp = new SpritesheetAnimation();
-		jumpUp.build('jumpUp', this.getFramesByRange('cupcake0', 24, 26,'', '.png'), 4, false ,null);
+		jumpUp.build('jumpUp', ['pig0026.png'], 4, false ,null);
 
 		var dashMotion = new SpritesheetAnimation();
-		dashMotion.build('dash', ['dash.png'], 1, false, null);
+		dashMotion.build('dash', ['pig0028.png'], 1, false, null);
 
 
 		var jumpDown = new SpritesheetAnimation();
-		jumpDown.build('jumpDown', this.getFramesByRange('cupcake0', 26, 40,'', '.png'), 4, false, null);
+		jumpDown.build('jumpDown', ['pig0027.png'], 4, false, null);
 
 
 		this.spritesheet = new Spritesheet();

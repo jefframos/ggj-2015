@@ -15,8 +15,8 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.x = windowWidth - 150;
 
         var assetsToLoader = ['dist/img/atlas/atlas.json',
-        'dist/img/atlas/cupcake.json',
         'dist/img/atlas/cow.json',
+        'dist/img/atlas/pig.json',
         'dist/img/atlas/environment.json'];
 
 
@@ -226,7 +226,7 @@ var GameScreen = AbstractScreen.extend({
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, 0.25);
         this.cow.setScale( scale,scale);
 
-        var refPos = windowHeight - 75  - this.cow.getContent().height / 2;
+        var refPos = windowHeight - 73  - this.cow.getContent().height / 2;
         this.firstPos = windowWidth * 0.5;
         console.log(this.firstPos);
         this.cow.setPosition(this.firstPos,refPos);
@@ -236,12 +236,15 @@ var GameScreen = AbstractScreen.extend({
 
         this.pig = new Pig(this.playerModel);
         this.pig.build(this);
-        var refPosPig = windowHeight - 80  - this.pig.getContent().height / 2;
+        var refPosPig = windowHeight - 67  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
         this.pig.rotation = -1;
         this.secondPos = windowWidth * 0.5 -this.pig.getContent().width;
         this.pig.setPosition(this.secondPos,refPosPig);
         this.pig.floorPos = refPosPig;
+
+        scale = scaleConverter(this.pig.getContent().height, windowHeight, 0.20);
+        this.pig.setScale( scale,scale);
 
         this.second = this.pig;
 

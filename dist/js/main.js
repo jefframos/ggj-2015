@@ -466,17 +466,17 @@ var Application = AbstractApplication.extend({
 }), Pig = GameEntiity.extend({
     build: function(screen, floorPos) {
         var motionIdle = new SpritesheetAnimation();
-        motionIdle.build("idle", this.getFramesByRange("cupcake0", 1, 23, "", ".png"), 1, !0, null);
+        motionIdle.build("idle", this.getFramesByRange("pig0", 1, 23, "", ".png"), 0, !0, null);
         var jumpUp = new SpritesheetAnimation();
-        jumpUp.build("jumpUp", this.getFramesByRange("cupcake0", 24, 26, "", ".png"), 4, !1, null);
+        jumpUp.build("jumpUp", [ "pig0026.png" ], 4, !1, null);
         var dashMotion = new SpritesheetAnimation();
-        dashMotion.build("dash", [ "dash.png" ], 1, !1, null);
+        dashMotion.build("dash", [ "pig0028.png" ], 1, !1, null);
         var jumpDown = new SpritesheetAnimation();
-        jumpDown.build("jumpDown", this.getFramesByRange("cupcake0", 26, 40, "", ".png"), 4, !1, null), 
-        this.spritesheet = new Spritesheet(), this.spritesheet.addAnimation(motionIdle), 
-        this.spritesheet.addAnimation(jumpDown), this.spritesheet.addAnimation(jumpUp), 
-        this.spritesheet.addAnimation(dashMotion), this.spritesheet.play("jumpUp"), this.screen = screen, 
-        this.floorPos = floorPos, this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
+        jumpDown.build("jumpDown", [ "pig0027.png" ], 4, !1, null), this.spritesheet = new Spritesheet(), 
+        this.spritesheet.addAnimation(motionIdle), this.spritesheet.addAnimation(jumpDown), 
+        this.spritesheet.addAnimation(jumpUp), this.spritesheet.addAnimation(dashMotion), 
+        this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
+        this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
         this.rotation = 0, this.gravity = .2;
     }
@@ -622,7 +622,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cupcake.json", "dist/img/atlas/cow.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/atlas.json", "dist/img/atlas/cow.json", "dist/img/atlas/pig.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -699,13 +699,14 @@ var Application = AbstractApplication.extend({
         this.cow.rotation = -1;
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
-        var refPos = windowHeight - 75 - this.cow.getContent().height / 2;
+        var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
         this.firstPos = .5 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
         this.cow.floorPos = refPos, this.first = this.cow, this.pig = new Pig(this.playerModel), 
         this.pig.build(this);
-        var refPosPig = windowHeight - 80 - this.pig.getContent().height / 2;
+        var refPosPig = windowHeight - 67 - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = .5 * windowWidth - this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
+        scale = scaleConverter(this.pig.getContent().height, windowHeight, .2), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;
         var posHelper = .05 * windowHeight;
         this.bulletBar = new BarView(.1 * windowWidth, 10, 1, 1), this.addChild(this.bulletBar), 
