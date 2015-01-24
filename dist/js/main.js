@@ -706,7 +706,7 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.vel = 0, this.maxVel = 5, this.environment4 = new Environment(windowWidth, windowHeight), 
+        this.maxVel = 7, this.vel = this.maxVel, this.environment4 = new Environment(windowWidth, windowHeight), 
         this.environment4.build([ "montanha2.png" ], 80, 75), this.addChild(this.environment4), 
         this.environment3 = new Environment(windowWidth, windowHeight), this.environment3.build([ "montanha1.png" ], 50, 75), 
         this.addChild(this.environment3), this.environment2 = new Environment(windowWidth, windowHeight), 
