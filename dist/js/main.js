@@ -627,10 +627,11 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(.5 * windowWidth, 0, windowWidth, windowHeight), 
         this.particleAccum = 50, this.gameOver = !1;
         var self = this;
-        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
-            self.vel = self.maxVel;
-        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {}, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {}, 
-        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {}, this.textAcc.setText(this.textAcc.text + "\nbuild");
+        this.leftDown = !1, this.rightDown = !1, this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
+            self.leftDown || (self.leftDown = !0, self.vel = self.maxVel);
+        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {}, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
+            self.rightDown || (self.rightDown = !0, self.vel = self.maxVel);
+        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {}, this.textAcc.setText(this.textAcc.text + "\nbuild");
     },
     onProgress: function() {
         this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
@@ -639,7 +640,7 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super(), this.playerModel && (this.updateParticles(), this.vel + this.accel > 0 && (this.vel -= this.accel), 
+        this._super(), this.playerModel && (this.updateParticles(), this.vel - this.accel >= 0 && (this.vel -= this.accel), 
         this.environment.velocity.x = -this.vel);
     },
     updateParticles: function() {},

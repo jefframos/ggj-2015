@@ -51,9 +51,15 @@ var GameScreen = AbstractScreen.extend({
         this.particleAccum = 50;
         this.gameOver = false;
         var self = this;
-
+        this.leftDown = false;
+        this.rightDown = false;
 
         this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+            if(self.leftDown){
+                //shiti happens
+                return;
+            }
+            self.leftDown = true;
             self.vel = self.maxVel;
         };
          
@@ -62,7 +68,12 @@ var GameScreen = AbstractScreen.extend({
         };
 
         this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
-           
+            if(self.rightDown){
+                //shiti happens
+                return;
+            }
+            self.rightDown = true;
+            self.vel = self.maxVel;
         };
          
         this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
@@ -90,7 +101,7 @@ var GameScreen = AbstractScreen.extend({
         }
 
         this.updateParticles();
-        if(this.vel + this.accel > 0){
+        if(this.vel - this.accel >= 0){
             this.vel -= this.accel;
         }
         this.environment.velocity.x = -this.vel;
