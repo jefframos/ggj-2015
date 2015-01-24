@@ -195,8 +195,8 @@ var GameScreen = AbstractScreen.extend({
         this.addChild(this.background);
 
         this.accel = 0.1;
-        this.vel = 0;
-        this.maxVel = 5;
+        this.maxVel = 7;
+        this.vel = this.maxVel;
 
 
         this.environment4 = new Environment(windowWidth, windowHeight);
