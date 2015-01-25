@@ -1,0 +1,93 @@
+{"frames": {
+
+"100.png":
+{
+	"frame": {"x":2,"y":2,"w":185,"h":341},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":341},
+	"sourceSize": {"w":185,"h":341},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"200.png":
+{
+	"frame": {"x":189,"y":2,"w":185,"h":341},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":341},
+	"sourceSize": {"w":185,"h":341},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"900.png":
+{
+	"frame": {"x":376,"y":2,"w":185,"h":341},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":341},
+	"sourceSize": {"w":185,"h":341},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"abajo.png":
+{
+	"frame": {"x":563,"y":2,"w":185,"h":341},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":185,"h":341},
+	"sourceSize": {"w":185,"h":341},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"aloca.png":
+{
+	"frame": {"x":750,"y":2,"w":228,"h":288},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":228,"h":288},
+	"sourceSize": {"w":228,"h":288},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"arriba.png":
+{
+	"frame": {"x":980,"y":2,"w":181,"h":342},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":181,"h":342},
+	"sourceSize": {"w":181,"h":342},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"caramba.png":
+{
+	"frame": {"x":1163,"y":2,"w":295,"h":296},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":295,"h":296},
+	"sourceSize": {"w":295,"h":296},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"dinovoador.png":
+{
+	"frame": {"x":1460,"y":2,"w":198,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":145},
+	"sourceSize": {"w":198,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"et.png":
+{
+	"frame": {"x":1660,"y":2,"w":182,"h":145},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":182,"h":145},
+	"sourceSize": {"w":182,"h":145},
+	"pivot": {"x":0.5,"y":0.5}
+}},
+"meta": {
+	"app": "http://www.codeandweb.com/texturepacker",
+	"version": "1.0",
+	"image": "enemies.png",
+	"format": "RGBA8888",
+	"size": {"w":1844,"h":346},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:cf46195ff9d6d924b8928db4783d379d:a3a6bf6b05ff1a4aebf031036c0ecef1:9b2a76c8b2a408b3f0547a4eddda1e06$"
+}
+}

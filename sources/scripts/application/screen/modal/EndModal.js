@@ -50,8 +50,17 @@ var EndModal = Class.extend({
 
 		this.boxContainer.position.y = -this.boxContainer.height * 1.5;
 
+		this.points = new PIXI.Text('', {font:'40px Arial', wordWrap:true, wordWrapWidth:200, align:'center'});
+        this.boxContainer.addChild(this.points);
+        console.log(this.points);
+        this.points.position.x = bgPos.x + 135 + this.retryButton.width / 2 - 50;// - 100;// + this.boxContainer.width / 2 - this.points.width / 2;
+        this.points.position.y = bgPos.y + 268 - 80;// + this.boxContainer.width / 2 - this.points.width / 2;
+        // this.points.position.x = bgPos.y;
+
 	},
-	show:function(){
+	show:function(points){
+		// console.log(points,'pointspointspointspointspointspointspointspointspointspointspointspointspoints');
+		this.points.setText(points);
 		this.screen.updateable = false;
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});
 		TweenLite.to(this.boxContainer.position, 1, {y:0, ease:'easeOutBack'});

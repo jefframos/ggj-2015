@@ -20,6 +20,7 @@ var GameScreen = AbstractScreen.extend({
         'dist/img/atlas/UI.json',
         'dist/img/atlas/dino.json',
         'dist/img/atlas/objects.json',
+        'dist/img/atlas/enemies.json',
         'dist/img/atlas/environment.json'];
 
 
@@ -113,7 +114,8 @@ var GameScreen = AbstractScreen.extend({
         }
 
         if(this.gameOver){
-            this.endModal.show();
+            this.endModal.show(this.levelCounter);
+            // this.endModal.show();
             // this.resetGame();
             return;
         }
@@ -271,7 +273,7 @@ var GameScreen = AbstractScreen.extend({
             tempObstacles.velFactor = 1;
             tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
             this.obstaclesAccum = 200 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0);
-            this.itensAcum = 1000;
+            this.itensAcum = 300;
         }else{
             this.itensAcum --;
         }
@@ -293,9 +295,6 @@ var GameScreen = AbstractScreen.extend({
         }
     },
     updateObstacles:function(){
-        if(true){
-            return;
-        }
         if(this.obstaclesAccum < 0){
             var id = Math.floor(APP.getGameModel().objects.length * Math.random());
             console.log(APP.getGameModel().objects, id);
@@ -366,18 +365,18 @@ var GameScreen = AbstractScreen.extend({
             this.hammer.off('swipeleft');
         }
 
-        this.levelCounter = 0;
-        this.obstaclesAccum = 200;
+        
+        this.obstaclesAccum = 300;
         this.enemiesAccum = 600;
         this.itensAcum = 1200;
         this.waitTuUp = false;
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
 
-        this.debugChildsText = new PIXI.Text('', {font:'15px Arial'});
-        this.addChild(this.debugChildsText);
-        this.debugChildsText.position.y = 20;
-        this.debugChildsText.position.x = windowWidth - 350;
+        // this.debugChildsText = new PIXI.Text('', {font:'15px Arial'});
+        // this.addChild(this.debugChildsText);
+        // this.debugChildsText.position.y = 20;
+        // this.debugChildsText.position.x = windowWidth - 350;
 
         this.accel = 0.1;
         this.maxVel = 6;
@@ -448,7 +447,7 @@ var GameScreen = AbstractScreen.extend({
         this.playerModelCow.reset();
 
 
-        this.cow = new Cow(this.playerModelCow);
+        this.cow = new Cow(this.playerModelCow, this);
         this.cow.build(this);
        
         this.layer.addChild(this.cow);
@@ -468,7 +467,7 @@ var GameScreen = AbstractScreen.extend({
         this.playerModelPig = APP.getGameModel().playerModels[1];
         this.playerModelPig.reset();
 
-        this.pig = new Pig(this.playerModelPig);
+        this.pig = new Pig(this.playerModelPig, this);
         this.pig.build(this);
         var refPosPig = windowHeight - 50  - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig);
@@ -573,7 +572,7 @@ var GameScreen = AbstractScreen.extend({
     },
     addListenners:function(){
         this.vel = this.maxVel;
-
+        this.levelCounter = 0;
         this.labelPoints = new PIXI.Text('', {font:'50px Arial'});
         this.addChild(this.labelPoints);
         this.labelPoints.position.y = windowHeight - 80;
@@ -586,11 +585,11 @@ var GameScreen = AbstractScreen.extend({
         }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});
         TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
-        TweenLite.to(this.cowDashBar.getContent().position, 0.8, {delay:0.7, y:100, ease:'easeOutBack'});
-        TweenLite.to(this.pigDashBar.getContent().position, 0.8, {delay:0.9, y:100, ease:'easeOutBack'});
-        TweenLite.to(this.cowEnergyBar.getContent().position, 0.6, {delay:1.0, y:50, ease:'easeOutBack'});
-        TweenLite.to(this.pigEnergyBar.getContent().position, 0.6, {delay:1.2,y:50, ease:'easeOutBack'});
-        TweenLite.to(this.pauseButton.getContent().position, 0.8, {delay:1.4,y:20, ease:'easeOutBack'});
+        TweenLite.to(this.pigDashBar.getContent().position, 0.5, {delay:1.5, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.cowDashBar.getContent().position, 0.5, {delay:1.7, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.pigEnergyBar.getContent().position, 0.6, {delay:1.8,y:50, ease:'easeOutBack'});
+        TweenLite.to(this.cowEnergyBar.getContent().position, 0.6, {delay:2.0, y:50, ease:'easeOutBack'});
+        TweenLite.to(this.pauseButton.getContent().position, 0.8, {delay:2.2,y:20, ease:'easeOutBack'});
 
 
 

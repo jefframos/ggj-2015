@@ -16,7 +16,7 @@ var Bullet = Entity.extend({
         this.timeLive = 1000;
         this.power = 1;
         this.defaultVelocity = 1;
-        this.imgSource = 'cow0001.png';
+        this.imgSource = APP.getGameModel().enemies[Math.floor(APP.getGameModel().enemies.length * Math.random())][0];
         this.screen = screen;
 
     },
@@ -41,7 +41,7 @@ var Bullet = Entity.extend({
             // console.log( this.screen.vel / 50);
         }
         this.layer.collideChilds(this);
-        if(this.getPosition().y > windowHeight - 80){
+        if(this.getPosition().y > windowHeight){
             this.preKill();
         }
         this.timeLive --;
@@ -65,15 +65,19 @@ var Bullet = Entity.extend({
         }
     },
     preKill:function(){
-        if(this.collidable){
-            var self = this;
-            this.updateable = true;
-            this.collidable = false;
-            this.fall = true;
-            this.velocity = {x:0, y:0};
-            TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
+        this.kill = true;
+        this.collidable = false;
+        return;
 
-        }
+        // if(this.collidable){
+        //     var self = this;
+        //     this.updateable = true;
+        //     this.collidable = false;
+        //     this.fall = true;
+        //     this.velocity = {x:0, y:0};
+        //     TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
+
+        // }
     },
     pointDistance: function(x, y, x0, y0){
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);

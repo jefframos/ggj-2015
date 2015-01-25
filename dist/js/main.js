@@ -379,7 +379,8 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = 1e3, 
-        this.power = 1, this.defaultVelocity = 1, this.imgSource = "cow0001.png", this.screen = screen;
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = APP.getGameModel().enemies[Math.floor(APP.getGameModel().enemies.length * Math.random())][0], 
+        this.screen = screen;
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -390,7 +391,7 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.screen && (this.velocity.x *= 1 + this.screen.vel / 1e3, this.velocity.y *= 1.01 + this.screen.vel / 1e3), 
-        this.layer.collideChilds(this), this.getPosition().y > windowHeight - 80 && this.preKill(), 
+        this.layer.collideChilds(this), this.getPosition().y > windowHeight && this.preKill(), 
         this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.width;
     },
     collide: function(arrayCollide) {
@@ -398,18 +399,7 @@ var Application = AbstractApplication.extend({
         console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(arrayCollide[0].idType));
     },
     preKill: function() {
-        if (this.collidable) {
-            var self = this;
-            this.updateable = !0, this.collidable = !1, this.fall = !0, this.velocity = {
-                x: 0,
-                y: 0
-            }, TweenLite.to(this.getContent(), .3, {
-                alpha: 0,
-                onComplete: function() {
-                    self.kill = !0;
-                }
-            });
-        }
+        this.kill = !0, this.collidable = !1;
     },
     pointDistance: function(x, y, x0, y0) {
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);
@@ -519,16 +509,25 @@ var Application = AbstractApplication.extend({
     },
     update: function() {}
 }), GameEntiity = SpritesheetEntity.extend({
-    init: function(playerModel) {
+    init: function(playerModel, screen) {
         this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 40, 
-        this.type = "player", this.isFirst = !1, this.particles = [];
+        this.type = "player", this.isFirst = !1, this.particles = [], this.screen = screen;
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
     },
     effect: function(type, value) {
-        1 === type ? (this.playerModel.currentEnergy += this.playerModel.maxEnergy * value, 
-        this.playerModel.currentEnergy > this.playerModel.maxEnergy && (this.playerModel.currentEnergy = this.playerModel.maxEnergy)) : 2 === type && (this.invencibleAccum = value);
+        if (1 === type) {
+            this.playerModel.currentEnergy += this.playerModel.maxEnergy * value, this.playerModel.currentEnergy > this.playerModel.maxEnergy && (this.playerModel.currentEnergy = this.playerModel.maxEnergy);
+            for (var i = 15; i >= 0; i--) {
+                var particle3 = new Particles({
+                    x: -.3,
+                    y: -(1 * Math.random() + .3)
+                }, 120, "particleGreen.png", 0);
+                particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width / 2 + Math.random() * this.getContent().width, this.getPosition().y + this.getContent().height / 2 - 40 * Math.random()), 
+                console.log(this.getContent().parent), this.screen.addChild(particle3);
+            }
+        } else 2 === type && (this.invencibleAccum = value);
     },
     hurt: function(type) {
         if (!(this.onDash && type === this.idType || this.invencibleAccum > 0)) {
@@ -715,7 +714,8 @@ var Application = AbstractApplication.extend({
     init: function() {
         this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, 1.15, 1), new PlayerModel(.04, .7, 1.5, 1.2, 2) ], 
         this.objects = [ [ "ice1.png", 1, !0 ], [ "ice2.png", 1, !0 ], [ "rock1.png", 2, !0 ], [ "rock2.png", 2, !0 ], [ "colide_cacto1.png", 3, !1 ], [ "colide_cacto2.png", 3, !1 ], [ "colide_espinho1.png", 3, !1 ], [ "colide_espinho2.png", 3, !1 ] ], 
-        this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.setModel(0);
+        this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.enemies = [ [ "et.png", 2, 300 ], [ "dinovoador.png", 1, .5 ] ], 
+        this.setModel(0);
     },
     setModel: function(id) {
         this.currentID = id, this.currentPlayerModel = this.playerModels[id];
@@ -854,7 +854,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/enemies.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
@@ -876,7 +876,7 @@ var Application = AbstractApplication.extend({
             this._super();
             var i;
             if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-            if (this.gameOver) return void this.endModal.show();
+            if (this.gameOver) return void this.endModal.show(this.levelCounter);
             if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles(), 
             this.updateEnemies(), this.updateItens()), this.vel > this.maxVel && (this.vel -= this.accel, 
             this.onDash && (this.vel -= 5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
@@ -949,7 +949,7 @@ var Application = AbstractApplication.extend({
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
             this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0), 
-            this.itensAcum = 1e3;
+            this.itensAcum = 300;
         } else this.itensAcum--;
     },
     updateEnemies: function() {
@@ -965,7 +965,14 @@ var Application = AbstractApplication.extend({
         } else this.enemiesAccum--;
     },
     updateObstacles: function() {
-        return;
+        if (this.obstaclesAccum < 0) {
+            var id = Math.floor(APP.getGameModel().objects.length * Math.random());
+            console.log(APP.getGameModel().objects, id);
+            var tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
+            this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
+            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
+            this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0);
+        } else this.obstaclesAccum--;
     },
     updateParticles: function() {
         if (this.particleAccum < 0) {
@@ -999,14 +1006,10 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.levelCounter = 0, this.obstaclesAccum = 200, this.enemiesAccum = 600, this.itensAcum = 1200, 
-        this.waitTuUp = !1, this.background = new SimpleSprite("sky.png"), this.addChild(this.background), 
-        this.debugChildsText = new PIXI.Text("", {
-            font: "15px Arial"
-        }), this.addChild(this.debugChildsText), this.debugChildsText.position.y = 20, this.debugChildsText.position.x = windowWidth - 350, 
-        this.accel = .1, this.maxVel = 6, this.maxDash = 7, this.vel = .5 * this.maxVel, 
-        this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
-        this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
+        this.obstaclesAccum = 300, this.enemiesAccum = 600, this.itensAcum = 1200, this.waitTuUp = !1, 
+        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
+        this.maxVel = 6, this.maxDash = 7, this.vel = .5 * this.maxVel, this.envArray = [], 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .012, 
@@ -1021,14 +1024,14 @@ var Application = AbstractApplication.extend({
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
         this.envObjects = [], this.playerModelCow = APP.getGameModel().playerModels[0], 
-        this.playerModelCow.reset(), this.cow = new Cow(this.playerModelCow), this.cow.build(this), 
+        this.playerModelCow.reset(), this.cow = new Cow(this.playerModelCow, this), this.cow.build(this), 
         this.layer.addChild(this.cow), this.cow.rotation = -1;
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
         this.firstPos = .33 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
         this.cow.floorPos = refPos, this.first = this.cow, this.playerModelPig = APP.getGameModel().playerModels[1], 
-        this.playerModelPig.reset(), this.pig = new Pig(this.playerModelPig), this.pig.build(this);
+        this.playerModelPig.reset(), this.pig = new Pig(this.playerModelPig, this), this.pig.build(this);
         var refPosPig = windowHeight - 50 - this.pig.getContent().height / 2;
         this.layer.addChild(this.pig), this.pig.rotation = -1, this.secondPos = this.firstPos - 1.5 * this.pig.getContent().width, 
         this.pig.setPosition(this.secondPos, refPosPig), this.pig.floorPos = refPosPig, 
@@ -1069,7 +1072,7 @@ var Application = AbstractApplication.extend({
         this.endModal = new EndModal(this), this.addChild(this.endModal.getContent());
     },
     addListenners: function() {
-        this.vel = this.maxVel, this.labelPoints = new PIXI.Text("", {
+        this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
             font: "50px Arial"
         }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 80, 
         this.labelPoints.position.x = windowWidth - 80, this.labelPoints.setText(0);
@@ -1089,24 +1092,24 @@ var Application = AbstractApplication.extend({
             delay: .5,
             x: this.secondPos,
             ease: "easeOutCubic"
-        }), TweenLite.to(this.cowDashBar.getContent().position, .8, {
-            delay: .7,
+        }), TweenLite.to(this.pigDashBar.getContent().position, .5, {
+            delay: 1.5,
             y: 100,
             ease: "easeOutBack"
-        }), TweenLite.to(this.pigDashBar.getContent().position, .8, {
-            delay: .9,
+        }), TweenLite.to(this.cowDashBar.getContent().position, .5, {
+            delay: 1.7,
             y: 100,
-            ease: "easeOutBack"
-        }), TweenLite.to(this.cowEnergyBar.getContent().position, .6, {
-            delay: 1,
-            y: 50,
             ease: "easeOutBack"
         }), TweenLite.to(this.pigEnergyBar.getContent().position, .6, {
-            delay: 1.2,
+            delay: 1.8,
+            y: 50,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.cowEnergyBar.getContent().position, .6, {
+            delay: 2,
             y: 50,
             ease: "easeOutBack"
         }), TweenLite.to(this.pauseButton.getContent().position, .8, {
-            delay: 1.4,
+            delay: 2.2,
             y: 20,
             ease: "easeOutBack"
         });
@@ -1259,10 +1262,17 @@ var Application = AbstractApplication.extend({
                 self.screen.screenManager.change("Wait");
             });
         }, this.pauseLabel = new SimpleSprite("pauseLabel.png"), this.boxContainer.addChild(this.pauseLabel.container), 
-        this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91), this.boxContainer.position.y = 1.5 * -this.boxContainer.height;
+        this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91), this.boxContainer.position.y = 1.5 * -this.boxContainer.height, 
+        this.points = new PIXI.Text("", {
+            font: "40px Arial",
+            wordWrap: !0,
+            wordWrapWidth: 200,
+            align: "center"
+        }), this.boxContainer.addChild(this.points), console.log(this.points), this.points.position.x = bgPos.x + 135 + this.retryButton.width / 2 - 50, 
+        this.points.position.y = bgPos.y + 268 - 80;
     },
-    show: function() {
-        this.screen.updateable = !1, TweenLite.to(this.bg, .5, {
+    show: function(points) {
+        this.points.setText(points), this.screen.updateable = !1, TweenLite.to(this.bg, .5, {
             alpha: .8
         }), TweenLite.to(this.boxContainer.position, 1, {
             y: 0,

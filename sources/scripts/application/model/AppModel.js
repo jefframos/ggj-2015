@@ -31,6 +31,9 @@ var AppModel = Class.extend({
 		this.itens = [['jalapeno.png',2, 300],
 		['bacon.png',1, 0.2]];
 
+		this.enemies = [['et.png',2, 300],
+		['dinovoador.png',1, 0.5]];
+
 		this.setModel(0);
 	},
 	setModel:function(id){

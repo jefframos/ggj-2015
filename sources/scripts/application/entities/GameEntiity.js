@@ -1,6 +1,6 @@
 /*jshint undef:false */
 var GameEntiity = SpritesheetEntity.extend({
-    init:function(playerModel){
+    init:function(playerModel, screen){
         this.playerModel = playerModel;
         this._super( true );
         this.collidable = true;
@@ -8,6 +8,7 @@ var GameEntiity = SpritesheetEntity.extend({
         this.type = 'player';
         this.isFirst = false;
         this.particles = [];
+        this.screen = screen;
     },
    
     setTarget:function(pos){
@@ -28,6 +29,16 @@ var GameEntiity = SpritesheetEntity.extend({
             if(this.playerModel.currentEnergy > this.playerModel.maxEnergy){
                 this.playerModel.currentEnergy = this.playerModel.maxEnergy;
             }
+            for (var i = 15; i >= 0; i--) {
+                var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'particleGreen.png', 0);
+                particle3.build();
+                particle3.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
+                    this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
+                // particle3.velocity.x = -this.getContent().parent.vel/8;
+                console.log(this.getContent().parent);
+                this.screen.addChild(particle3);
+            }
+
         }else if(type === 2){
             this.invencibleAccum = value;
         }

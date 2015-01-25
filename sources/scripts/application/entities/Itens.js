@@ -36,6 +36,7 @@ var Itens = Entity.extend({
 			this.kill = true;
 		}
 		this.range = this.sprite.width / 2;
+		
 	},
 	collide:function(arrayCollide){
 		if(this.collidable){

@@ -2,7 +2,7 @@
 
 "creditsButton.png":
 {
-	"frame": {"x":134,"y":2,"w":282,"h":90},
+	"frame": {"x":150,"y":2,"w":282,"h":90},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":282,"h":90},
@@ -11,7 +11,7 @@
 },
 "creditsButtonOver.png":
 {
-	"frame": {"x":418,"y":2,"w":282,"h":90},
+	"frame": {"x":434,"y":2,"w":282,"h":90},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":282,"h":90},
@@ -20,7 +20,7 @@
 },
 "folhas1.png":
 {
-	"frame": {"x":18,"y":2,"w":114,"h":88},
+	"frame": {"x":34,"y":2,"w":114,"h":88},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":114,"h":88},
@@ -29,7 +29,7 @@
 },
 "folhas2.png":
 {
-	"frame": {"x":702,"y":2,"w":260,"h":100},
+	"frame": {"x":718,"y":2,"w":260,"h":100},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":260,"h":100},
@@ -38,7 +38,7 @@
 },
 "goButton.png":
 {
-	"frame": {"x":1284,"y":2,"w":318,"h":101},
+	"frame": {"x":980,"y":2,"w":318,"h":101},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":318,"h":101},
@@ -47,7 +47,7 @@
 },
 "goButtonOver.png":
 {
-	"frame": {"x":964,"y":2,"w":318,"h":101},
+	"frame": {"x":1300,"y":2,"w":318,"h":101},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":318,"h":101},
@@ -73,6 +73,15 @@
 	"pivot": {"x":0.5,"y":0.5}
 },
 "particle.png":
+{
+	"frame": {"x":18,"y":2,"w":14,"h":14},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":14,"h":14},
+	"sourceSize": {"w":14,"h":14},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"particleGreen.png":
 {
 	"frame": {"x":2,"y":2,"w":14,"h":14},
 	"rotated": false,
@@ -106,6 +115,6 @@
 	"format": "RGBA8888",
 	"size": {"w":1816,"h":1512},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f4471f0bd4142803dd1cff5643817ed5:6dcb6fc5012c824f51ac810a2f4f9636:17912d807795a397b5ccd2ab39a16cd0$"
+	"smartupdate": "$TexturePacker:SmartUpdate:fa2b76cb7c95006ec9e7c60ec87b45cf:63f27f97dd433e08efc0764594c90637:17912d807795a397b5ccd2ab39a16cd0$"
 }
 }
