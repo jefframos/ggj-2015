@@ -111,6 +111,40 @@ var GameScreen = AbstractScreen.extend({
             for (i = this.envArray.length - 1; i >= 0; i--) {
                 this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             }
+
+            if(this.levelCounter === 100){
+                var chicken100 = new Chicken('100.png', this);
+                chicken100.build();
+                chicken100.setPosition(windowWidth,windowHeight - 80 - chicken100.getContent().height);
+                this.addChild(chicken100);
+            }
+            else if(this.levelCounter === 200){
+                var chicken200 = new Chicken('200.png', this);
+                chicken200.build();
+                chicken200.setPosition(windowWidth,windowHeight - 80 - chicken200.getContent().height);
+                this.addChild(chicken200);
+                // this.envArray.push(chicken100);
+            }else if(this.levelCounter === 900){
+                var chicken900 = new Chicken('900.png', this);
+                chicken900.build();
+                chicken900.setPosition(windowWidth,windowHeight - 80 - chicken900.getContent().height);
+                this.addChild(chicken900);
+                // this.envArray.push(chicken100);
+            }else if(this.levelCounter > 900 && (this.levelCounter % 450) === 0){
+                var chickens = ['abajo.png', 'arriba.png', 'aloca.png', 'caramba.png'];
+                var chickenRnd = new Chicken(chickens[Math.floor(chickens.length * Math.random())], this);
+                chickenRnd.build();
+                chickenRnd.setPosition(windowWidth,windowHeight - 80 - chickenRnd.getContent().height);
+                this.addChild(chickenRnd);
+
+                if(Math.random() < 0.5){
+                    chickenRnd.getContent().rotation = 180;
+                }
+            }
+        //     this.envArray.push(new Environment(windowWidth, windowHeight));
+        // this.envArray[this.envArray.length - 1].build(['nuvem2.png'], 600, windowHeight * 0.7);
+        // this.addChild(this.envArray[this.envArray.length - 1]);
+        // this.envArray[this.envArray.length - 1].velFactor = 0.01;
         }
 
         if(this.gameOver){
@@ -299,7 +333,7 @@ var GameScreen = AbstractScreen.extend({
             var id = Math.floor(APP.getGameModel().objects.length * Math.random());
             // console.log(APP.getGameModel().objects, id);
             var tempModel = APP.getGameModel().objects[id];
-            var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
+            var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this);
             this.envObjects.push(tempObstacles);
             tempObstacles.build();
             this.layer.addChild(tempObstacles);
@@ -338,7 +372,15 @@ var GameScreen = AbstractScreen.extend({
         }
 
         if(this.first.invencibleAccum > 0 ){
-            // console.log('cade a bbbbb', this.invencibleAccum % 5);
+            if(!this.invencibleGraph.container.parent ){
+                this.invencibleGraph.container.anchor.x = 0.5;
+                this.invencibleGraph.container.anchor.y = 1;
+                this.invencibleGraph.container.scale.y = 0.2;
+                this.invencibleGraph.container.position.x = windowWidth / 2;
+                this.invencibleGraph.container.position.y = windowHeight / 2 + 80;
+                this.addChild(this.invencibleGraph.container);
+                TweenLite.to(this.invencibleGraph.container.scale, 1,{y:1, ease:'easeOutElastic'});
+            }
             this.vel = this.maxVel * 1.1;
             if(this.first.invencibleAccum % 5 === 0){
                 // console.log('cade a porra');
@@ -350,6 +392,12 @@ var GameScreen = AbstractScreen.extend({
                 particle3.velocity.x = -this.vel/8;
                 this.addChild(particle3);
 
+            }
+        }else{
+            var self = this;
+            if(this.invencibleGraph.container.parent){
+
+                this.invencibleGraph.container.parent.removeChild(this.invencibleGraph.container);
             }
         }
         
@@ -550,7 +598,8 @@ var GameScreen = AbstractScreen.extend({
         this.endModal = new EndModal(this);
         this.addChild(this.endModal.getContent());
 
-        
+        this.invencibleGraph = new SimpleSprite('burning.png');
+
 
         // for (var i = 3; i >= 0; i--) {
         //     var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
@@ -580,7 +629,7 @@ var GameScreen = AbstractScreen.extend({
         this.labelPoints.setText(0);
 
         var self = this;
-        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, y: - 500, ease:'easeInCubic', onComplete:function(){
+        TweenLite.to(this.dino.getContent().position, 1.6, {x:-600, y: - 500, ease:'easeInCubic', onComplete:function(){
             self.dino.kill = true;
         }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});

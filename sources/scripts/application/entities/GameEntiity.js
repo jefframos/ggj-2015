@@ -29,15 +29,22 @@ var GameEntiity = SpritesheetEntity.extend({
             if(this.playerModel.currentEnergy > this.playerModel.maxEnergy){
                 this.playerModel.currentEnergy = this.playerModel.maxEnergy;
             }
-            for (var i = 12; i >= 0; i--) {
-                var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'particleGreen.png', 0);
-                particle3.build();
-                particle3.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
-                    this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
-                // particle3.velocity.x = -this.getContent().parent.vel/8;
-                // console.log(this.getContent().parent);
-                this.screen.addChild(particle3);
-            }
+            var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'hp.png', 0);
+            particle3.build();
+            particle3.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
+                this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
+            // particle3.velocity.x = -this.getContent().parent.vel/8;
+            // console.log(this.getContent().parent);
+            this.screen.addChild(particle3);
+            // for (var i = 12; i >= 0; i--) {
+            //     var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'particleGreen.png', 0);
+            //     particle3.build();
+            //     particle3.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
+            //         this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
+            //     // particle3.velocity.x = -this.getContent().parent.vel/8;
+            //     // console.log(this.getContent().parent);
+            //     this.screen.addChild(particle3);
+            // }
 
         }else if(type === 2){
             this.invencibleAccum = value;

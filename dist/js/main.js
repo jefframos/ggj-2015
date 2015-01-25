@@ -408,6 +408,19 @@ var Application = AbstractApplication.extend({
         collection.object && "environment" === collection.object.type && collection.object.fireCollide(), 
         this.preKill();
     }
+}), Chicken = Entity.extend({
+    init: function(source, screen) {
+        this._super(!0), this.updateable = !0, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
+        this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
+        this.velFactor = 1, this.screen = screen;
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.updateable = !0;
+    },
+    update: function() {
+        this.velocity.x = -this.screen.vel, this._super(), this.getPosition().x < -this.sprite.width && (this.kill = !0);
+    }
 }), Cupcake = SpritesheetEntity.extend({
     init: function() {
         this._super(!0);
@@ -447,9 +460,7 @@ var Application = AbstractApplication.extend({
         this.dinoContainer = new PIXI.DisplayObjectContainer(), this.container = new PIXI.DisplayObjectContainer();
     },
     build: function() {
-        function repeatTimeline() {
-            tl.restart();
-        }
+        function repeatTimeline() {}
         function repeatTimeline2() {
             tlBody.restart();
         }
@@ -466,7 +477,7 @@ var Application = AbstractApplication.extend({
         var tl = new TimelineLite({
             onComplete: repeatTimeline
         });
-        tl.append(TweenLite.to(this.dinoMouth, 2, {
+        tl.append(TweenLite.to(this.dinoMouth, 1.5, {
             rotation: .2,
             ease: "easeInOutCubic"
         })), tl.append(TweenLite.to(this.dinoMouth, 2, {
@@ -519,14 +530,12 @@ var Application = AbstractApplication.extend({
     effect: function(type, value) {
         if (1 === type) {
             this.playerModel.currentEnergy += this.playerModel.maxEnergy * value, this.playerModel.currentEnergy > this.playerModel.maxEnergy && (this.playerModel.currentEnergy = this.playerModel.maxEnergy);
-            for (var i = 15; i >= 0; i--) {
-                var particle3 = new Particles({
-                    x: -.3,
-                    y: -(1 * Math.random() + .3)
-                }, 120, "particleGreen.png", 0);
-                particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width / 2 + Math.random() * this.getContent().width, this.getPosition().y + this.getContent().height / 2 - 40 * Math.random()), 
-                this.screen.addChild(particle3);
-            }
+            var particle3 = new Particles({
+                x: -.3,
+                y: -(1 * Math.random() + .3)
+            }, 120, "hp.png", 0);
+            particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width / 2 + Math.random() * this.getContent().width, this.getPosition().y + this.getContent().height / 2 - 40 * Math.random()), 
+            this.screen.addChild(particle3);
         } else 2 === type && (this.invencibleAccum = value);
     },
     hurt: function(type) {
@@ -597,11 +606,11 @@ var Application = AbstractApplication.extend({
         this.preKill();
     }
 }), Obstacle = Entity.extend({
-    init: function(type, source, brekeable) {
+    init: function(type, source, brekeable, screen) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
-        this.velFactor = 1, this.idType = type, this.brekeable = brekeable;
+        this.velFactor = 1, this.idType = type, this.brekeable = brekeable, this.screen = screen;
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -612,22 +621,25 @@ var Application = AbstractApplication.extend({
         this.range = this.sprite.width / 2;
     },
     collide: function(arrayCollide) {
-        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = this.brekeable, 
-        console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(this.idType));
+        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.preKill(), 
+        this.collidable = !1, arrayCollide[0].hurt(this.idType));
     },
     preKill: function() {
-        if (this.collidable) {
-            var self = this;
-            this.updateable = !0, this.collidable = !1, this.fall = !0, this.velocity = {
-                x: 0,
-                y: 0
-            }, TweenLite.to(this.getContent(), .3, {
-                alpha: 0,
-                onComplete: function() {
-                    self.kill = !0;
-                }
-            });
+        for (var i = 5; i >= 0; i--) {
+            var particle3 = new Particles({
+                x: -.3,
+                y: -(1 * Math.random() + .3)
+            }, 120, "hp.png", 0);
+            particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width + Math.random() * this.getContent().width, this.getPosition().y - 50 * Math.random()), 
+            this.screen.addChild(particle3);
         }
+        var self = this;
+        TweenLite.to(this.getContent(), .3, {
+            alpha: 0,
+            onComplete: function() {
+                self.kill = !0;
+            }
+        });
     },
     pointDistance: function(x, y, x0, y0) {
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);
@@ -712,7 +724,7 @@ var Application = AbstractApplication.extend({
     }
 }), AppModel = Class.extend({
     init: function() {
-        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, 1.15, 1), new PlayerModel(.04, .7, 1.5, 1.2, 2) ], 
+        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, .15, 1), new PlayerModel(.04, .7, 1.5, .2, 2) ], 
         this.objects = [ [ "ice1.png", 1, !0 ], [ "ice2.png", 1, !0 ], [ "rock1.png", 2, !0 ], [ "rock2.png", 2, !0 ], [ "colide_cacto1.png", 3, !1 ], [ "colide_cacto2.png", 3, !1 ], [ "colide_espinho1.png", 3, !1 ], [ "colide_espinho2.png", 3, !1 ] ], 
         this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.enemies = [ [ "et.png", 2, 300 ], [ "dinovoador.png", 1, .5 ] ], 
         this.setModel(0);
@@ -874,7 +886,26 @@ var Application = AbstractApplication.extend({
             this.levelCounter % 100 === 0 && this.maxVel < 15 && (this.onDash ? this.waitTuUp = !0 : (this.maxVel++, 
             this.vel = this.maxVel))), this._super();
             var i;
-            if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+            if (this.envArray) {
+                for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+                if (100 === this.levelCounter) {
+                    var chicken100 = new Chicken("100.png", this);
+                    chicken100.build(), chicken100.setPosition(windowWidth, windowHeight - 80 - chicken100.getContent().height), 
+                    this.addChild(chicken100);
+                } else if (200 === this.levelCounter) {
+                    var chicken200 = new Chicken("200.png", this);
+                    chicken200.build(), chicken200.setPosition(windowWidth, windowHeight - 80 - chicken200.getContent().height), 
+                    this.addChild(chicken200);
+                } else if (900 === this.levelCounter) {
+                    var chicken900 = new Chicken("900.png", this);
+                    chicken900.build(), chicken900.setPosition(windowWidth, windowHeight - 80 - chicken900.getContent().height), 
+                    this.addChild(chicken900);
+                } else if (this.levelCounter > 900 && this.levelCounter % 450 === 0) {
+                    var chickens = [ "abajo.png", "arriba.png", "aloca.png", "caramba.png" ], chickenRnd = new Chicken(chickens[Math.floor(chickens.length * Math.random())], this);
+                    chickenRnd.build(), chickenRnd.setPosition(windowWidth, windowHeight - 80 - chickenRnd.getContent().height), 
+                    this.addChild(chickenRnd), Math.random() < .5 && (chickenRnd.getContent().rotation = 180);
+                }
+            }
             if (this.gameOver) return void this.endModal.show(this.levelCounter);
             if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles(), 
             this.updateEnemies(), this.updateItens()), this.vel > this.maxVel && (this.vel -= this.accel, 
@@ -963,7 +994,7 @@ var Application = AbstractApplication.extend({
     },
     updateObstacles: function() {
         if (this.obstaclesAccum < 0) {
-            var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
+            var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
             this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0);
@@ -990,13 +1021,23 @@ var Application = AbstractApplication.extend({
                 this.addChild(particle2), particle2.velocity.x = -this.vel / 2;
             }
         } else this.particleAccum2--;
-        if (this.first.invencibleAccum > 0 && (this.vel = 1.1 * this.maxVel, this.first.invencibleAccum % 5 === 0)) {
-            var particle3 = new Particles({
-                x: -.3,
-                y: -(.2 * Math.random() + .3)
-            }, 50, "nacho.png", .05 * Math.random());
-            particle3.build(), particle3.setPosition(this.first.getPosition().x - this.first.getContent().width / 2 + Math.random() * this.first.getContent().width - 20, this.first.getPosition().y + this.first.getContent().height / 2 - 40 * Math.random()), 
-            particle3.velocity.x = -this.vel / 8, this.addChild(particle3);
+        if (this.first.invencibleAccum > 0) {
+            if (this.invencibleGraph.container.parent || (this.invencibleGraph.container.anchor.x = .5, 
+            this.invencibleGraph.container.anchor.y = 1, this.invencibleGraph.container.scale.y = .2, 
+            this.invencibleGraph.container.position.x = windowWidth / 2, this.invencibleGraph.container.position.y = windowHeight / 2 + 80, 
+            this.addChild(this.invencibleGraph.container), TweenLite.to(this.invencibleGraph.container.scale, 1, {
+                y: 1,
+                ease: "easeOutElastic"
+            })), this.vel = 1.1 * this.maxVel, this.first.invencibleAccum % 5 === 0) {
+                var particle3 = new Particles({
+                    x: -.3,
+                    y: -(.2 * Math.random() + .3)
+                }, 50, "nacho.png", .05 * Math.random());
+                particle3.build(), particle3.setPosition(this.first.getPosition().x - this.first.getContent().width / 2 + Math.random() * this.first.getContent().width - 20, this.first.getPosition().y + this.first.getContent().height / 2 - 40 * Math.random()), 
+                particle3.velocity.x = -this.vel / 8, this.addChild(particle3);
+            }
+        } else {
+            this.invencibleGraph.container.parent && this.invencibleGraph.container.parent.removeChild(this.invencibleGraph.container);
         }
     },
     initApplication: function() {
@@ -1064,7 +1105,7 @@ var Application = AbstractApplication.extend({
         }), this.container.alpha = 0, TweenLite.to(this.container, .3, {
             alpha: 1
         }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent()), 
-        this.endModal = new EndModal(this), this.addChild(this.endModal.getContent());
+        this.endModal = new EndModal(this), this.addChild(this.endModal.getContent()), this.invencibleGraph = new SimpleSprite("burning.png");
     },
     addListenners: function() {
         this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
@@ -1072,7 +1113,7 @@ var Application = AbstractApplication.extend({
         }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 80, 
         this.labelPoints.position.x = windowWidth - 80, this.labelPoints.setText(0);
         var self = this;
-        TweenLite.to(this.dino.getContent().position, 1.8, {
+        TweenLite.to(this.dino.getContent().position, 1.6, {
             x: -600,
             y: -500,
             ease: "easeInCubic",

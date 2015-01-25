@@ -1,6 +1,6 @@
 /*jshint undef:false */
 var Obstacle = Entity.extend({
-	init:function(type, source, brekeable){
+	init:function(type, source, brekeable, screen){
 		this._super( true );
 		this.updateable = false;
 		this.deading = false;
@@ -17,7 +17,7 @@ var Obstacle = Entity.extend({
 		this.velFactor = 1;
 		this.idType = type;
 		this.brekeable = brekeable;
-
+		this.screen = screen;
 	},
 	build: function(){
 
@@ -40,8 +40,9 @@ var Obstacle = Entity.extend({
 	collide:function(arrayCollide){
 		if(this.collidable){
 			if(arrayCollide[0].type === 'player' && arrayCollide[0].isFirst){
-				this.kill = this.brekeable;//preKill();
-				console.log(this.kill);
+				// this.kill = this.brekeable;//preKill();
+				// console.log(this.kill);
+				this.preKill();
 				// arrayCollide[0].preKill();
 				this.collidable = false;
 				arrayCollide[0].hurt(this.idType);
@@ -49,15 +50,24 @@ var Obstacle = Entity.extend({
 		}
 	},
 	preKill:function(){
-		if(this.collidable){
-			var self = this;
-			this.updateable = true;
-			this.collidable = false;
-			this.fall = true;
-			this.velocity = {x:0, y:0};
-			TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
-
+		for (var i = 5; i >= 0; i--) {
+			var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'hp.png', 0);
+	        particle3.build();
+	        particle3.setPosition(this.getPosition().x -this.getContent().width+ Math.random() * this.getContent().width,
+	            this.getPosition().y - Math.random() * 50);
+	        this.screen.addChild(particle3);
 		}
+		
+        // this.kill = true
+		// if(this.collidable){
+		var self = this;
+	// 	this.updateable = true;
+	// 	this.collidable = false;
+	// 	this.fall = true;
+	// 	this.velocity = {x:0, y:0};
+		TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
+
+		// }
 	},
 	pointDistance: function(x, y, x0, y0){
 		return Math.sqrt((x -= x0) * x + (y -= y0) * y);

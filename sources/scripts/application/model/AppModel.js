@@ -15,8 +15,8 @@ var AppModel = Class.extend({
 // 			new PlayerModel( 0.04,0.7,1.5,0.2,2)
 
 		this.playerModels = [
-			new PlayerModel( 0.04,0.8,2,1.15,1),
-			new PlayerModel( 0.04,0.7,1.5,1.2,2)
+			new PlayerModel( 0.04,0.8,2,0.15,1),
+			new PlayerModel( 0.04,0.7,1.5,0.2,2)
 		];
 
 		this.objects = [['ice1.png',1,true],
