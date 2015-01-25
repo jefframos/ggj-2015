@@ -17,7 +17,8 @@ var Particles = Entity.extend({
         this.power = 1;
         this.defaultVelocity = 1;
         this.imgSource = label;
-        
+        this.alphadecress = 0.03;
+        this.scaledecress = 0.03;
         if(rotation){
             this.rotation = rotation;
         }
@@ -44,15 +45,15 @@ var Particles = Entity.extend({
             this.getContent().rotation += this.rotation;
         }
 
-        if(this.sprite.alpha >= 0.03){
-            this.sprite.alpha -=0.03;
+        if(this.sprite.alpha >= this.alphadecres){
+            this.sprite.alpha -=this.alphadecres;
         }
 
         if(this.sprite.scale.x >= 1){
             return;
         }
-        this.sprite.scale.x +=0.03;
-        this.sprite.scale.y += 0.03;
+        this.sprite.scale.x += this.scaledecress;
+        this.sprite.scale.y += this.scaledecress;
     },
     preKill:function(){
         //this._super();

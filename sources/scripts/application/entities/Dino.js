@@ -37,14 +37,14 @@ var Dino = Entity.extend({
 		TweenLite.to(this.getContent(), 0.5, {alpha:1});
 
 		this.dinoMouth.position.x = 30;
-		this.dinoMouth.position.y = 250;
+		this.dinoMouth.position.y = 260;
 
 		function repeatTimeline(){
 			tl.restart();
 		}
 		var tl = new TimelineLite({onComplete:repeatTimeline});
-		tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: 0.1, ease:'easeInOutCubic'}));
-		tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: -0.1, ease:'easeInOutCubic'}));
+		tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: 0.2, ease:'easeInOutCubic'}));
+		tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: -0.2, ease:'easeInOutCubic'}));
 		// tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: 0, ease:'easeOutCubic'}));
 
 		function repeatTimeline2(){

@@ -92,7 +92,8 @@ var GameScreen = AbstractScreen.extend({
         }
 
         if(this.gameOver){
-            this.resetGame();
+            this.endModal.show();
+            // this.resetGame();
             return;
         }
         // if(!this.playerModel)
@@ -464,6 +465,10 @@ var GameScreen = AbstractScreen.extend({
 
         this.pauseModal = new PauseModal(this);
         this.addChild(this.pauseModal.getContent());
+
+        this.endModal = new EndModal(this);
+        this.addChild(this.endModal.getContent());
+
 
     },
     addListenners:function(){

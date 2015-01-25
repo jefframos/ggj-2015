@@ -276,8 +276,8 @@ SmartSocket.SOCKET_ERROR = "socketError";
 
 var Application = AbstractApplication.extend({
     init: function() {
-        this._super(windowWidth, windowHeight), this.stage.setBackgroundColor(12580351), 
-        this.stage.removeChild(this.loadText), this.isMobile = testMobile(), this.appContainer = document.getElementById("rect"), 
+        this._super(windowWidth, windowHeight), this.stage.setBackgroundColor(19784), this.stage.removeChild(this.loadText), 
+        this.isMobile = testMobile(), this.appContainer = document.getElementById("rect"), 
         this.id = parseInt(1e11 * Math.random()), this.gameModel = new AppModel();
     },
     update: function() {
@@ -304,7 +304,7 @@ var Application = AbstractApplication.extend({
         this.endGameScreen = new EndGameScreen("EndGame"), this.choicePlayerScreen = new ChoicePlayerScreen("Choice"), 
         this.screenManager.addScreen(this.waitScreen), this.screenManager.addScreen(this.gameScreen), 
         this.screenManager.addScreen(this.endGameScreen), this.screenManager.addScreen(this.choicePlayerScreen), 
-        this.screenManager.change("Game");
+        this.screenManager.change("Wait");
     },
     onAssetsLoaded: function() {
         this.initApplication();
@@ -471,15 +471,15 @@ var Application = AbstractApplication.extend({
         this.dinoContainer.addChild(this.dinohead), this.updateable = !0, this.collidable = !0, 
         this.getContent().alpha = 0, TweenLite.to(this.getContent(), .5, {
             alpha: 1
-        }), this.dinoMouth.position.x = 30, this.dinoMouth.position.y = 250;
+        }), this.dinoMouth.position.x = 30, this.dinoMouth.position.y = 260;
         var tl = new TimelineLite({
             onComplete: repeatTimeline
         });
         tl.append(TweenLite.to(this.dinoMouth, 2, {
-            rotation: .1,
+            rotation: .2,
             ease: "easeInOutCubic"
         })), tl.append(TweenLite.to(this.dinoMouth, 2, {
-            rotation: -.1,
+            rotation: -.2,
             ease: "easeInOutCubic"
         }));
         var tlBody = new TimelineLite({
@@ -825,7 +825,7 @@ var Application = AbstractApplication.extend({
             this._super();
             var i;
             if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-            if (this.gameOver) return void this.resetGame();
+            if (this.gameOver) return void this.endModal.show();
             if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
             this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
             this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
@@ -992,7 +992,8 @@ var Application = AbstractApplication.extend({
             onComplete: function() {
                 self.addListenners();
             }
-        }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent());
+        }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent()), 
+        this.endModal = new EndModal(this), this.addChild(this.endModal.getContent());
     },
     addListenners: function() {
         function tapLeft() {
@@ -1063,9 +1064,11 @@ var Application = AbstractApplication.extend({
     },
     build: function() {
         this._super();
-        var assetsToLoader = [ "dist/img/ease.png", "dist/img/atlas/atlas.json", "dist/img/UI/simpleButtonOver.png", "dist/img/UI/simpleButtonUp.png" ];
+        var assetsToLoader = [ "dist/img/atlas/splash.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
-        this.initLoad()) : this.onAssetsLoaded();
+        this.initLoad()) : this.onAssetsLoaded(), TweenLite.to(this.container, .5, {
+            alpha: 1
+        });
     },
     onProgress: function() {
         this._super();
@@ -1074,24 +1077,93 @@ var Application = AbstractApplication.extend({
         this.initApplication();
     },
     initApplication: function() {
-        this.easeImg = new SimpleSprite("dist/img/ease.png"), this.addChild(this.easeImg), 
-        this.easeImg.setPosition(windowWidth / 2 - this.easeImg.getContent().width / 2, 50);
+        function repeatTimeline() {
+            tl.restart();
+        }
+        function repeatTimeline2() {
+            tl2.restart();
+        }
+        function repeatTimeline3() {
+            tl3.restart();
+        }
+        this.bgImg = new SimpleSprite("splashBg.jpg"), this.addChild(this.bgImg), this.posImg = new SimpleSprite("pos.png"), 
+        this.addChild(this.posImg), this.logo = new SimpleSprite("logo.png"), this.addChild(this.logo), 
+        this.logo.setPosition(windowWidth / 2 - this.logo.getContent().width / 2, .05 * windowHeight);
         var self = this;
-        this.btnBenchmark = new DefaultButton("dist/img/UI/simpleButtonUp.png", "dist/img/UI/simpleButtonOver.png"), 
-        console.log(this.btnBenchmark.build), this.btnBenchmark.build(300, 100), this.btnBenchmark.setPosition(windowWidth / 2 - this.btnBenchmark.width / 2, windowHeight / 2), 
-        this.addChild(this.btnBenchmark), this.btnBenchmark.addLabel(new PIXI.Text("Jogar", {
-            align: "center",
-            font: "60px Arial",
-            wordWrap: !0,
-            wordWrapWidth: 300
-        }), 70, 15), this.btnBenchmark.clickCallback = function() {
-            self.screenManager.change("Choice");
-        }, possibleFullscreen() && (this.fullScreen = new DefaultButton("dist/img/UI/simpleButtonUp.png", "dist/img/UI/simpleButtonOver.png"), 
-        this.fullScreen.build(40, 20), this.fullScreen.setPosition(.95 * windowWidth - 20, .95 * windowHeight - 35), 
-        this.addChild(this.fullScreen), this.fullScreen.addLabel(new PIXI.Text("Full", {
-            font: "10px Arial"
-        }), 5, 5), this.fullScreen.clickCallback = function() {
-            fullscreen();
+        this.goButton = new DefaultButton("goButton.png", "goButtonOver.png"), this.goButton.build(300, 100), 
+        this.goButton.setPosition(windowWidth / 2 - this.goButton.width / 2, windowHeight / 2), 
+        this.addChild(this.goButton), this.goButton.clickCallback = function() {
+            clearInterval(self.interval), self.screenManager.change("Game");
+        }, this.creditsButton = new DefaultButton("creditsButton.png", "creditsButtonOver.png"), 
+        this.creditsButton.build(300, 100), this.creditsButton.setPosition(windowWidth / 2 - this.creditsButton.width / 2, windowHeight / 2 + 120), 
+        this.addChild(this.creditsButton), this.lights = new SimpleSprite("lights.png"), 
+        this.addChild(this.lights), this.lights.setPosition(windowWidth - .05 * this.lights.getContent().width + 80, 150);
+        var tl = new TimelineLite({
+            onComplete: repeatTimeline
+        });
+        this.lights.container.anchor.x = .95, this.lights.container.anchor.y = .05, tl.append(TweenLite.to(this.lights.container, 4, {
+            rotation: .2,
+            ease: "easeInOutCubic"
+        })), tl.append(TweenLite.to(this.lights.container, 8, {
+            rotation: -.2,
+            ease: "easeInOutCubic"
+        })), tl.append(TweenLite.to(this.lights.container, 4, {
+            rotation: 0,
+            ease: "easeInOutCubic"
+        })), this.frescura1 = new SimpleSprite("folhas1.png"), this.addChild(this.frescura1), 
+        this.frescura1.setPosition(50, windowHeight + 10);
+        var tl2 = new TimelineLite({
+            onComplete: repeatTimeline2
+        });
+        this.frescura1.container.anchor.y = 1, tl2.append(TweenLite.to(this.frescura1.container, 3, {
+            rotation: .2,
+            ease: "easeInOutCubic"
+        })), tl2.append(TweenLite.to(this.frescura1.container, 6, {
+            rotation: -.2,
+            ease: "easeInOutCubic"
+        })), tl2.append(TweenLite.to(this.frescura1.container, 3, {
+            rotation: 0,
+            ease: "easeInOutCubic"
+        })), this.frescura2 = new SimpleSprite("folhas2.png"), this.addChild(this.frescura2), 
+        this.frescura2.setPosition(.8 * windowWidth, windowHeight + 20);
+        var tl3 = new TimelineLite({
+            onComplete: repeatTimeline3
+        });
+        this.frescura2.container.anchor.x = .5, this.frescura2.container.anchor.y = 1, this.frescura2.container.scale.y = 1.5, 
+        tl3.append(TweenLite.to(this.frescura2.container, 3, {
+            rotation: .2,
+            ease: "easeInOutCubic"
+        })), tl3.append(TweenLite.to(this.frescura2.container, 6, {
+            rotation: -.2,
+            ease: "easeInOutCubic"
+        })), tl3.append(TweenLite.to(this.frescura2.container, 3, {
+            rotation: 0,
+            ease: "easeInOutCubic"
+        }));
+        for (var i = 8; i >= 0; i--) {
+            var particle = new Particles({
+                x: .3 - .6 * Math.random(),
+                y: -(.2 * Math.random() + .3)
+            }, 300 * Math.random() + 300, "particle.png", -.01);
+            particle.build(), particle.setPosition(windowWidth * Math.random(), (windowHeight - 80) * Math.random() + 80), 
+            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
+        }
+        this.interval = setInterval(function() {
+            var particle = new Particles({
+                x: .3 - .6 * Math.random(),
+                y: -(.2 * Math.random() + .3)
+            }, 300 * Math.random() + 300, "particle.png", -.01);
+            particle.build(), particle.setPosition(windowWidth * Math.random(), (windowHeight - 80) * Math.random() + 80), 
+            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
+        }, 900);
+    },
+    transitionOut: function(nextScreen, container) {
+        var self = this;
+        TweenLite.to(this.container, .5, {
+            alpha: 0,
+            onComplete: function() {
+                self.destroy(), container.removeChild(self.getContent()), nextScreen.transitionIn();
+            }
         });
     }
 }), EndModal = Class.extend({
@@ -1107,22 +1179,22 @@ var Application = AbstractApplication.extend({
             y: this.background.container.position.y
         };
         this.retryButton = new DefaultButton("retryButton.png", "retryButtonOver.png"), 
-        this.retryButton.build(), this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 193), 
+        this.retryButton.build(), this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 268), 
         this.boxContainer.addChild(this.retryButton.getContent());
         var self = this;
         this.retryButton.clickCallback = function() {
             self.hide(self.screen.resetGame());
-        }, this.continueButton = new DefaultButton("continueButton.png", "continueButtonOver.png"), 
-        this.continueButton.build(), this.continueButton.setPosition(bgPos.x + 135, bgPos.y + 288), 
-        this.boxContainer.addChild(this.continueButton.getContent()), this.continueButton.clickCallback = function() {
+        }, this.exitButton = new DefaultButton("exitButton.png", "exitButtonOver.png"), 
+        this.exitButton.build(), this.exitButton.setPosition(bgPos.x + 135, bgPos.y + 363), 
+        this.boxContainer.addChild(this.exitButton.getContent()), this.exitButton.clickCallback = function() {
             self.hide(function() {
-                self.screen.updateable = !0;
+                self.screen.screenManager.change("Wait");
             });
         }, this.pauseLabel = new SimpleSprite("pauseLabel.png"), this.boxContainer.addChild(this.pauseLabel.container), 
         this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91), this.boxContainer.position.y = 1.5 * -this.boxContainer.height;
     },
     show: function() {
-        TweenLite.to(this.bg, .5, {
+        this.screen.updateable = !1, TweenLite.to(this.bg, .5, {
             alpha: .8
         }), TweenLite.to(this.boxContainer.position, 1, {
             y: 0,
@@ -1320,7 +1392,8 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 40, this.width = 1, 
         this.height = 1, this.type = "fire", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = timeLive, 
-        this.power = 1, this.defaultVelocity = 1, this.imgSource = label, rotation && (this.rotation = rotation);
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = label, this.alphadecress = .03, 
+        this.scaledecress = .03, rotation && (this.rotation = rotation);
     },
     build: function() {
         this.updateable = !0, this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -1331,8 +1404,8 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.width, 
-        this.rotation && (this.getContent().rotation += this.rotation), this.sprite.alpha >= .03 && (this.sprite.alpha -= .03), 
-        this.sprite.scale.x >= 1 || (this.sprite.scale.x += .03, this.sprite.scale.y += .03);
+        this.rotation && (this.getContent().rotation += this.rotation), this.sprite.alpha >= this.alphadecres && (this.sprite.alpha -= this.alphadecres), 
+        this.sprite.scale.x >= 1 || (this.sprite.scale.x += this.scaledecress, this.sprite.scale.y += this.scaledecress);
     },
     preKill: function() {
         this.updateable = !0, this.kill = !0;

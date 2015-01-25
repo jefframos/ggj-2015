@@ -22,7 +22,7 @@ var EndModal = Class.extend({
 		var bgPos = {x:this.background.container.position.x, y:this.background.container.position.y};
 		this.retryButton = new DefaultButton('retryButton.png', 'retryButtonOver.png');
         this.retryButton.build();
-        this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 193);
+        this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 268);
         this.boxContainer.addChild(this.retryButton.getContent());
 
 		var self = this;
@@ -33,14 +33,14 @@ var EndModal = Class.extend({
             self.hide(self.screen.resetGame());
         };
 
-        this.continueButton = new DefaultButton('continueButton.png', 'continueButtonOver.png');
-        this.continueButton.build();
-        this.continueButton.setPosition(bgPos.x + 135, bgPos.y + 288);
-        this.boxContainer.addChild(this.continueButton.getContent());
-        // this.continueButton.addLabel(new PIXI.Text('<', {font:'40px Arial'}),5,5);
-        this.continueButton.clickCallback = function(){
+        this.exitButton = new DefaultButton('exitButton.png', 'exitButtonOver.png');
+        this.exitButton.build();
+        this.exitButton.setPosition(bgPos.x + 135, bgPos.y + 363);
+        this.boxContainer.addChild(this.exitButton.getContent());
+        // this.exitButton.addLabel(new PIXI.Text('<', {font:'40px Arial'}),5,5);
+        this.exitButton.clickCallback = function(){
             // self.screenManager.prevScreen();
-            self.hide(function(){self.screen.updateable = true;});
+            self.hide(function(){self.screen.screenManager.change('Wait');});
 
         };
 
@@ -52,6 +52,7 @@ var EndModal = Class.extend({
 
 	},
 	show:function(){
+		this.screen.updateable = false;
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});
 		TweenLite.to(this.boxContainer.position, 1, {y:0, ease:'easeOutBack'});
 		TweenLite.to(this.boxContainer, 0.5, {alpha:1});

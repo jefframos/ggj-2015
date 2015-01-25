@@ -3,7 +3,7 @@ var Application = AbstractApplication.extend({
 	init:function(){
 
         this._super(windowWidth, windowHeight);
-        this.stage.setBackgroundColor(0xBFF5FF);
+        this.stage.setBackgroundColor(0x004d48);
         // this.stage.setBackgroundColor(0xFF9387);
         this.stage.removeChild(this.loadText);
         this.isMobile = testMobile();
@@ -45,7 +45,7 @@ var Application = AbstractApplication.extend({
         this.screenManager.addScreen(this.gameScreen);
         this.screenManager.addScreen(this.endGameScreen);
         this.screenManager.addScreen(this.choicePlayerScreen);
-        this.screenManager.change('Game');
+        this.screenManager.change('Wait');
     },
     onAssetsLoaded:function()
     {
