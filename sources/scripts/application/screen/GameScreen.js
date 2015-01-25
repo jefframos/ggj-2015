@@ -9,12 +9,12 @@ var GameScreen = AbstractScreen.extend({
     build: function () {
         this._super();
 
-        this.textAcc = new PIXI.Text('', {font:'15px Arial'});
-        this.addChild(this.textAcc);
-        this.textAcc.position.y = 20;
-        this.textAcc.position.x = windowWidth - 150;
+        // this.textAcc = new PIXI.Text('', {font:'15px Arial'});
+        // // this.addChild(this.textAcc);
+        // this.textAcc.position.y = 20;
+        // this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = [];//'dist/img/atlas/cow.json',
+        var assetsToLoader = ['dist/img/pixel.jpg'];//'dist/img/atlas/cow.json',
         // 'dist/img/atlas/effects.json',
         // 'dist/img/atlas/pig.json',
         // 'dist/img/atlas/UI.json',
@@ -26,9 +26,10 @@ var GameScreen = AbstractScreen.extend({
 
         if(assetsToLoader.length > 0){
             this.loader = new PIXI.AssetLoader(assetsToLoader);
-            this.textAcc.setText(this.textAcc.text+'\ninitLoad');
+            // this.textAcc.setText(this.textAcc.text+'\ninitLoad');
             this.initLoad();
         }else{
+
             this.onAssetsLoaded();
         }
        
@@ -73,11 +74,12 @@ var GameScreen = AbstractScreen.extend({
     onProgress:function(){
 
         this._super();
-        this.textAcc.setText(this.loadPercent);
+        // this.textAcc.setText(this.loadPercent);
     },
     onAssetsLoaded:function()
     {
-        this.textAcc.setText(this.textAcc.text+'\nAssetsLoaded');
+        console.log('onAssetsLoaded');
+        // this.textAcc.setText(this.textAcc.text+'\nAssetsLoaded');
         this.initApplication();
     },
     update:function() {
@@ -306,8 +308,8 @@ var GameScreen = AbstractScreen.extend({
             this.layer.addChild(tempObstacles);
             tempObstacles.velFactor = 1;
             tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
-            this.obstaclesAccum = 200 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0);
-            this.itensAcum = 300;
+            
+            this.itensAcum = 300 + Math.random() * 500;
         }else{
             this.itensAcum --;
         }
@@ -322,7 +324,16 @@ var GameScreen = AbstractScreen.extend({
             bullet.build();
             bullet.setPosition(windowWidth, windowHeight * 0.05);
             this.layer.addChild(bullet);
-            this.enemiesAccum = 500;
+            var teste = this.levelCounter / 10;
+            if(teste > 1000){
+                teste = 200;
+            }else{
+                teste = this.levelCounter / 50;
+            }
+            if(teste > 200 ){
+                teste = 200;
+            }
+            this.enemiesAccum = 400 + Math.random() * 200 - teste;
         }else{
             this.enemiesAccum --;
         }
@@ -338,7 +349,16 @@ var GameScreen = AbstractScreen.extend({
             this.layer.addChild(tempObstacles);
             tempObstacles.velFactor = 1;
             tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
-            this.obstaclesAccum = 200 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0);
+            var teste = this.levelCounter / 10;
+            if(teste > 1000){
+                teste = 200;
+            }else{
+                teste = this.levelCounter / 50;
+            }
+            if(teste > 200 ){
+                teste = 200;
+            }
+            this.obstaclesAccum = 300 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0) - teste;
         }else{
             this.obstaclesAccum --;
         }
@@ -410,7 +430,7 @@ var GameScreen = AbstractScreen.extend({
     },
     initApplication:function(){
 
-
+        console.log('initApplication');
         if(this.hammer){
             this.hammer.off('swipeup');
 
@@ -422,7 +442,7 @@ var GameScreen = AbstractScreen.extend({
         
         this.obstaclesAccum = 300;
         this.enemiesAccum = 600;
-        this.itensAcum = 100;
+        this.itensAcum = 1300;
         this.waitTuUp = false;
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
@@ -575,7 +595,7 @@ var GameScreen = AbstractScreen.extend({
             self.pauseModal.show();
         };
 
-        this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
+        // this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
         this.dino = new Dino();
         this.dino.build();
@@ -627,6 +647,7 @@ var GameScreen = AbstractScreen.extend({
         // }, 1300);
     },
     addListenners:function(){
+        console.log('addListeners');
         this.vel = this.maxVel;
         this.levelCounter = 0;
         this.labelPoints = new PIXI.Text('', {font:'50px Arial', fill:'white'});
@@ -771,6 +792,6 @@ var GameScreen = AbstractScreen.extend({
         //     self.rightDown = false;
         // };
 
-        this.textAcc.setText(this.textAcc.text+'\nbuild');
+        // this.textAcc.setText(this.textAcc.text+'\nbuild');
     }
 });

@@ -846,21 +846,19 @@ var Application = AbstractApplication.extend({
         this._super();
     },
     build: function() {
-        this._super(), this.textAcc = new PIXI.Text("", {
-            font: "15px Arial"
-        }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [];
+        this._super();
+        var assetsToLoader = [ "dist/img/pixel.jpg" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
-        this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
-        this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
+        this.initLoad()) : this.onAssetsLoaded(), this.particleAccum = 50, this.particleAccum2 = 40, 
+        this.gameOver = !1;
         this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1, 
         this.levelCounter = 0, this.waitTuUp = !1;
     },
     onProgress: function() {
-        this._super(), this.textAcc.setText(this.loadPercent);
+        this._super();
     },
     onAssetsLoaded: function() {
-        this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
+        console.log("onAssetsLoaded"), this.initApplication();
     },
     update: function() {
         if (this.updateable) {
@@ -957,8 +955,7 @@ var Application = AbstractApplication.extend({
             var id = Math.floor(APP.getGameModel().itens.length * Math.random()), tempModel = APP.getGameModel().itens[id], tempObstacles = new Itens(tempModel[1], tempModel[0], tempModel[2]);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
-            this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0), 
-            this.itensAcum = 300;
+            this.itensAcum = 300 + 500 * Math.random();
         } else this.itensAcum--;
     },
     updateEnemies: function() {
@@ -967,16 +964,20 @@ var Application = AbstractApplication.extend({
                 x: Math.cos(angle) * bulletVel - this.vel / 2,
                 y: Math.sin(angle) * bulletVel
             }, this);
-            bullet.build(), bullet.setPosition(windowWidth, .05 * windowHeight), this.layer.addChild(bullet), 
-            this.enemiesAccum = 500;
+            bullet.build(), bullet.setPosition(windowWidth, .05 * windowHeight), this.layer.addChild(bullet);
+            var teste = this.levelCounter / 10;
+            teste = teste > 1e3 ? 200 : this.levelCounter / 50, teste > 200 && (teste = 200), 
+            this.enemiesAccum = 400 + 200 * Math.random() - teste;
         } else this.enemiesAccum--;
     },
     updateObstacles: function() {
         if (this.obstaclesAccum < 0) {
             var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this, tempModel[3]);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
-            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
-            this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0);
+            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80);
+            var teste = this.levelCounter / 10;
+            teste = teste > 1e3 ? 200 : this.levelCounter / 50, teste > 200 && (teste = 200), 
+            this.obstaclesAccum = 300 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0) - teste;
         } else this.obstaclesAccum--;
     },
     updateParticles: function() {
@@ -1021,11 +1022,12 @@ var Application = AbstractApplication.extend({
         }
     },
     initApplication: function() {
-        this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.obstaclesAccum = 300, this.enemiesAccum = 600, this.itensAcum = 100, this.waitTuUp = !1, 
-        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.maxVel = 6, this.maxDash = 7, this.vel = .8 * this.maxVel, this.envArray = [], 
-        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
+        console.log("initApplication"), this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), 
+        this.hammer.off("swipeleft")), this.obstaclesAccum = 300, this.enemiesAccum = 600, 
+        this.itensAcum = 1300, this.waitTuUp = !1, this.background = new SimpleSprite("sky.png"), 
+        this.addChild(this.background), this.accel = .1, this.maxVel = 6, this.maxDash = 7, 
+        this.vel = .8 * this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
+        this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .012, 
@@ -1064,8 +1066,7 @@ var Application = AbstractApplication.extend({
         this.pauseButton.build(), this.pauseButton.setPosition(windowWidth - 20 - this.pauseButton.width, -200), 
         this.addChild(this.pauseButton), this.pauseButton.clickCallback = function() {
             self.updateable = !1, self.pauseModal.show();
-        }, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.dino = new Dino(), 
-        this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
+        }, this.dino = new Dino(), this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
         this.dino.getContent().position.y = -200, this.first.spritesheet.position.x = this.firstPos - 500, 
         this.second.spritesheet.position.x = this.secondPos - 500, TweenLite.to(this.first.spritesheet.position, 1, {
             delay: .5,
@@ -1088,7 +1089,7 @@ var Application = AbstractApplication.extend({
         this.endModal = new EndModal(this), this.addChild(this.endModal.getContent()), this.invencibleGraph = new SimpleSprite("burning.png");
     },
     addListenners: function() {
-        this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
+        console.log("addListeners"), this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
             font: "50px Arial",
             fill: "white"
         }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 70, 
@@ -1141,7 +1142,7 @@ var Application = AbstractApplication.extend({
             self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
         }), document.body.addEventListener("keydown", function(e) {
             self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
-        }), this.textAcc.setText(this.textAcc.text + "\nbuild");
+        });
     }
 }), WaitScreen = AbstractScreen.extend({
     init: function(label) {
