@@ -562,26 +562,51 @@ var GameScreen = AbstractScreen.extend({
         var posHelper =  windowHeight * 0.05;
 
 
-        this.cowEnergyBar = new EnergyBar('energyBackBar.png', 'blueBar.png', 'cowFace.png');
+        this.cowEnergyBar = new EnergyBar('container_vaca.png', 'vida_vaca.png', 'cowFace.png');
         this.addChild(this.cowEnergyBar);
         this.cowEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,-70);
+        this.cowEnergyBar.frontShape.container.y = 10;
+        this.cowEnergyBar.frontShape.container.x = 40;
+
+        this.cowEnergyBar.icon.container.position.x = -50;
+        this.cowEnergyBar.icon.container.position.y = -29;
         
         // this.cowEnergyBar.setPosition(70,50);
 
-        this.pigEnergyBar = new EnergyBar('energyBackBar.png', 'blueBar.png', 'pigface.png');
+        this.pigEnergyBar = new EnergyBar('container_vaca.png', 'vida_pig.png', 'pigface.png');
         this.addChild(this.pigEnergyBar);
         this.pigEnergyBar.setPosition(70,-70);
+        this.pigEnergyBar.frontShape.container.y = 10;
+        this.pigEnergyBar.frontShape.container.x = 40;
 
+        this.pigEnergyBar.icon.container.position.x = -50;
+        this.pigEnergyBar.icon.container.position.y = -41;
         // this.pigEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20,50);
 
-        this.cowDashBar = new EnergyBar('dashBackBar.png', 'iceBar.png', 'dashIco2.png');
+        this.cowDashBar = new BarView(115, 12);
+        // this.cowDashBar = new EnergyBar('dashBackBar.png', 'power_vaca.png', 'dashIco2.png', true, true);
         this.addChild(this.cowDashBar);
-        this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,-120);
+        // this.cowDashBar.backShape.alpha = 0;
+        // this.cowDashBar.icon.alpha = 0;
+
+        this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 56,-80);
         // this.cowDashBar.setPosition(130,100);
 
-        this.pigDashBar = new EnergyBar('dashBackBar.png', 'goldBar.png', 'dashIco.png');
+
+        this.pigDashBar = new BarView(115, 12);
+        // this.cowDashBar = new EnergyBar('dashBackBar.png', 'power_vaca.png', 'dashIco2.png', true, true);
         this.addChild(this.pigDashBar);
-        this.pigDashBar.setPosition(130,-120);
+        // this.cowDashBar.backShape.alpha = 0;
+        // this.cowDashBar.icon.alpha = 0;
+
+        this.pigDashBar.setPosition(116,-80);
+
+        // this.pigDashBar = new EnergyBar('dashBackBar.png', 'power_pig.png', 'dashIco.png', true, true);
+        // this.addChild(this.pigDashBar);
+        // this.pigDashBar.backShape.alpha = 0;
+        // this.pigDashBar.icon.alpha = 0;
+
+        // this.pigDashBar.setPosition(80,-120);
         // this.pigDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80,100);
 
 
@@ -662,8 +687,8 @@ var GameScreen = AbstractScreen.extend({
         }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});
         TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
-        TweenLite.to(this.pigDashBar.getContent().position, 0.5, {delay:1.5, y:100, ease:'easeOutBack'});
-        TweenLite.to(this.cowDashBar.getContent().position, 0.5, {delay:1.7, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.pigDashBar.getContent().position, 0.5, {delay:1.5, y:90, ease:'easeOutBack'});
+        TweenLite.to(this.cowDashBar.getContent().position, 0.5, {delay:1.7, y:90, ease:'easeOutBack'});
         TweenLite.to(this.pigEnergyBar.getContent().position, 0.6, {delay:1.8,y:50, ease:'easeOutBack'});
         TweenLite.to(this.cowEnergyBar.getContent().position, 0.6, {delay:2.0, y:50, ease:'easeOutBack'});
         TweenLite.to(this.pauseButton.getContent().position, 0.8, {delay:2.2,y:20, ease:'easeOutBack'});

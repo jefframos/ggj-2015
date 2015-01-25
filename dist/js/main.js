@@ -350,21 +350,21 @@ var Application = AbstractApplication.extend({
         this.container.position.x = x, this.container.position.y = y;
     }
 }), EnergyBar = Class.extend({
-    init: function(backBar, bar, icoSrc) {
+    init: function(backBar, bar, icoSrc, hasIcon, hasBack) {
         this.container = new PIXI.DisplayObjectContainer(), this.barContainer = new PIXI.DisplayObjectContainer(), 
         this.backShape = new SimpleSprite(backBar), this.container.addChild(this.barContainer), 
-        this.barContainer.addChild(this.backShape.container), this.frontShape = new SimpleSprite(bar), 
-        this.barContainer.addChild(this.frontShape.container), this.frontShape.container.position.y = this.backShape.container.height / 2 - this.frontShape.container.height / 2, 
-        this.mask = new PIXI.Graphics(), this.mask.beginFill(65280), this.mask.drawRect(0, 0, this.backShape.container.width, this.backShape.container.height), 
+        hasBack || this.barContainer.addChild(this.backShape.container), this.frontShape = new SimpleSprite(bar), 
+        this.barContainer.addChild(this.frontShape.container), this.mask = new PIXI.Graphics(), 
+        this.mask.beginFill(65280), this.mask.drawRect(0, 0, this.backShape.container.width, this.backShape.container.height), 
         this.barContainer.addChild(this.mask), this.barContainer.mask = this.mask, this.icon = new SimpleSprite(icoSrc), 
         this.icon.container.position.y = this.backShape.container.height / 2 - this.icon.container.height / 2, 
-        this.icon.container.position.x = -this.icon.container.width / 2, this.container.addChild(this.icon.container), 
-        console.log(this.icon.container);
+        this.icon.container.position.x = -this.icon.container.width / 2, hasIcon || this.container.addChild(this.icon.container), 
+        console.log(this.icon.container), this.hasBack = hasBack;
     },
     updateBar: function(currentValue, maxValue) {
         if (this.currentValue !== currentValue || this.maxValue !== maxValue && currentValue >= 0) {
             this.currentValue = currentValue, this.maxValue = maxValue;
-            var tempW = this.frontShape.container.width, pos = -tempW + this.currentValue / this.maxValue * this.frontShape.container.width;
+            var tempW = this.frontShape.container.width, pos = -tempW + this.currentValue / this.maxValue * this.frontShape.container.width + 20;
             this.frontShape.container.position.x = pos;
         }
     },
@@ -399,7 +399,16 @@ var Application = AbstractApplication.extend({
         console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(arrayCollide[0].idType));
     },
     preKill: function() {
-        this.kill = !0, this.collidable = !1;
+        for (var i = 4; i >= 0; i--) {
+            var particle3 = new Particles({
+                x: -this.screen.vel * Math.random() - 3,
+                y: -(5 * Math.random() + 7)
+            }, 120, "nacho.png", .1 * Math.random());
+            particle3.build(), particle3.gravity = .2 + Math.random(), particle3.alphadecres = .08, 
+            particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + .1 * this.getContent().width) / 2, this.getPosition().y - 50 * Math.random() - this.getContent().width / 4), 
+            this.screen.addChild(particle3);
+        }
+        this.kill = !0;
     },
     pointDistance: function(x, y, x0, y0) {
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);
@@ -707,7 +716,7 @@ var Application = AbstractApplication.extend({
     }
 }), AppModel = Class.extend({
     init: function() {
-        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, .15, 1), new PlayerModel(.04, .7, 1.5, .2, 2) ], 
+        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, .34, 1), new PlayerModel(.04, .7, 1.5, .34, 2) ], 
         this.objects = [ [ "ice1.png", 1, !0, "particula_gelo.png" ], [ "ice2.png", 1, !0, "particula_gelo.png" ], [ "rock1.png", 2, !0, "particula_pedra.png" ], [ "rock2.png", 2, !0, "particula_pedra.png" ], [ "colide_cacto1.png", 3, !1, "particula_espinhos.png" ], [ "colide_cacto2.png", 3, !1, "particula_espinhos.png" ], [ "colide_espinho1.png", 3, !1, "particula_espinhos.png" ], [ "colide_espinho2.png", 3, !1, "particula_espinhos.png" ] ], 
         this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.enemies = [ [ "et.png", 2, 300 ], [ "dinovoador.png", 1, .5 ] ], 
         this.setModel(0);
@@ -1056,15 +1065,19 @@ var Application = AbstractApplication.extend({
         scale = scaleConverter(this.pig.getContent().height, windowHeight, .15), this.pig.setScale(scale, scale), 
         this.second = this.pig, this.gameOver = !1;
         var self = this;
-        this.cowEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "cowFace.png"), 
+        this.cowEnergyBar = new EnergyBar("container_vaca.png", "vida_vaca.png", "cowFace.png"), 
         this.addChild(this.cowEnergyBar), this.cowEnergyBar.setPosition(70 + this.cowEnergyBar.getContent().width + 20, -70), 
-        this.pigEnergyBar = new EnergyBar("energyBackBar.png", "blueBar.png", "pigface.png"), 
-        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70, -70), this.cowDashBar = new EnergyBar("dashBackBar.png", "iceBar.png", "dashIco2.png"), 
-        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, -120), 
-        this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(130, -120), this.pauseButton = new DefaultButton("pause.png", "pause.png"), 
-        this.pauseButton.build(), this.pauseButton.setPosition(windowWidth - 20 - this.pauseButton.width, -200), 
-        this.addChild(this.pauseButton), this.pauseButton.clickCallback = function() {
+        this.cowEnergyBar.frontShape.container.y = 10, this.cowEnergyBar.frontShape.container.x = 40, 
+        this.cowEnergyBar.icon.container.position.x = -50, this.cowEnergyBar.icon.container.position.y = -29, 
+        this.pigEnergyBar = new EnergyBar("container_vaca.png", "vida_pig.png", "pigface.png"), 
+        this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70, -70), this.pigEnergyBar.frontShape.container.y = 10, 
+        this.pigEnergyBar.frontShape.container.x = 40, this.pigEnergyBar.icon.container.position.x = -50, 
+        this.pigEnergyBar.icon.container.position.y = -41, this.cowDashBar = new BarView(115, 12), 
+        this.addChild(this.cowDashBar), this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 56, -80), 
+        this.pigDashBar = new BarView(115, 12), this.addChild(this.pigDashBar), this.pigDashBar.setPosition(116, -80), 
+        this.pauseButton = new DefaultButton("pause.png", "pause.png"), this.pauseButton.build(), 
+        this.pauseButton.setPosition(windowWidth - 20 - this.pauseButton.width, -200), this.addChild(this.pauseButton), 
+        this.pauseButton.clickCallback = function() {
             self.updateable = !1, self.pauseModal.show();
         }, this.dino = new Dino(), this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
         this.dino.getContent().position.y = -200, this.first.spritesheet.position.x = this.firstPos - 500, 
@@ -1112,11 +1125,11 @@ var Application = AbstractApplication.extend({
             ease: "easeOutCubic"
         }), TweenLite.to(this.pigDashBar.getContent().position, .5, {
             delay: 1.5,
-            y: 100,
+            y: 90,
             ease: "easeOutBack"
         }), TweenLite.to(this.cowDashBar.getContent().position, .5, {
             delay: 1.7,
-            y: 100,
+            y: 90,
             ease: "easeOutBack"
         }), TweenLite.to(this.pigEnergyBar.getContent().position, .6, {
             delay: 1.8,

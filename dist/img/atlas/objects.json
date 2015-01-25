@@ -92,11 +92,11 @@
 },
 "rock2.png":
 {
-	"frame": {"x":2,"y":1249,"w":330,"h":287},
+	"frame": {"x":2,"y":1249,"w":330,"h":230},
 	"rotated": false,
 	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":330,"h":287},
-	"sourceSize": {"w":330,"h":287},
+	"spriteSourceSize": {"x":0,"y":0,"w":330,"h":230},
+	"sourceSize": {"w":330,"h":230},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -104,8 +104,8 @@
 	"version": "1.0",
 	"image": "objects.png",
 	"format": "RGBA8888",
-	"size": {"w":403,"h":1538},
+	"size": {"w":403,"h":1481},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:b8b6f355a9a13017cd45cdb4b545e5b9:e557c341a04665e245e5a3ff202618da:8d6d12ff4d5234f2a4b19e0a906dbf52$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b2c1120d0f0f6e64267932039c786684:5805537de23e5313729c1cce3c906fef:8d6d12ff4d5234f2a4b19e0a906dbf52$"
 }
 }
