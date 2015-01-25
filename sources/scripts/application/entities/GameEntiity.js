@@ -4,7 +4,7 @@ var GameEntiity = SpritesheetEntity.extend({
         this.playerModel = playerModel;
         this._super( true );
         this.collidable = true;
-        this.range = 80;
+        this.range = 40;
         this.type = 'player';
     },
    
@@ -19,6 +19,22 @@ var GameEntiity = SpritesheetEntity.extend({
             this.velocity.y = this.upVel;
         }
 
+    },
+    hurt:function(type){
+        if(this.onDash && type === this.idType){
+            return;
+        }
+        else if(this.onDash){
+            this.playerModel.currentEnergy -= this.playerModel.maxEnergy * (this.playerModel.demage / 5);
+        }else{
+            this.playerModel.currentEnergy -= this.playerModel.maxEnergy * this.playerModel.demage;
+        }
+        if(this.playerModel.currentEnergy <= 0){
+            this.dead = true;
+            this.collidable = false;
+            this.velocity.x = -3;
+            // this.updateable = false;
+        }
     },
     dash:function(){
 
@@ -41,6 +57,9 @@ var GameEntiity = SpritesheetEntity.extend({
 
         this._super();
 
+        if(this.dead && this.getPosition().x < -80 ){
+            this.updateable = false;
+        }
         if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
             this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
         }

@@ -7,12 +7,16 @@ var AppModel = Class.extend({
 		// energy coast,
 		// bullet coast,
 		// vel,
-		// bullet vel,
+		// demage,
 		// bullet force
 
+
+// new PlayerModel( 0.04,0.8,2,0.15,1),
+// 			new PlayerModel( 0.04,0.7,1.5,0.2,2)
+
 		this.playerModels = [
-			new PlayerModel('vaca', 0.04,0.8,2,8,1),
-			new PlayerModel('feter.png', 0.04,0.7,1.5,4,2)
+			new PlayerModel( 0.04,0.8,2,1.15,1),
+			new PlayerModel( 0.04,0.7,1.5,1.2,2)
 		];
 		this.setModel(0);
 	},

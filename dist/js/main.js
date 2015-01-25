@@ -522,11 +522,15 @@ var Application = AbstractApplication.extend({
     update: function() {}
 }), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
-        this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 80, 
+        this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 40, 
         this.type = "player";
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
+    },
+    hurt: function(type) {
+        this.onDash && type === this.idType || (this.playerModel.currentEnergy -= this.onDash ? this.playerModel.maxEnergy * (this.playerModel.demage / 5) : this.playerModel.maxEnergy * this.playerModel.demage, 
+        this.playerModel.currentEnergy <= 0 && (this.dead = !0, this.collidable = !1, this.velocity.x = -3));
     },
     dash: function() {
         this.spritesheet.play("dash"), this.onDash = !0;
@@ -535,7 +539,8 @@ var Application = AbstractApplication.extend({
         this.inJump || (this.inJump = !0, this.velocity.y = -6);
     },
     update: function() {
-        return this._super(), this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
+        return this._super(), this.dead && this.getPosition().x < -80 && (this.updateable = !1), 
+        this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
         this.getPosition().x > windowWidth + 50 && this.preKill(), this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, 
         this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
         this.inJump = !1, this.spritesheet.play("idle")), void (this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
@@ -546,21 +551,23 @@ var Application = AbstractApplication.extend({
         this._super();
     }
 }), Obstacle = Entity.extend({
-    init: function(type, source) {
+    init: function(type, source, brekeable) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
-        this.velFactor = 1;
+        this.velFactor = 1, this.idType = type, this.brekeable = brekeable;
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
         this.sprite.anchor.y = 1, this.updateable = !0, this.collidable = !0;
     },
     update: function() {
-        this._super(), this.layer.collideChilds(this), this.range = this.width;
+        this._super(), this.layer.collideChilds(this), this.getPosition().x < -this.sprite.width && (this.kill = !0), 
+        this.range = this.sprite.width / 2;
     },
     collide: function(arrayCollide) {
-        console.log("fireCollide", arrayCollide[0]), this.collidable && "player" === arrayCollide[0].type && (this.kill = !0);
+        this.collidable && "player" === arrayCollide[0].type && (this.kill = this.brekeable, 
+        this.collidable = !1, arrayCollide[0].hurt(this.idType));
     },
     preKill: function() {
         if (this.collidable) {
@@ -598,7 +605,7 @@ var Application = AbstractApplication.extend({
         this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
         this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.rotation = 0, this.gravity = .2;
+        this.rotation = 0, this.gravity = .2, this.idType = 1;
     },
     dash: function(isFirst) {
         this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
@@ -635,7 +642,7 @@ var Application = AbstractApplication.extend({
         this.spritesheet.play("jumpUp"), this.screen = screen, this.floorPos = floorPos, 
         this.defaultVel = 50 * gameScale, this.upVel = this.playerModel.velocity * gameScale, 
         this.spritesheet.texture.anchor.x = .5, this.spritesheet.texture.anchor.y = .5, 
-        this.rotation = 0, this.gravity = .2;
+        this.rotation = 0, this.gravity = .2, this.idType = 2;
     },
     dash: function(isFirst) {
         this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashpig.png")), 
@@ -659,7 +666,7 @@ var Application = AbstractApplication.extend({
     }
 }), AppModel = Class.extend({
     init: function() {
-        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel("vaca", .04, .8, 2, 8, 1), new PlayerModel("feter.png", .04, .7, 1.5, 4, 2) ], 
+        this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, 1.15, 1), new PlayerModel(.04, .7, 1.5, 1.2, 2) ], 
         this.setModel(0);
     },
     setModel: function(id) {
@@ -669,12 +676,12 @@ var Application = AbstractApplication.extend({
     destroy: function() {},
     serialize: function() {}
 }), PlayerModel = Class.extend({
-    init: function(source, ecoast, bcoast, vel, bvel, bforce) {
+    init: function(ecoast, bcoast, vel, demage, bforce) {
         this.range = 40, this.maxEnergy = 100, this.maxBulletEnergy = 100, this.currentEnergy = 100, 
         this.currentBulletEnergy = 100, this.recoverBulletEnergy = .5, this.chargeBullet = 2, 
-        this.currentBulletForce = 100, this.recoverEnergy = .5, this.imgSource = source ? source : "piangersN.png", 
-        this.energyCoast = ecoast ? ecoast : .002, this.bulletCoast = bcoast ? bcoast : .2, 
-        this.velocity = vel ? vel : 2, this.bulletVel = bvel ? bvel : 8, this.bulletForce = bforce ? bforce : 1;
+        this.currentBulletForce = 100, this.recoverEnergy = .5, this.energyCoast = ecoast ? ecoast : .002, 
+        this.bulletCoast = bcoast ? bcoast : .2, this.velocity = vel ? vel : 2, this.demage = demage ? demage : .2, 
+        this.bulletForce = bforce ? bforce : 1;
     },
     reset: function() {
         this.currentEnergy = this.maxEnergy, this.currentBulletEnergy = this.maxBulletEnergy;
@@ -818,18 +825,27 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super(), (this.cowDashBar || this.pigDashBar) && (this.updateParticles(), 
-        this.updateObstacles()), this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
-        this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
-        this.second.onDash = !1));
+        this._super();
         var i;
         if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-        if (this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
-        this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
-        this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
-        this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
-        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
-        this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
+        if (!this.gameOver) {
+            if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
+            this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+            this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
+            this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
+            if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+            this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
+            this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
+            this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
+            this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+            this.first) {
+                if (this.first.dead && !this.second.dead) {
+                    var temp = this.first;
+                    this.first = this.second, this.second = temp;
+                }
+                this.first.dead && this.second.dead && (this.gameOver = !0);
+            }
+        }
     },
     dash: function() {
         if (!(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast)) {
@@ -844,16 +860,20 @@ var Application = AbstractApplication.extend({
         }
     },
     change: function() {
-        var temp = this.first;
-        this.first = this.second, this.second = temp, console.log(this.firstPos, this.secondPos);
-        this.first.getPosition().x;
-        TweenLite.to(this.first.spritesheet.position, .5, {
-            x: this.firstPos,
-            ease: "easeOutCubic"
-        }), TweenLite.to(this.second.spritesheet.position, .5, {
-            x: this.secondPos,
-            ease: "easeInCubic"
-        });
+        if (!this.first.dead && !this.second.dead) {
+            var temp = this.first;
+            this.first = this.second, this.second = temp;
+            {
+                this.first.getPosition().x;
+            }
+            TweenLite.to(this.first.spritesheet.position, .5, {
+                x: this.firstPos,
+                ease: "easeOutCubic"
+            }), TweenLite.to(this.second.spritesheet.position, .5, {
+                x: this.secondPos,
+                ease: "easeInCubic"
+            });
+        }
     },
     jump: function() {
         if (!this.onDash) {
@@ -867,7 +887,7 @@ var Application = AbstractApplication.extend({
     updateObstacles: function() {
         if (this.obstaclesAccum < 0) {
             this.obstaclesAccum = 200 + 20 * Math.random();
-            var tempObstacles = new Obstacle(1, "ice1.png");
+            var tempObstacles = new Obstacle(1, "ice1.png", !0);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80);
         } else this.obstaclesAccum--;
@@ -961,9 +981,15 @@ var Application = AbstractApplication.extend({
             self.rightDown || (self.rightDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
             self.tapAccum = 0);
         }
-        this.vel = this.maxVel, TweenLite.to(this.dino.getContent().position, 1.8, {
+        this.vel = this.maxVel;
+        var self = this;
+        TweenLite.to(this.dino.getContent().position, 1.8, {
             x: -600,
-            ease: "easeOutCubic"
+            y: -500,
+            ease: "easeOutCubic",
+            onComplete: function() {
+                self.dino.kill = !0;
+            }
         }), TweenLite.to(this.first.spritesheet.position, 1, {
             delay: .5,
             x: this.firstPos,
@@ -989,7 +1015,7 @@ var Application = AbstractApplication.extend({
             y: 100,
             ease: "easeOutBack"
         });
-        var self = this, swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
+        var swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
         hammer.add(swipe), hammer.on("swipeup", function() {
             self.jump();
         }), hammer.on("swiperight", function() {

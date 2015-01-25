@@ -80,6 +80,17 @@ var GameScreen = AbstractScreen.extend({
     },
     update:function() {
         this._super();
+
+        var i;
+        if(this.envArray){
+            for (i = this.envArray.length - 1; i >= 0; i--) {
+                this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+            }
+        }
+
+        if(this.gameOver){
+            return;
+        }
         // if(!this.playerModel)
         // {
         //     return;
@@ -101,12 +112,7 @@ var GameScreen = AbstractScreen.extend({
                 this.second.onDash = false;
             }
         }
-        var i;
-        if(this.envArray){
-            for (i = this.envArray.length - 1; i >= 0; i--) {
-                this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-            }
-        }
+       
         
         if(this.envObjects){
             for (i = this.envObjects.length - 1; i >= 0; i--) {
@@ -131,6 +137,17 @@ var GameScreen = AbstractScreen.extend({
         if(this.energyBar){
             this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
         }
+
+        if(this.first){
+            if(this.first.dead && !this.second.dead){
+                var temp = this.first;
+                this.first = this.second;
+                this.second = temp;
+            }
+            if(this.first.dead && this.second.dead){
+                this.gameOver = true;
+            }
+        }
         // this.textAcc.setText(this.childs.length);
     },
     dash:function(){
@@ -154,10 +171,13 @@ var GameScreen = AbstractScreen.extend({
         // }
     },
     change:function(){
+        if(this.first.dead || this.second.dead){
+            return;
+        }
         var temp = this.first;
         this.first = this.second;
         this.second = temp;
-        console.log(this.firstPos, this.secondPos);
+        // console.log(this.firstPos, this.secondPos);
         var tempPos = this.first.getPosition().x;
         // this.first.spritesheet.position.x = this.second.getPosition().x;
         // this.second.spritesheet.position.x = tempPos;
@@ -180,7 +200,7 @@ var GameScreen = AbstractScreen.extend({
     updateObstacles:function(){
         if(this.obstaclesAccum < 0){
             this.obstaclesAccum = 200 + Math.random() * 20;
-            var tempObstacles = new Obstacle(1, 'ice1.png');
+            var tempObstacles = new Obstacle(1, 'ice1.png', true);
             this.envObjects.push(tempObstacles);
             tempObstacles.build();
             this.layer.addChild(tempObstacles);
@@ -388,8 +408,10 @@ var GameScreen = AbstractScreen.extend({
     },
     addListenners:function(){
         this.vel = this.maxVel;
-
-        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, ease:'easeOutCubic'});
+        var self = this;
+        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, y: - 500, ease:'easeOutCubic', onComplete:function(){
+            self.dino.kill = true;
+        }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});
         TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
         TweenLite.to(this.cowEnergyBar.getContent().position, 0.8, {delay:0.2, y:50, ease:'easeOutBack'});
@@ -399,7 +421,6 @@ var GameScreen = AbstractScreen.extend({
 
 
 
-        var self = this;
         var swipe     = new Hammer.Swipe();
         var hammer    = new Hammer.Manager(renderer.view);
         hammer.add(swipe);

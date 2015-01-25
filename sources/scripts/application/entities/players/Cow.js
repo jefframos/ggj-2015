@@ -46,6 +46,7 @@ var Cow = GameEntiity.extend({
 		this.rotation = 0;
 
 		this.gravity = 0.2;
+		this.idType = 1;
 		// console.log(this.spritesheet.texture);
 	},
 	dash:function(isFirst){
