@@ -178,16 +178,16 @@ var GameScreen = AbstractScreen.extend({
             this.first.isFirst = true;
             this.second.isFirst = false;
         }
-        if(this.debugChildsText){
-            var k;
-            var j;
-            this.childsCounter = 0;
-            for (k = this.childs.length - 1; k >= 0; k--) {
-                this.recursiveCounter(this.childs[k]);
-                this.childsCounter ++;
-            }
-            this.debugChildsText.setText(this.childs.length + ' - ' + this.childsCounter);
-        }
+        // if(this.debugChildsText){
+        //     var k;
+        //     var j;
+        //     this.childsCounter = 0;
+        //     for (k = this.childs.length - 1; k >= 0; k--) {
+        //         this.recursiveCounter(this.childs[k]);
+        //         this.childsCounter ++;
+        //     }
+        //     this.debugChildsText.setText(this.childs.length + ' - ' + this.childsCounter);
+        // }
         // this.textAcc.setText(this.childs.length);
     },
     resetGame:function(){
@@ -553,23 +553,23 @@ var GameScreen = AbstractScreen.extend({
 
         
 
-        for (var i = 3; i >= 0; i--) {
-            var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
-            particle.build();
-            particle.setPosition(windowWidth * Math.random(),(windowHeight - 60));
-            // particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
-            particle.alphadecress = 0.01;
-            particle.scaledecress = Math.random();
-            self.addChild(particle);
-        }
-        this.interval = setInterval(function(){
-            var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
-            particle.build();
-            particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
-            particle.alphadecress = 0.01;
-            particle.scaledecress = Math.random();
-            self.addChild(particle);
-        }, 1300);
+        // for (var i = 3; i >= 0; i--) {
+        //     var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
+        //     particle.build();
+        //     particle.setPosition(windowWidth * Math.random(),(windowHeight - 60));
+        //     // particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
+        //     particle.alphadecress = 0.01;
+        //     particle.scaledecress = Math.random();
+        //     self.addChild(particle);
+        // }
+        // this.interval = setInterval(function(){
+        //     var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
+        //     particle.build();
+        //     particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
+        //     particle.alphadecress = 0.01;
+        //     particle.scaledecress = Math.random();
+        //     self.addChild(particle);
+        // }, 1300);
     },
     addListenners:function(){
         this.vel = this.maxVel;

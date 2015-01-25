@@ -894,12 +894,6 @@ var Application = AbstractApplication.extend({
                 this.first.dead && this.second.dead && (this.gameOver = !0), this.first.isFirst = !0, 
                 this.second.isFirst = !1;
             }
-            if (this.debugChildsText) {
-                var k;
-                for (this.childsCounter = 0, k = this.childs.length - 1; k >= 0; k--) this.recursiveCounter(this.childs[k]), 
-                this.childsCounter++;
-                this.debugChildsText.setText(this.childs.length + " - " + this.childsCounter);
-            }
         }
     },
     resetGame: function() {
@@ -1073,22 +1067,6 @@ var Application = AbstractApplication.extend({
             alpha: 1
         }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent()), 
         this.endModal = new EndModal(this), this.addChild(this.endModal.getContent());
-        for (var i = 3; i >= 0; i--) {
-            var particle = new Particles({
-                x: .3 - .6 * Math.random(),
-                y: -(.2 * Math.random() + .3)
-            }, 300 * Math.random() + 300, "particle.png", -.01);
-            particle.build(), particle.setPosition(windowWidth * Math.random(), windowHeight - 60), 
-            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
-        }
-        this.interval = setInterval(function() {
-            var particle = new Particles({
-                x: .3 - .6 * Math.random(),
-                y: -(.2 * Math.random() + .3)
-            }, 300 * Math.random() + 300, "particle.png", -.01);
-            particle.build(), particle.setPosition(windowWidth * Math.random(), (windowHeight - 80) * Math.random() + 80), 
-            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
-        }, 1300);
     },
     addListenners: function() {
         this.vel = this.maxVel, this.labelPoints = new PIXI.Text("", {
