@@ -245,6 +245,15 @@ var GameScreen = AbstractScreen.extend({
     },
     initApplication:function(){
 
+
+        if(this.hammer){
+            this.hammer.off('swipeup');
+
+            this.hammer.off('swiperight');
+
+            this.hammer.off('swipeleft');
+        }
+
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
 
@@ -426,24 +435,24 @@ var GameScreen = AbstractScreen.extend({
 
 
         var swipe     = new Hammer.Swipe();
-        var hammer    = new Hammer.Manager(renderer.view);
-        hammer.add(swipe);
+        this.hammer    = new Hammer.Manager(renderer.view);
+        this.hammer.add(swipe);
 
-        hammer.on('swipeup', function() {
+        this.hammer.on('swipeup', function() {
             if(self.gameOver){
                 return;
             }
             self.jump();
         });
 
-        hammer.on('swiperight', function() {
+        this.hammer.on('swiperight', function() {
             if(self.gameOver){
                 return;
             }
             self.dash();
         });
 
-        hammer.on('swipeleft', function() {
+        this.hammer.on('swipeleft', function() {
             if(self.gameOver){
                 return;
             }

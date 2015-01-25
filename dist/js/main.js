@@ -920,6 +920,7 @@ var Application = AbstractApplication.extend({
         } else this.particleAccum2--;
     },
     initApplication: function() {
+        this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
         this.maxVel = 7, this.vel = .5 * this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
         this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
@@ -1020,25 +1021,25 @@ var Application = AbstractApplication.extend({
             y: 100,
             ease: "easeOutBack"
         });
-        var swipe = new Hammer.Swipe(), hammer = new Hammer.Manager(renderer.view);
-        hammer.add(swipe), hammer.on("swipeup", function() {
-            self.jump();
-        }), hammer.on("swiperight", function() {
-            self.dash();
-        }), hammer.on("swipeleft", function() {
-            self.change();
+        var swipe = new Hammer.Swipe();
+        this.hammer = new Hammer.Manager(renderer.view), this.hammer.add(swipe), this.hammer.on("swipeup", function() {
+            self.gameOver || self.jump();
+        }), this.hammer.on("swiperight", function() {
+            self.gameOver || self.dash();
+        }), this.hammer.on("swipeleft", function() {
+            self.gameOver || self.change();
         }), document.body.addEventListener("keyup", function(e) {
-            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
+            self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
         }), document.body.addEventListener("keydown", function(e) {
-            87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
+            self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
         }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
-            tapLeft();
+            self.gameOver || tapLeft();
         }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {
-            self.leftDown = !1;
+            self.gameOver || (self.leftDown = !1);
         }, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
-            tapRight();
+            self.gameOver || tapRight();
         }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
-            self.rightDown = !1;
+            self.gameOver || (self.rightDown = !1);
         }, this.textAcc.setText(this.textAcc.text + "\nbuild");
     }
 }), WaitScreen = AbstractScreen.extend({
