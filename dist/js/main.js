@@ -950,7 +950,7 @@ var Application = AbstractApplication.extend({
             onComplete: function() {
                 self.addListenners();
             }
-        }), this.addListenners(), this.updateable = !0;
+        }), this.updateable = !0;
     },
     addListenners: function() {
         function tapLeft() {

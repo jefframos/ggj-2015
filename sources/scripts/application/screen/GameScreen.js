@@ -381,7 +381,7 @@ var GameScreen = AbstractScreen.extend({
             self.addListenners();
         }});
 
-        this.addListenners();
+        // this.addListenners();
 
         this.updateable = true;
 
