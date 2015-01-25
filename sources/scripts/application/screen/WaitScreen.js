@@ -18,7 +18,7 @@ var WaitScreen = AbstractScreen.extend({
         // 'dist/img/atlas/dino.json',
         // 'dist/img/atlas/objects.json',
         // 'dist/img/atlas/environment.json'];
-
+        console.log(this.loaded, 'loaded');
         var assetsToLoader = ['dist/img/atlas/splash.json',
         'dist/img/atlas/cow.json',
         'dist/img/atlas/effects.json',
@@ -28,9 +28,7 @@ var WaitScreen = AbstractScreen.extend({
         'dist/img/atlas/objects.json',
         'dist/img/atlas/enemies.json',
         'dist/img/atlas/environment.json'];
-        
-
-        if(assetsToLoader.length > 0){
+        if(assetsToLoader.length > 0 && !APP.loaded){
             this.loaderContainer = new PIXI.DisplayObjectContainer();
             this.loader = new PIXI.AssetLoader(assetsToLoader);
             this.initLoad();
@@ -70,6 +68,7 @@ var WaitScreen = AbstractScreen.extend({
     },
     onAssetsLoaded:function()
     {
+        APP.loaded = true;
         var self = this;
         if(this.loaderContainer){
             TweenLite.to(this.loaderView.container, 0.5, {alpha:0});
@@ -160,16 +159,15 @@ var WaitScreen = AbstractScreen.extend({
         //     self.screenManager.change('Choice');
         // };
 
-        // if(possibleFullscreen()){
-        //     this.fullScreen = new DefaultButton('dist/img/UI/simpleButtonUp.png', 'dist/img/UI/simpleButtonOver.png');
-        //     this.fullScreen.build(40, 20);
-        //     this.fullScreen.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 35);
-        //     this.addChild(this.fullScreen);
-        //     this.fullScreen.addLabel(new PIXI.Text('Full', {font:'10px Arial'}),5,5);
-        //     this.fullScreen.clickCallback = function(){
-        //         fullscreen();
-        //     };
-        // }
+        if(possibleFullscreen()){
+            this.fullScreen = new DefaultButton('full.png', 'full.png');
+            this.fullScreen.build();
+            this.fullScreen.setPosition( windowWidth - 20 - this.fullScreen.width, windowHeight  - 20 - this.fullScreen.height );
+            this.addChild(this.fullScreen);
+            this.fullScreen.clickCallback = function(){
+                fullscreen();
+            };
+        }
         for (var i = 8; i >= 0; i--) {
             var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
             particle.build();

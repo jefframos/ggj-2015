@@ -1031,9 +1031,9 @@ var Application = AbstractApplication.extend({
         }
     },
     initApplication: function() {
-        console.log("initApplication"), this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), 
-        this.hammer.off("swipeleft")), this.obstaclesAccum = 300, this.enemiesAccum = 600, 
-        this.itensAcum = 1300, this.waitTuUp = !1, this.background = new SimpleSprite("sky.png"), 
+        this.updateable = !0, console.log("initApplication"), this.hammer && (this.hammer.off("swipeup"), 
+        this.hammer.off("swiperight"), this.hammer.off("swipeleft")), this.obstaclesAccum = 300, 
+        this.enemiesAccum = 600, this.itensAcum = 1300, this.waitTuUp = !1, this.background = new SimpleSprite("sky.png"), 
         this.addChild(this.background), this.accel = .1, this.maxVel = 6, this.maxDash = 7, 
         this.vel = .8 * this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
         this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
@@ -1102,7 +1102,8 @@ var Application = AbstractApplication.extend({
         this.endModal = new EndModal(this), this.addChild(this.endModal.getContent()), this.invencibleGraph = new SimpleSprite("burning.png");
     },
     addListenners: function() {
-        console.log("addListeners"), this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
+        console.log("addListeners"), this.updateable = !0, this.vel = this.maxVel, this.levelCounter = 0, 
+        this.labelPoints = new PIXI.Text("", {
             font: "50px Arial",
             fill: "white"
         }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 70, 
@@ -1131,12 +1132,12 @@ var Application = AbstractApplication.extend({
             delay: 1.7,
             y: 90,
             ease: "easeOutBack"
-        }), TweenLite.to(this.pigEnergyBar.getContent().position, .6, {
-            delay: 1.8,
+        }), TweenLite.to(this.pigEnergyBar.getContent().position, .5, {
+            delay: 1.5,
             y: 50,
             ease: "easeOutBack"
-        }), TweenLite.to(this.cowEnergyBar.getContent().position, .6, {
-            delay: 2,
+        }), TweenLite.to(this.cowEnergyBar.getContent().position, .5, {
+            delay: 1.7,
             y: 50,
             ease: "easeOutBack"
         }), TweenLite.to(this.pauseButton.getContent().position, .8, {
@@ -1165,9 +1166,9 @@ var Application = AbstractApplication.extend({
         this._super();
     },
     build: function() {
-        this._super();
+        this._super(), console.log(this.loaded, "loaded");
         var assetsToLoader = [ "dist/img/atlas/splash.json", "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/enemies.json", "dist/img/atlas/environment.json" ];
-        assetsToLoader.length > 0 ? (this.loaderContainer = new PIXI.DisplayObjectContainer(), 
+        assetsToLoader.length > 0 && !APP.loaded ? (this.loaderContainer = new PIXI.DisplayObjectContainer(), 
         this.loader = new PIXI.AssetLoader(assetsToLoader), this.initLoad(), this.loaderView = new SimpleSprite("dist/img/loading.png"), 
         this.loaderView.setPosition(windowWidth / 2 - 232, windowHeight - 376), this.addChild(this.loaderView.container), 
         this.loaderViewBar = new SimpleSprite("dist/img/loading_barra.png"), this.loaderViewBar.container.position.x = -400, 
@@ -1183,6 +1184,7 @@ var Application = AbstractApplication.extend({
         this._super(), console.log(this.loadPercent), this.loaderViewBar.container.position.x = -377 + 377 * this.loadPercent;
     },
     onAssetsLoaded: function() {
+        APP.loaded = !0;
         var self = this;
         this.loaderContainer ? (TweenLite.to(this.loaderView.container, .5, {
             alpha: 0
@@ -1256,7 +1258,11 @@ var Application = AbstractApplication.extend({
         })), tl3.append(TweenLite.to(this.frescura2.container, 3, {
             rotation: 0,
             ease: "easeInOutCubic"
-        }));
+        })), possibleFullscreen() && (this.fullScreen = new DefaultButton("full.png", "full.png"), 
+        this.fullScreen.build(), this.fullScreen.setPosition(windowWidth - 20 - this.fullScreen.width, windowHeight - 20 - this.fullScreen.height), 
+        this.addChild(this.fullScreen), this.fullScreen.clickCallback = function() {
+            fullscreen();
+        });
         for (var i = 8; i >= 0; i--) {
             var particle = new Particles({
                 x: .3 - .6 * Math.random(),

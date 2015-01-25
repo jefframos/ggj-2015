@@ -30,6 +30,7 @@ var GameScreen = AbstractScreen.extend({
             this.initLoad();
         }else{
 
+            // this.initLoad();
             this.onAssetsLoaded();
         }
        
@@ -83,7 +84,7 @@ var GameScreen = AbstractScreen.extend({
         this.initApplication();
     },
     update:function() {
-        //console.log('update', this.updateable);
+        // console.log('update', this.updateable);
         if(!this.updateable){
             return;
         }
@@ -430,6 +431,7 @@ var GameScreen = AbstractScreen.extend({
     },
     initApplication:function(){
 
+        this.updateable = true;
         console.log('initApplication');
         if(this.hammer){
             this.hammer.off('swipeup');
@@ -673,6 +675,7 @@ var GameScreen = AbstractScreen.extend({
     },
     addListenners:function(){
         console.log('addListeners');
+        this.updateable = true;
         this.vel = this.maxVel;
         this.levelCounter = 0;
         this.labelPoints = new PIXI.Text('', {font:'50px Arial', fill:'white'});
@@ -689,8 +692,8 @@ var GameScreen = AbstractScreen.extend({
         TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
         TweenLite.to(this.pigDashBar.getContent().position, 0.5, {delay:1.5, y:90, ease:'easeOutBack'});
         TweenLite.to(this.cowDashBar.getContent().position, 0.5, {delay:1.7, y:90, ease:'easeOutBack'});
-        TweenLite.to(this.pigEnergyBar.getContent().position, 0.6, {delay:1.8,y:50, ease:'easeOutBack'});
-        TweenLite.to(this.cowEnergyBar.getContent().position, 0.6, {delay:2.0, y:50, ease:'easeOutBack'});
+        TweenLite.to(this.pigEnergyBar.getContent().position, 0.5, {delay:1.5,y:50, ease:'easeOutBack'});
+        TweenLite.to(this.cowEnergyBar.getContent().position, 0.5, {delay:1.7, y:50, ease:'easeOutBack'});
         TweenLite.to(this.pauseButton.getContent().position, 0.8, {delay:2.2,y:20, ease:'easeOutBack'});
 
 
