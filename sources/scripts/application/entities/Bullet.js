@@ -56,7 +56,8 @@ var Bullet = Entity.extend({
     collide:function(arrayCollide){
         if(this.collidable){
             if(arrayCollide[0].type === 'player' && arrayCollide[0].isFirst){
-                this.kill = true;//preKill();
+                // this.kill = true;//preKill();
+                this.preKill();
                 console.log(this.kill);
                 // arrayCollide[0].preKill();
                 this.collidable = false;
@@ -66,7 +67,7 @@ var Bullet = Entity.extend({
     },
     preKill:function(){
         for (var i = 4; i >= 0; i--) {
-            var particle3 = new Particles({x:-this.screen.vel * Math.random() - 3, y:-(Math.random() * 5 + 7)}, 120, 'nacho.png', Math.random() * 0.1);
+            var particle3 = new Particles({x:-this.screen.vel * Math.random() - 3, y:-(Math.random() * 5 + 7)}, 120, 'particula_pedra.png', Math.random() * 0.1);
             particle3.build();
             particle3.gravity = 0.2 + Math.random();
             particle3.alphadecres = 0.08;

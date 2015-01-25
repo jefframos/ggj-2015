@@ -395,7 +395,7 @@ var Application = AbstractApplication.extend({
         this.timeLive--, this.timeLive <= 0 && this.preKill();
     },
     collide: function(arrayCollide) {
-        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = !0, 
+        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.preKill(), 
         console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(arrayCollide[0].idType));
     },
     preKill: function() {
@@ -403,7 +403,7 @@ var Application = AbstractApplication.extend({
             var particle3 = new Particles({
                 x: -this.screen.vel * Math.random() - 3,
                 y: -(5 * Math.random() + 7)
-            }, 120, "nacho.png", .1 * Math.random());
+            }, 120, "particula_pedra.png", .1 * Math.random());
             particle3.build(), particle3.gravity = .2 + Math.random(), particle3.alphadecres = .08, 
             particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + .1 * this.getContent().width) / 2, this.getPosition().y - 50 * Math.random() - this.getContent().width / 4), 
             this.screen.addChild(particle3);
@@ -615,7 +615,7 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         this._super(), this.layer.collideChilds(this), this.getPosition().x < -this.sprite.width && (this.kill = !0), 
-        this.range = this.sprite.width / 2;
+        this.range = .95 * this.sprite.width;
     },
     collide: function(arrayCollide) {
         this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.preKill(), 
@@ -1215,8 +1215,9 @@ var Application = AbstractApplication.extend({
             clearInterval(self.interval), self.screenManager.change("Game");
         }, this.creditsButton = new DefaultButton("creditsButton.png", "creditsButtonOver.png"), 
         this.creditsButton.build(300, 100), this.creditsButton.setPosition(windowWidth / 2 - this.creditsButton.width / 2, windowHeight / 2 + 120), 
-        this.addChild(this.creditsButton), this.lights = new SimpleSprite("lights.png"), 
-        this.addChild(this.lights), this.lights.setPosition(windowWidth - .05 * this.lights.getContent().width + 80, 150);
+        this.addChild(this.creditsButton), this.creditsButton.clickCallback = function() {
+            self.creditsModal.show();
+        }, this.lights = new SimpleSprite("lights.png"), this.addChild(this.lights), this.lights.setPosition(windowWidth - .05 * this.lights.getContent().width + 80, 150);
         var tl = new TimelineLite({
             onComplete: repeatTimeline
         });
@@ -1278,7 +1279,8 @@ var Application = AbstractApplication.extend({
             }, 300 * Math.random() + 300, "particle.png", -.01);
             particle.build(), particle.setPosition(windowWidth * Math.random(), (windowHeight - 80) * Math.random() + 80), 
             particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
-        }, 900);
+        }, 900), this.creditsModal = new CreditsModal(this), this.addChild(this.creditsModal), 
+        this.creditsModal.hide();
     },
     transitionOut: function(nextScreen, container) {
         var self = this;
@@ -1288,6 +1290,51 @@ var Application = AbstractApplication.extend({
                 self.destroy(), container.removeChild(self.getContent()), nextScreen.transitionIn();
             }
         });
+    }
+}), CreditsModal = Class.extend({
+    init: function(screen) {
+        this.screen = screen, this.container = new PIXI.DisplayObjectContainer(), this.boxContainer = new PIXI.DisplayObjectContainer(), 
+        this.bg = new PIXI.Graphics(), this.bg.beginFill(19784), this.bg.drawRect(0, 0, windowWidth, windowHeight), 
+        this.bg.alpha = 0, this.container.addChild(this.bg), this.container.addChild(this.boxContainer), 
+        this.background = new SimpleSprite("credits.png"), this.boxContainer.addChild(this.background.container), 
+        this.background.container.position.x = windowWidth / 2 - this.background.getContent().width / 2, 
+        this.background.container.position.y = windowHeight / 2 - this.background.getContent().height / 2;
+        var bgPos = {
+            x: this.background.container.position.x + 70,
+            y: this.background.container.position.y + 14
+        }, self = this;
+        this.exitButton = new DefaultButton("close.png", "close.png"), this.exitButton.build(), 
+        this.exitButton.setPosition(bgPos.x + 815, bgPos.y - 28), this.boxContainer.addChild(this.exitButton.getContent()), 
+        this.exitButton.clickCallback = function() {
+            self.hide();
+        }, this.boxContainer.alpha = 0;
+    },
+    show: function() {
+        this.container.parent.setChildIndex(this.container, this.container.parent.children.length - 1), 
+        this.screen.updateable = !1, TweenLite.to(this.bg, .5, {
+            alpha: .8
+        }), TweenLite.to(this.boxContainer.position, 1, {
+            y: 0,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.boxContainer, .5, {
+            alpha: 1
+        });
+    },
+    hide: function(callback) {
+        TweenLite.to(this.bg, .5, {
+            alpha: 0,
+            onComplete: function() {
+                callback && callback();
+            }
+        }), TweenLite.to(this.boxContainer.position, 1, {
+            y: -this.boxContainer.height,
+            ease: "easeInBack"
+        }), TweenLite.to(this.boxContainer, .5, {
+            alpha: 0
+        });
+    },
+    getContent: function() {
+        return this.container;
     }
 }), EndModal = Class.extend({
     init: function(screen) {
@@ -1316,10 +1363,11 @@ var Application = AbstractApplication.extend({
         }, this.pauseLabel = new SimpleSprite("score.png"), this.boxContainer.addChild(this.pauseLabel.container), 
         this.pauseLabel.setPosition(bgPos.x + 185, bgPos.y + 101), this.boxContainer.position.y = 1.5 * -this.boxContainer.height, 
         this.points = new PIXI.Text("", {
-            font: "40px Arial",
+            font: "40px Arial Black",
             wordWrap: !0,
             wordWrapWidth: 200,
-            align: "center"
+            align: "center",
+            fill: "#78bb34"
         }), this.boxContainer.addChild(this.points), console.log(this.points), this.points.position.x = bgPos.x + 135 + this.retryButton.width / 2 - 50, 
         this.points.position.y = bgPos.y + 268 - 80;
     },

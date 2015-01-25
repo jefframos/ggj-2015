@@ -106,6 +106,9 @@ var WaitScreen = AbstractScreen.extend({
         this.creditsButton.build(300,100);
         this.creditsButton.setPosition( windowWidth / 2 - this.creditsButton.width / 2,windowHeight / 2 + 120);
         this.addChild(this.creditsButton);
+        this.creditsButton.clickCallback = function(){
+            self.creditsModal.show();
+        };
 
         this.lights = new SimpleSprite('lights.png');
         this.addChild(this.lights);
@@ -184,6 +187,11 @@ var WaitScreen = AbstractScreen.extend({
             particle.scaledecress = Math.random();
             self.addChild(particle);
         }, 900);
+
+        this.creditsModal = new CreditsModal(this);
+        this.addChild(this.creditsModal);
+        this.creditsModal.hide();
+        
     },
     transitionOut:function(nextScreen, container)
     {

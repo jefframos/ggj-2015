@@ -50,7 +50,7 @@ var EndModal = Class.extend({
 
 		this.boxContainer.position.y = -this.boxContainer.height * 1.5;
 
-		this.points = new PIXI.Text('', {font:'40px Arial', wordWrap:true, wordWrapWidth:200, align:'center'});
+		this.points = new PIXI.Text('', {font:'40px Arial Black', wordWrap:true, wordWrapWidth:200, align:'center', fill:'#78bb34'});
         this.boxContainer.addChild(this.points);
         console.log(this.points);
         this.points.position.x = bgPos.x + 135 + this.retryButton.width / 2 - 50;// - 100;// + this.boxContainer.width / 2 - this.points.width / 2;

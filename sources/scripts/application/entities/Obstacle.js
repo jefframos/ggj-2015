@@ -36,7 +36,7 @@ var Obstacle = Entity.extend({
 		if(this.getPosition().x < -this.sprite.width){
 			this.kill = true;
 		}
-		this.range = this.sprite.width / 2;
+		this.range = this.sprite.width * 0.95;
 	},
 	collide:function(arrayCollide){
 		if(this.collidable){
