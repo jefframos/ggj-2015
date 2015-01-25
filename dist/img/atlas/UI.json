@@ -2,7 +2,7 @@
 
 "backPauseModal.png":
 {
-	"frame": {"x":2,"y":890,"w":499,"h":486},
+	"frame": {"x":2,"y":598,"w":499,"h":486},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":499,"h":486},
@@ -11,7 +11,7 @@
 },
 "bacon.png":
 {
-	"frame": {"x":2,"y":681,"w":198,"h":207},
+	"frame": {"x":2,"y":389,"w":198,"h":207},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":207},
@@ -20,7 +20,7 @@
 },
 "blueBar.png":
 {
-	"frame": {"x":254,"y":2,"w":210,"h":17},
+	"frame": {"x":2,"y":21,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -29,7 +29,7 @@
 },
 "close.png":
 {
-	"frame": {"x":2,"y":301,"w":86,"h":78},
+	"frame": {"x":249,"y":301,"w":86,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":78},
@@ -38,7 +38,7 @@
 },
 "continueButton.png":
 {
-	"frame": {"x":249,"y":221,"w":245,"h":78},
+	"frame": {"x":2,"y":301,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -47,7 +47,7 @@
 },
 "continueButtonOver.png":
 {
-	"frame": {"x":90,"y":301,"w":245,"h":78},
+	"frame": {"x":249,"y":221,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -74,7 +74,7 @@
 },
 "dashIco.png":
 {
-	"frame": {"x":300,"y":87,"w":61,"h":52},
+	"frame": {"x":363,"y":87,"w":61,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
@@ -83,29 +83,11 @@
 },
 "dashIco2.png":
 {
-	"frame": {"x":363,"y":87,"w":61,"h":52},
+	"frame": {"x":300,"y":87,"w":61,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
 	"sourceSize": {"w":61,"h":52},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"dashpig.png":
-{
-	"frame": {"x":2,"y":531,"w":347,"h":148},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
-	"sourceSize": {"w":347,"h":148},
-	"pivot": {"x":0.5,"y":0.5}
-},
-"dashvaca.png":
-{
-	"frame": {"x":88,"y":381,"w":347,"h":148},
-	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
-	"sourceSize": {"w":347,"h":148},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "energyBackBar.png":
@@ -137,7 +119,7 @@
 },
 "jalapeno.png":
 {
-	"frame": {"x":202,"y":681,"w":198,"h":207},
+	"frame": {"x":202,"y":389,"w":198,"h":207},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":207},
@@ -146,7 +128,7 @@
 },
 "pause.png":
 {
-	"frame": {"x":337,"y":301,"w":86,"h":78},
+	"frame": {"x":337,"y":141,"w":86,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":78},
@@ -164,7 +146,7 @@
 },
 "pigface.png":
 {
-	"frame": {"x":2,"y":381,"w":84,"h":86},
+	"frame": {"x":337,"y":301,"w":84,"h":86},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":86},
@@ -173,7 +155,7 @@
 },
 "redBar.png":
 {
-	"frame": {"x":2,"y":21,"w":210,"h":17},
+	"frame": {"x":254,"y":2,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -182,7 +164,7 @@
 },
 "retryButton.png":
 {
-	"frame": {"x":2,"y":221,"w":245,"h":78},
+	"frame": {"x":90,"y":141,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -191,7 +173,7 @@
 },
 "retryButtonOver.png":
 {
-	"frame": {"x":90,"y":141,"w":245,"h":78},
+	"frame": {"x":2,"y":221,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -203,8 +185,8 @@
 	"version": "1.0",
 	"image": "UI.png",
 	"format": "RGBA8888",
-	"size": {"w":503,"h":1378},
+	"size": {"w":503,"h":1086},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c7d5cb68646b542cab1e1bd78a97f8ab:67aee76b071734a8d934655ad5b187a7:4b774b923918ecd961888279dba3ffad$"
+	"smartupdate": "$TexturePacker:SmartUpdate:fb2510482741ae9c8a8b91d7d4b4364f:7a21c9f696b3026a663e3776d5051d26:4b774b923918ecd961888279dba3ffad$"
 }
 }
