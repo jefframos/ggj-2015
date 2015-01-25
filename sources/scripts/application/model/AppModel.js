@@ -27,6 +27,10 @@ var AppModel = Class.extend({
 		['colide_cacto2.png',3,false],
 		['colide_espinho1.png',3,false],
 		['colide_espinho2.png',3,false]];
+
+		this.itens = [['jalapeno.png',2, 300],
+		['bacon.png',1, 0.2]];
+
 		this.setModel(0);
 	},
 	setModel:function(id){

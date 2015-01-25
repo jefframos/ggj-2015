@@ -1,6 +1,6 @@
 /*jshint undef:false */
 var Bullet = Entity.extend({
-    init:function(vel, timeLive){
+    init:function(vel, screen){
         this._super( true );
         this.updateable = false;
         this.deading = false;
@@ -13,10 +13,11 @@ var Bullet = Entity.extend({
         this.node = null;
         this.velocity.x = vel.x;
         this.velocity.y = vel.y;
-        this.timeLive = timeLive;
+        this.timeLive = 1000;
         this.power = 1;
         this.defaultVelocity = 1;
         this.imgSource = 'cow0001.png';
+        this.screen = screen;
 
     },
     build: function(){
@@ -34,8 +35,11 @@ var Bullet = Entity.extend({
     },
     update: function(){
         this._super();
-        this.velocity.x *= 1.01;
-        this.velocity.y *= 1.01;
+        if(this.screen){
+            this.velocity.x *= 1 + this.screen.vel / 1000;
+            this.velocity.y *= 1.01 + this.screen.vel / 1000;
+            // console.log( this.screen.vel / 50);
+        }
         this.layer.collideChilds(this);
         if(this.getPosition().y > windowHeight - 80){
             this.preKill();
@@ -50,13 +54,13 @@ var Bullet = Entity.extend({
         // }
     },
     collide:function(arrayCollide){
-        console.log('ENEMY BATEU AQUI', arrayCollide[0]);
         if(this.collidable){
-            if(arrayCollide[0].type === 'bird'){
-                console.log(arrayCollide[0].type);
+            if(arrayCollide[0].type === 'player' && arrayCollide[0].isFirst){
                 this.kill = true;//preKill();
-                arrayCollide[0].preKill();
-                // arrayCollide[0].hurt(this.power, this.fireType);
+                console.log(this.kill);
+                // arrayCollide[0].preKill();
+                this.collidable = false;
+                arrayCollide[0].hurt(arrayCollide[0].idType);
             }
         }
     },

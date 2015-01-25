@@ -92,8 +92,8 @@ var GameScreen = AbstractScreen.extend({
                 this.maxVel ++;
                 this.vel = this.maxVel;
             }
-            if(this.levelCounter % 100 === 0){
-                console.log(this.levelCounter % 100 && this.maxVel < 10);
+            if(this.levelCounter % 100 === 0  && this.maxVel < 15){
+                console.log(this.levelCounter % 100 && this.maxVel < 8);
                 if(this.onDash ){
                     this.waitTuUp = true;
                 }else{
@@ -101,6 +101,7 @@ var GameScreen = AbstractScreen.extend({
                     this.vel = this.maxVel;
                 }
             }
+            console.log(this.maxVel);
         }
         this._super();
 
@@ -124,6 +125,7 @@ var GameScreen = AbstractScreen.extend({
             this.updateParticles();
             this.updateObstacles();
             this.updateEnemies();
+            this.updateItens();
         }
 
         if(this.vel > this.maxVel){
@@ -223,6 +225,7 @@ var GameScreen = AbstractScreen.extend({
         this.leftDown = false;
         this.rightDown = false;
         this.first.dash(true);
+        this.first.invencibleAccum = 0;
         var self = this;
         setTimeout(function(){
             self.second.dash(false);
@@ -257,12 +260,29 @@ var GameScreen = AbstractScreen.extend({
         }, 400);
         // }
     },
+    updateItens:function(){
+        if(this.itensAcum < 0){
+            var id = Math.floor(APP.getGameModel().itens.length * Math.random());
+            var tempModel = APP.getGameModel().itens[id];
+            var tempObstacles = new Itens(tempModel[1], tempModel[0], tempModel[2]);
+            this.envObjects.push(tempObstacles);
+            tempObstacles.build();
+            this.layer.addChild(tempObstacles);
+            tempObstacles.velFactor = 1;
+            tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
+            this.obstaclesAccum = 200 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0);
+            this.itensAcum = 1000;
+        }else{
+            this.itensAcum --;
+        }
+    },
     updateEnemies:function(){
         if(this.enemiesAccum < 0){
-            var angle = (70 + Math.random()* 70) * Math.PI / 180;
-            var bulletVel = 7;
+            var angle = (30 + Math.random()* 70) * Math.PI / 180;
+            console.log('AGULO', angle);
+            var bulletVel = 2;
             var bullet = new Bullet({x:Math.cos(angle) * bulletVel - this.vel/2,
-                y:Math.sin(angle) * bulletVel});
+                y:Math.sin(angle) * bulletVel}, this);
             bullet.build();
             //UTILIZAR O ANGULO PARA CALCULAR A POSIÇÃO CORRETA DO TIRO
             bullet.setPosition(windowWidth, windowHeight * 0.05);
@@ -318,6 +338,21 @@ var GameScreen = AbstractScreen.extend({
             this.particleAccum2 --;
         }
 
+        if(this.first.invencibleAccum > 0 ){
+            // console.log('cade a bbbbb', this.invencibleAccum % 5);
+            this.vel = this.maxVel * 1.1;
+            if(this.first.invencibleAccum % 5 === 0){
+                // console.log('cade a porra');
+
+                var particle3 = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'nacho.png', Math.random()*0.05);
+                particle3.build();
+                particle3.setPosition(this.first.getPosition().x - this.first.getContent().width /2 + Math.random() * this.first.getContent().width - 20,
+                    this.first.getPosition().y + this.first.getContent().height / 2 - Math.random() * 40);
+                particle3.velocity.x = -this.vel/8;
+                this.addChild(particle3);
+
+            }
+        }
         
     },
     initApplication:function(){
@@ -333,7 +368,8 @@ var GameScreen = AbstractScreen.extend({
 
         this.levelCounter = 0;
         this.obstaclesAccum = 200;
-        this.enemiesAccum = 200;
+        this.enemiesAccum = 600;
+        this.itensAcum = 1200;
         this.waitTuUp = false;
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
@@ -344,7 +380,7 @@ var GameScreen = AbstractScreen.extend({
         this.debugChildsText.position.x = windowWidth - 350;
 
         this.accel = 0.1;
-        this.maxVel = 7;
+        this.maxVel = 6;
         this.maxDash = 7;
         this.vel = this.maxVel * 0.5;
         this.envArray = [];

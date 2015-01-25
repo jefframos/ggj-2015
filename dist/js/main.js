@@ -375,11 +375,11 @@ var Application = AbstractApplication.extend({
         this.container.position.x = x, this.container.position.y = y;
     }
 }), Bullet = Entity.extend({
-    init: function(vel, timeLive) {
+    init: function(vel, screen) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
-        this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = timeLive, 
-        this.power = 1, this.defaultVelocity = 1, this.imgSource = "cow0001.png";
+        this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = 1e3, 
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = "cow0001.png", this.screen = screen;
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -389,13 +389,13 @@ var Application = AbstractApplication.extend({
         });
     },
     update: function() {
-        this._super(), this.velocity.x *= 1.01, this.velocity.y *= 1.01, this.layer.collideChilds(this), 
-        this.getPosition().y > windowHeight - 80 && this.preKill(), this.timeLive--, this.timeLive <= 0 && this.preKill(), 
-        this.range = this.width;
+        this._super(), this.screen && (this.velocity.x *= 1 + this.screen.vel / 1e3, this.velocity.y *= 1.01 + this.screen.vel / 1e3), 
+        this.layer.collideChilds(this), this.getPosition().y > windowHeight - 80 && this.preKill(), 
+        this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.width;
     },
     collide: function(arrayCollide) {
-        console.log("ENEMY BATEU AQUI", arrayCollide[0]), this.collidable && "bird" === arrayCollide[0].type && (console.log(arrayCollide[0].type), 
-        this.kill = !0, arrayCollide[0].preKill());
+        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = !0, 
+        console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(arrayCollide[0].idType));
     },
     preKill: function() {
         if (this.collidable) {
@@ -521,13 +521,17 @@ var Application = AbstractApplication.extend({
 }), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 40, 
-        this.type = "player", this.isFirst = !1;
+        this.type = "player", this.isFirst = !1, this.particles = [];
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
     },
+    effect: function(type, value) {
+        1 === type ? (this.playerModel.currentEnergy += this.playerModel.maxEnergy * value, 
+        this.playerModel.currentEnergy > this.playerModel.maxEnergy && (this.playerModel.currentEnergy = this.playerModel.maxEnergy)) : 2 === type && (this.invencibleAccum = value);
+    },
     hurt: function(type) {
-        if (!this.onDash || type !== this.idType) {
+        if (!(this.onDash && type === this.idType || this.invencibleAccum > 0)) {
             if (this.onDash) {
                 var val = this.playerModel.maxEnergy * (this.playerModel.demage / 5);
                 this.playerModel.currentEnergy -= val, this.playerModel.currentEnergy <= val && (this.playerModel.currentEnergy = val);
@@ -544,14 +548,54 @@ var Application = AbstractApplication.extend({
     update: function() {
         return this._super(), this.dead && this.getPosition().x < -80 && (this.updateable = !1), 
         this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy - this.playerModel.recoverBulletEnergy && (this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy), 
-        this.getPosition().x > windowWidth + 50 && this.preKill(), this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, 
-        this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
+        this.invencibleAccum > 0 && this.invencibleAccum--, this.getPosition().x > windowWidth + 50 && this.preKill(), 
+        this.onDash ? void (this.velocity.y = 0) : (this.velocity.y += this.gravity, this.getPosition().y + this.velocity.y >= this.floorPos && (this.velocity.y = 0, 
         this.inJump = !1, this.spritesheet.play("idle")), void (this.velocity.y < 0 && "jumpUp" !== this.spritesheet.currentAnimation.label ? (console.log("jumpUp"), 
         this.spritesheet.play("jumpUp")) : this.velocity.y > 0 && "jumpDown" !== this.spritesheet.currentAnimation.label && (console.log("jumpDown"), 
         this.spritesheet.play("jumpDown"))));
     },
     destroy: function() {
         this._super();
+    }
+}), Itens = Entity.extend({
+    init: function(type, source, value) {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
+        this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
+        this.velFactor = 1, this.idType = type, this.value = value;
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
+        this.sprite.anchor.y = 1, this.updateable = !0, this.collidable = !0;
+    },
+    update: function() {
+        this._super(), this.layer.collideChilds(this), this.getPosition().x < -this.sprite.width && (this.kill = !0), 
+        this.range = this.sprite.width / 2;
+    },
+    collide: function(arrayCollide) {
+        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = !0, 
+        console.log(this.kill), this.collidable = !1, arrayCollide[0].effect(this.idType, this.value));
+    },
+    preKill: function() {
+        if (this.collidable) {
+            var self = this;
+            this.updateable = !0, this.collidable = !1, this.fall = !0, this.velocity = {
+                x: 0,
+                y: 0
+            }, TweenLite.to(this.getContent(), .3, {
+                alpha: 0,
+                onComplete: function() {
+                    self.kill = !0;
+                }
+            });
+        }
+    },
+    pointDistance: function(x, y, x0, y0) {
+        return Math.sqrt((x -= x0) * x + (y -= y0) * y);
+    },
+    touch: function(collection) {
+        collection.object && "environment" === collection.object.type && collection.object.fireCollide(), 
+        this.preKill();
     }
 }), Obstacle = Entity.extend({
     init: function(type, source, brekeable) {
@@ -671,7 +715,7 @@ var Application = AbstractApplication.extend({
     init: function() {
         this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, 1.15, 1), new PlayerModel(.04, .7, 1.5, 1.2, 2) ], 
         this.objects = [ [ "ice1.png", 1, !0 ], [ "ice2.png", 1, !0 ], [ "rock1.png", 2, !0 ], [ "rock2.png", 2, !0 ], [ "colide_cacto1.png", 3, !1 ], [ "colide_cacto2.png", 3, !1 ], [ "colide_espinho1.png", 3, !1 ], [ "colide_espinho2.png", 3, !1 ] ], 
-        this.setModel(0);
+        this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.setModel(0);
     },
     setModel: function(id) {
         this.currentID = id, this.currentPlayerModel = this.playerModels[id];
@@ -827,15 +871,16 @@ var Application = AbstractApplication.extend({
         if (this.updateable) {
             this.labelPoints && (this.levelCounter++, this.labelPoints.setText(Math.floor(this.levelCounter)), 
             this.waitTuUp && !this.onDash && (this.waitTuUp = !1, this.maxVel++, this.vel = this.maxVel), 
-            this.levelCounter % 100 === 0 && (console.log(this.levelCounter % 100 && this.maxVel < 10), 
-            this.onDash ? this.waitTuUp = !0 : (this.maxVel++, this.vel = this.maxVel))), this._super();
+            this.levelCounter % 100 === 0 && this.maxVel < 15 && (console.log(this.levelCounter % 100 && this.maxVel < 8), 
+            this.onDash ? this.waitTuUp = !0 : (this.maxVel++, this.vel = this.maxVel)), console.log(this.maxVel)), 
+            this._super();
             var i;
             if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             if (this.gameOver) return void this.endModal.show();
             if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles(), 
-            this.updateEnemies()), this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
-            this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
-            this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
+            this.updateEnemies(), this.updateItens()), this.vel > this.maxVel && (this.vel -= this.accel, 
+            this.onDash && (this.vel -= 5 * this.accel), this.vel < this.maxVel && (this.vel = this.maxVel, 
+            this.onDash = !1, this.first.onDash = !1, this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
             if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
             this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
             this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
@@ -872,7 +917,7 @@ var Application = AbstractApplication.extend({
             this.first.playerModel.currentBulletEnergy -= this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast, 
             this.first.playerModel.currentBulletEnergy < 0 && (this.first.playerModel.currentBulletEnergy = 0), 
             this.vel = 6 * this.maxDash, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
-            this.first.dash(!0);
+            this.first.dash(!0), this.first.invencibleAccum = 0;
             var self = this;
             setTimeout(function() {
                 self.second.dash(!1);
@@ -904,12 +949,23 @@ var Application = AbstractApplication.extend({
             }, 400);
         }
     },
+    updateItens: function() {
+        if (this.itensAcum < 0) {
+            var id = Math.floor(APP.getGameModel().itens.length * Math.random()), tempModel = APP.getGameModel().itens[id], tempObstacles = new Itens(tempModel[1], tempModel[0], tempModel[2]);
+            this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
+            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
+            this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0), 
+            this.itensAcum = 1e3;
+        } else this.itensAcum--;
+    },
     updateEnemies: function() {
         if (this.enemiesAccum < 0) {
-            var angle = (70 + 70 * Math.random()) * Math.PI / 180, bulletVel = 7, bullet = new Bullet({
+            var angle = (30 + 70 * Math.random()) * Math.PI / 180;
+            console.log("AGULO", angle);
+            var bulletVel = 2, bullet = new Bullet({
                 x: Math.cos(angle) * bulletVel - this.vel / 2,
                 y: Math.sin(angle) * bulletVel
-            });
+            }, this);
             bullet.build(), bullet.setPosition(windowWidth, .05 * windowHeight), this.layer.addChild(bullet), 
             this.enemiesAccum = 500;
         } else this.enemiesAccum--;
@@ -938,14 +994,23 @@ var Application = AbstractApplication.extend({
                 this.addChild(particle2), particle2.velocity.x = -this.vel / 2;
             }
         } else this.particleAccum2--;
+        if (this.first.invencibleAccum > 0 && (this.vel = 1.1 * this.maxVel, this.first.invencibleAccum % 5 === 0)) {
+            var particle3 = new Particles({
+                x: -.3,
+                y: -(.2 * Math.random() + .3)
+            }, 50, "nacho.png", .05 * Math.random());
+            particle3.build(), particle3.setPosition(this.first.getPosition().x - this.first.getContent().width / 2 + Math.random() * this.first.getContent().width - 20, this.first.getPosition().y + this.first.getContent().height / 2 - 40 * Math.random()), 
+            particle3.velocity.x = -this.vel / 8, this.addChild(particle3);
+        }
     },
     initApplication: function() {
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.levelCounter = 0, this.obstaclesAccum = 200, this.enemiesAccum = 200, this.waitTuUp = !1, 
-        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.debugChildsText = new PIXI.Text("", {
+        this.levelCounter = 0, this.obstaclesAccum = 200, this.enemiesAccum = 600, this.itensAcum = 1200, 
+        this.waitTuUp = !1, this.background = new SimpleSprite("sky.png"), this.addChild(this.background), 
+        this.debugChildsText = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.debugChildsText), this.debugChildsText.position.y = 20, this.debugChildsText.position.x = windowWidth - 350, 
-        this.accel = .1, this.maxVel = 7, this.maxDash = 7, this.vel = .5 * this.maxVel, 
+        this.accel = .1, this.maxVel = 6, this.maxDash = 7, this.vel = .5 * this.maxVel, 
         this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
         this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 

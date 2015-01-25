@@ -7,6 +7,7 @@ var GameEntiity = SpritesheetEntity.extend({
         this.range = 40;
         this.type = 'player';
         this.isFirst = false;
+        this.particles = [];
     },
    
     setTarget:function(pos){
@@ -21,8 +22,18 @@ var GameEntiity = SpritesheetEntity.extend({
         }
 
     },
+    effect:function(type, value){
+        if(type === 1){
+            this.playerModel.currentEnergy += this.playerModel.maxEnergy * value;
+            if(this.playerModel.currentEnergy > this.playerModel.maxEnergy){
+                this.playerModel.currentEnergy = this.playerModel.maxEnergy;
+            }
+        }else if(type === 2){
+            this.invencibleAccum = value;
+        }
+    },
     hurt:function(type){
-        if(this.onDash && type === this.idType){
+        if(this.onDash && type === this.idType ||  this.invencibleAccum > 0){
             return;
         }
         else if(this.onDash){
@@ -41,6 +52,7 @@ var GameEntiity = SpritesheetEntity.extend({
             this.velocity.x = -3;
             // this.updateable = false;
         }
+
     },
     dash:function(){
 
@@ -69,6 +81,30 @@ var GameEntiity = SpritesheetEntity.extend({
         if(this.playerModel && this.playerModel.currentBulletEnergy <= this.playerModel.maxBulletEnergy -this.playerModel.recoverBulletEnergy) {
             this.playerModel.currentBulletEnergy += this.playerModel.recoverBulletEnergy;
         }
+
+        if(this.invencibleAccum > 0 ){
+            // console.log('cade a bbbbb', this.invencibleAccum % 5);
+
+            // if(this.invencibleAccum % 5 === 0){
+            //     // console.log('cade a porra');
+
+            //     var particle = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'particle.png', 0);
+            //     particle.build();
+            //     particle.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
+            //         this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
+            //     this.getContent().parent.addChild(particle.getContent());
+            //     particle.velocity.x = -this.getContent().parent.vel/2;
+            //     particle.alphadecress = 0.01;
+            //     particle.scaledecress = Math.random();
+            //     this.particles.push(particle);
+
+            // }
+            this.invencibleAccum --;
+        }
+
+        // for (var i = this.particles.length - 1; i >= 0; i--) {
+        //     this.particles[i].update();
+        // }
         // this.spritesheet.texture.anchor.x = 0.5;
         // this.spritesheet.texture.anchor.y = 0;
         
