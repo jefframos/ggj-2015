@@ -4,7 +4,7 @@ var Bullet = Entity.extend({
         this._super( true );
         this.updateable = false;
         this.deading = false;
-        this.range = 80;
+        this.range = 100;
         this.width = 1;
         this.height = 1;
         this.type = 'bullet';
@@ -48,7 +48,7 @@ var Bullet = Entity.extend({
         if(this.timeLive <= 0){
             this.preKill();
         }
-        this.range = this.height;
+        // this.range = this.height;
         // if(this.fall){
         //     this.velocity.y -= 0.1;
         // }

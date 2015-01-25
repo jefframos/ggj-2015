@@ -19,14 +19,14 @@ var AppModel = Class.extend({
 			new PlayerModel( 0.04,0.7,1.5,0.2,2)
 		];
 
-		this.objects = [['ice1.png',1,true, 'bacon.png'],
-		['ice2.png',1,true, 'bacon.png'],
-		['rock1.png',2,true, 'bacon.png'],
-		['rock2.png',2,true, 'bacon.png'],
-		['colide_cacto1.png',3,false, 'bacon.png'],
-		['colide_cacto2.png',3,false, 'bacon.png'],
-		['colide_espinho1.png',3,false, 'bacon.png'],
-		['colide_espinho2.png',3,false, 'bacon.png']];
+		this.objects = [['ice1.png',1,true, 'particula_gelo.png'],
+		['ice2.png',1,true, 'particula_gelo.png'],
+		['rock1.png',2,true, 'particula_pedra.png'],
+		['rock2.png',2,true, 'particula_pedra.png'],
+		['colide_cacto1.png',3,false, 'particula_espinhos.png'],
+		['colide_cacto2.png',3,false, 'particula_espinhos.png'],
+		['colide_espinho1.png',3,false, 'particula_espinhos.png'],
+		['colide_espinho2.png',3,false, 'particula_espinhos.png']];
 
 		this.itens = [['jalapeno.png',2, 300],
 		['bacon.png',1, 0.2]];

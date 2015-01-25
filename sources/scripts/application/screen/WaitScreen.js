@@ -19,25 +19,66 @@ var WaitScreen = AbstractScreen.extend({
         // 'dist/img/atlas/objects.json',
         // 'dist/img/atlas/environment.json'];
 
-        var assetsToLoader = ['dist/img/atlas/splash.json'];
-
+        var assetsToLoader = ['dist/img/atlas/splash.json',
+        'dist/img/atlas/cow.json',
+        'dist/img/atlas/effects.json',
+        'dist/img/atlas/pig.json',
+        'dist/img/atlas/UI.json',
+        'dist/img/atlas/dino.json',
+        'dist/img/atlas/objects.json',
+        'dist/img/atlas/enemies.json',
+        'dist/img/atlas/environment.json'];
+        
 
         if(assetsToLoader.length > 0){
+            this.loaderContainer = new PIXI.DisplayObjectContainer();
             this.loader = new PIXI.AssetLoader(assetsToLoader);
             this.initLoad();
+            this.loaderView = new SimpleSprite('dist/img/loading.png');
+            this.loaderView.setPosition(windowWidth / 2 - 464/2, windowHeight - 376);
+            this.addChild(this.loaderView.container);
+
+            this.loaderViewBar = new SimpleSprite('dist/img/loading_barra.png');
+            this.loaderViewBar.container.position.x = - 400;
+            // this.loaderViewBar.setPosition(windowWidth / 2 - 464/2 + 54, windowHeight - 376 + 251);
+            this.loaderContainer.addChild(this.loaderViewBar.container);
+
+            this.loaderContainer.position.x = windowWidth / 2 - 464/2 + 54;
+            this.loaderContainer.position.y = windowHeight - 376 + 251;
+            this.addChild(this.loaderContainer);
+
+            this.mask = new PIXI.Graphics();
+            this.mask.beginFill(0x00FF00);
+            this.mask.drawRect(0,0,377, 69);
+            this.loaderContainer.addChild(this.mask);
+            this.loaderContainer.mask = this.mask;
+
+
         }else{
             this.onAssetsLoaded();
         }
 
         TweenLite.to(this.container, 0.5, {alpha:1});
+
+
          
     },
     onProgress:function(){
         this._super();
+        console.log(this.loadPercent);
+        this.loaderViewBar.container.position.x = -377 +  377* (this.loadPercent);
     },
     onAssetsLoaded:function()
     {
-        this.initApplication();
+        var self = this;
+        if(this.loaderContainer){
+            TweenLite.to(this.loaderView.container, 0.5, {alpha:0});
+            TweenLite.to(this.loaderContainer, 0.5, {alpha:0, onComplete:function(){
+                self.initApplication();
+            }});
+        }else{
+            this.initApplication();
+        }
     },
     initApplication:function(){
         this.bgImg = new SimpleSprite('splashBg.jpg');

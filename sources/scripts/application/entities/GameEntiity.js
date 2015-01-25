@@ -31,8 +31,9 @@ var GameEntiity = SpritesheetEntity.extend({
             }
             var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'hp.png', 0);
             particle3.build();
-            particle3.setPosition(this.getPosition().x - this.getContent().width /2 + Math.random() * this.getContent().width,
-                this.getPosition().y + this.getContent().height / 2 - Math.random() * 40);
+            particle3.setPosition(this.getPosition().x,
+                this.getPosition().y - Math.random() * 50);
+            particle3.alphadecres = 0.05;
             // particle3.velocity.x = -this.getContent().parent.vel/8;
             // console.log(this.getContent().parent);
             this.screen.addChild(particle3);
@@ -55,14 +56,24 @@ var GameEntiity = SpritesheetEntity.extend({
             return;
         }
         else if(this.onDash){
-            var val = this.playerModel.maxEnergy * (this.playerModel.demage / 5);
-            this.playerModel.currentEnergy -= val;
-            if(this.playerModel.currentEnergy <= val){
-                this.playerModel.currentEnergy = val;
-            }
+            // var val = this.playerModel.maxEnergy * (this.playerModel.demage / 5);
+            // this.playerModel.currentEnergy -= val;
+            // if(this.playerModel.currentEnergy <= val){
+            //     this.playerModel.currentEnergy = val;
+            // }
 
         }else{
             this.playerModel.currentEnergy -= this.playerModel.maxEnergy * this.playerModel.demage;
+
+            var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'ouch.png', 0);
+            particle3.build();
+            particle3.setPosition(this.getPosition().x,
+                this.getPosition().y - Math.random() * 50);
+            particle3.alphadecres = 0.1;
+
+            // particle3.velocity.x = -this.getContent().parent.vel/8;
+            // console.log(this.getContent().parent);
+            this.screen.addChild(particle3);
         }
         if(this.playerModel.currentEnergy <= 0){
             this.dead = true;

@@ -44,9 +44,9 @@ var EndModal = Class.extend({
 
         };
 
-        this.pauseLabel = new SimpleSprite('pauseLabel.png');
+        this.pauseLabel = new SimpleSprite('score.png');
 		this.boxContainer.addChild(this.pauseLabel.container);
-        this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91);
+        this.pauseLabel.setPosition(bgPos.x + 185, bgPos.y + 101);
 
 		this.boxContainer.position.y = -this.boxContainer.height * 1.5;
 
@@ -59,10 +59,21 @@ var EndModal = Class.extend({
 
 	},
 	show:function(points){
+		var tempI = points;
+		if(points < 10){
+			tempI = '000' + points;
+		}
+		else if(points < 100){
+			tempI = '00' + points;
+		}
+		else if(points < 1000){
+			tempI = '0' + points;
+		}
+
 		// console.log(points,'pointspointspointspointspointspointspointspointspointspointspointspointspoints');
 		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
 
-		this.points.setText(points);
+		this.points.setText(tempI);
 		this.screen.updateable = false;
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});
 		TweenLite.to(this.boxContainer.position, 1, {y:0, ease:'easeOutBack'});

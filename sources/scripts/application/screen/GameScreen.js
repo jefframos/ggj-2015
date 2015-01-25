@@ -14,14 +14,14 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.y = 20;
         this.textAcc.position.x = windowWidth - 150;
 
-        var assetsToLoader = ['dist/img/atlas/cow.json',
-        'dist/img/atlas/effects.json',
-        'dist/img/atlas/pig.json',
-        'dist/img/atlas/UI.json',
-        'dist/img/atlas/dino.json',
-        'dist/img/atlas/objects.json',
-        'dist/img/atlas/enemies.json',
-        'dist/img/atlas/environment.json'];
+        var assetsToLoader = [];//'dist/img/atlas/cow.json',
+        // 'dist/img/atlas/effects.json',
+        // 'dist/img/atlas/pig.json',
+        // 'dist/img/atlas/UI.json',
+        // 'dist/img/atlas/dino.json',
+        // 'dist/img/atlas/objects.json',
+        // 'dist/img/atlas/enemies.json',
+        // 'dist/img/atlas/environment.json'];
 
 
         if(assetsToLoader.length > 0){
@@ -320,7 +320,6 @@ var GameScreen = AbstractScreen.extend({
             var bullet = new Bullet({x:Math.cos(angle) * bulletVel - this.vel/2,
                 y:Math.sin(angle) * bulletVel}, this);
             bullet.build();
-            //UTILIZAR O ANGULO PARA CALCULAR A POSIÇÃO CORRETA DO TIRO
             bullet.setPosition(windowWidth, windowHeight * 0.05);
             this.layer.addChild(bullet);
             this.enemiesAccum = 500;
@@ -393,6 +392,7 @@ var GameScreen = AbstractScreen.extend({
 
                 var particle3 = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'nacho.png', Math.random()*0.05);
                 particle3.build();
+                particle3.alphadecres = 0.09;
                 particle3.setPosition(this.first.getPosition().x - this.first.getContent().width /2 + Math.random() * this.first.getContent().width - 20,
                     this.first.getPosition().y + this.first.getContent().height / 2 - Math.random() * 40);
                 particle3.velocity.x = -this.vel/8;
@@ -603,7 +603,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.endModal = new EndModal(this);
         this.addChild(this.endModal.getContent());
-        // this.endModal.show(50);
+        // this.endModal.show(500);
 
         this.invencibleGraph = new SimpleSprite('burning.png');
 

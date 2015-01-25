@@ -57,7 +57,7 @@ var Obstacle = Entity.extend({
 	        particle3.gravity = 0.2 + Math.random();
 	        particle3.alphadecres = 0.08;
 	        particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + this.getContent().width * 0.1) / 2,
-	            this.getPosition().y - Math.random() * 50);
+	            this.getPosition().y - Math.random() * 50 - this.getContent().width / 4);
 	        this.screen.addChild(particle3);
 		}
 		this.kill = true;
