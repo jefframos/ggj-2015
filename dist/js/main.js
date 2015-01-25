@@ -392,7 +392,7 @@ var Application = AbstractApplication.extend({
     update: function() {
         this._super(), this.screen && (this.velocity.x *= 1 + this.screen.vel / 1e3, this.velocity.y *= 1.01 + this.screen.vel / 1e3), 
         this.layer.collideChilds(this), this.getPosition().y > windowHeight && this.preKill(), 
-        this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.width;
+        this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.height;
     },
     collide: function(arrayCollide) {
         this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = !0, 
@@ -625,21 +625,15 @@ var Application = AbstractApplication.extend({
         this.collidable = !1, arrayCollide[0].hurt(this.idType));
     },
     preKill: function() {
-        for (var i = 5; i >= 0; i--) {
+        for (var i = 4; i >= 0; i--) {
             var particle3 = new Particles({
-                x: -.3,
-                y: -(1 * Math.random() + .3)
+                x: -this.screen.vel * Math.random() - 3,
+                y: -(5 * Math.random() + 2)
             }, 120, "hp.png", 0);
-            particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width + Math.random() * this.getContent().width, this.getPosition().y - 50 * Math.random()), 
+            particle3.build(), particle3.gravity = .1, particle3.alphadecres = .1, particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + .1 * this.getContent().width) / 2, this.getPosition().y - 50 * Math.random()), 
             this.screen.addChild(particle3);
         }
-        var self = this;
-        TweenLite.to(this.getContent(), .3, {
-            alpha: 0,
-            onComplete: function() {
-                self.kill = !0;
-            }
-        });
+        this.kill = !0;
     },
     pointDistance: function(x, y, x0, y0) {
         return Math.sqrt((x -= x0) * x + (y -= y0) * y);
@@ -881,26 +875,26 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         if (this.updateable) {
-            this.labelPoints && (this.levelCounter++, this.labelPoints.setText(Math.floor(this.levelCounter)), 
+            this.labelPoints && (this.levelCounter++, this.labelPoints.setText(Math.floor(this.levelCounter / 10)), 
             this.waitTuUp && !this.onDash && (this.waitTuUp = !1, this.maxVel++, this.vel = this.maxVel), 
             this.levelCounter % 100 === 0 && this.maxVel < 15 && (this.onDash ? this.waitTuUp = !0 : (this.maxVel++, 
             this.vel = this.maxVel))), this._super();
             var i;
             if (this.envArray) {
                 for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-                if (100 === this.levelCounter) {
+                if (this.levelCounter / 10 === 100) {
                     var chicken100 = new Chicken("100.png", this);
                     chicken100.build(), chicken100.setPosition(windowWidth, windowHeight - 80 - chicken100.getContent().height), 
                     this.addChild(chicken100);
-                } else if (200 === this.levelCounter) {
+                } else if (this.levelCounter / 10 === 200) {
                     var chicken200 = new Chicken("200.png", this);
                     chicken200.build(), chicken200.setPosition(windowWidth, windowHeight - 80 - chicken200.getContent().height), 
                     this.addChild(chicken200);
-                } else if (900 === this.levelCounter) {
+                } else if (this.levelCounter / 10 === 900) {
                     var chicken900 = new Chicken("900.png", this);
                     chicken900.build(), chicken900.setPosition(windowWidth, windowHeight - 80 - chicken900.getContent().height), 
                     this.addChild(chicken900);
-                } else if (this.levelCounter > 900 && this.levelCounter % 450 === 0) {
+                } else if (this.levelCounter / 10 > 900 && this.levelCounter / 10 % 450 === 0) {
                     var chickens = [ "abajo.png", "arriba.png", "aloca.png", "caramba.png" ], chickenRnd = new Chicken(chickens[Math.floor(chickens.length * Math.random())], this);
                     chickenRnd.build(), chickenRnd.setPosition(windowWidth, windowHeight - 80 - chickenRnd.getContent().height), 
                     this.addChild(chickenRnd), Math.random() < .5 && (chickenRnd.getContent().rotation = 180);
@@ -1308,6 +1302,7 @@ var Application = AbstractApplication.extend({
         this.points.position.y = bgPos.y + 268 - 80;
     },
     show: function(points) {
+        this.container.parent.setChildIndex(this.container, this.container.parent.children.length - 1), 
         this.points.setText(points), this.screen.updateable = !1, TweenLite.to(this.bg, .5, {
             alpha: .8
         }), TweenLite.to(this.boxContainer.position, 1, {
@@ -1361,6 +1356,7 @@ var Application = AbstractApplication.extend({
         this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91), this.boxContainer.position.y = 1.5 * -this.boxContainer.height;
     },
     show: function() {
+        this.container.parent.setChildIndex(this.container, this.container.parent.children.length - 1), 
         TweenLite.to(this.bg, .5, {
             alpha: .8
         }), TweenLite.to(this.boxContainer.position, 1, {
@@ -1507,7 +1503,7 @@ var Application = AbstractApplication.extend({
         this.height = 1, this.type = "fire", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = timeLive, 
         this.power = 1, this.defaultVelocity = 1, this.imgSource = label, this.alphadecress = .03, 
-        this.scaledecress = .03, rotation && (this.rotation = rotation);
+        this.scaledecress = .03, this.gravity = 0, rotation && (this.rotation = rotation);
     },
     build: function() {
         this.updateable = !0, this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -1517,9 +1513,11 @@ var Application = AbstractApplication.extend({
         });
     },
     update: function() {
-        this._super(), this.timeLive--, this.timeLive <= 0 && this.preKill(), this.range = this.width, 
-        this.rotation && (this.getContent().rotation += this.rotation), this.sprite.alpha >= this.alphadecres && (this.sprite.alpha -= this.alphadecres), 
-        this.sprite.scale.x >= 1 || (this.sprite.scale.x += this.scaledecress, this.sprite.scale.y += this.scaledecress);
+        this._super(), 0 !== this.gravity && (this.velocity.y += this.gravity), this.timeLive--, 
+        this.timeLive <= 0 && this.preKill(), this.range = this.width, this.rotation && (this.getContent().rotation += this.rotation), 
+        this.sprite.alpha >= this.alphadecres && (this.sprite.alpha -= this.alphadecres, 
+        this.sprite.alpha <= 0 && (this.kill = !0)), this.sprite.scale.x >= 1 || (this.sprite.scale.x += this.scaledecress, 
+        this.sprite.scale.y += this.scaledecress);
     },
     preKill: function() {
         this.updateable = !0, this.kill = !0;

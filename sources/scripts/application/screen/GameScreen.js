@@ -87,7 +87,7 @@ var GameScreen = AbstractScreen.extend({
         }
         if(this.labelPoints){
             this.levelCounter ++;
-            this.labelPoints.setText(Math.floor(this.levelCounter));
+            this.labelPoints.setText(Math.floor(this.levelCounter / 10));
             if(this.waitTuUp && !this.onDash){
                 this.waitTuUp = false;
                 this.maxVel ++;
@@ -112,25 +112,25 @@ var GameScreen = AbstractScreen.extend({
                 this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             }
 
-            if(this.levelCounter === 100){
+            if(this.levelCounter / 10 === 100){
                 var chicken100 = new Chicken('100.png', this);
                 chicken100.build();
                 chicken100.setPosition(windowWidth,windowHeight - 80 - chicken100.getContent().height);
                 this.addChild(chicken100);
             }
-            else if(this.levelCounter === 200){
+            else if(this.levelCounter / 10 === 200){
                 var chicken200 = new Chicken('200.png', this);
                 chicken200.build();
                 chicken200.setPosition(windowWidth,windowHeight - 80 - chicken200.getContent().height);
                 this.addChild(chicken200);
                 // this.envArray.push(chicken100);
-            }else if(this.levelCounter === 900){
+            }else if(this.levelCounter / 10 === 900){
                 var chicken900 = new Chicken('900.png', this);
                 chicken900.build();
                 chicken900.setPosition(windowWidth,windowHeight - 80 - chicken900.getContent().height);
                 this.addChild(chicken900);
                 // this.envArray.push(chicken100);
-            }else if(this.levelCounter > 900 && (this.levelCounter % 450) === 0){
+            }else if(this.levelCounter / 10 > 900 && ((this.levelCounter / 10) % 450) === 0){
                 var chickens = ['abajo.png', 'arriba.png', 'aloca.png', 'caramba.png'];
                 var chickenRnd = new Chicken(chickens[Math.floor(chickens.length * Math.random())], this);
                 chickenRnd.build();

@@ -52,6 +52,8 @@ var PauseModal = Class.extend({
 
 	},
 	show:function(){
+		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
+
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});
 		TweenLite.to(this.boxContainer.position, 1, {y:0, ease:'easeOutBack'});
 		TweenLite.to(this.boxContainer, 0.5, {alpha:1});

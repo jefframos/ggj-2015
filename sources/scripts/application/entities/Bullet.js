@@ -48,7 +48,7 @@ var Bullet = Entity.extend({
         if(this.timeLive <= 0){
             this.preKill();
         }
-        this.range = this.width;
+        this.range = this.height;
         // if(this.fall){
         //     this.velocity.y -= 0.1;
         // }

@@ -19,6 +19,7 @@ var Particles = Entity.extend({
         this.imgSource = label;
         this.alphadecress = 0.03;
         this.scaledecress = 0.03;
+        this.gravity = 0;
         if(rotation){
             this.rotation = rotation;
         }
@@ -36,6 +37,9 @@ var Particles = Entity.extend({
     },
     update: function(){
         this._super();
+        if(this.gravity !== 0){
+            this.velocity.y += this.gravity;
+        }
         this.timeLive --;
         if(this.timeLive <= 0){
             this.preKill();
@@ -47,6 +51,9 @@ var Particles = Entity.extend({
 
         if(this.sprite.alpha >= this.alphadecres){
             this.sprite.alpha -=this.alphadecres;
+            if(this.sprite.alpha <= 0){
+                this.kill = true;
+            }
         }
 
         if(this.sprite.scale.x >= 1){

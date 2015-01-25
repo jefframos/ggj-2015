@@ -60,6 +60,8 @@ var EndModal = Class.extend({
 	},
 	show:function(points){
 		// console.log(points,'pointspointspointspointspointspointspointspointspointspointspointspointspoints');
+		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
+		
 		this.points.setText(points);
 		this.screen.updateable = false;
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});

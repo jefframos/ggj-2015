@@ -50,24 +50,18 @@ var Obstacle = Entity.extend({
 		}
 	},
 	preKill:function(){
-		for (var i = 5; i >= 0; i--) {
-			var particle3 = new Particles({x:-0.3, y:-(Math.random() * 1 + 0.3)}, 120, 'hp.png', 0);
+		for (var i = 4; i >= 0; i--) {
+			var particle3 = new Particles({x:-this.screen.vel * Math.random() - 3, y:-(Math.random() * 5 + 2)}, 120, 'hp.png', 0);
 	        particle3.build();
-	        particle3.setPosition(this.getPosition().x -this.getContent().width+ Math.random() * this.getContent().width,
+	        particle3.gravity = 0.1;
+	        particle3.alphadecres = 0.1;
+	        particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + this.getContent().width * 0.1) / 2,
 	            this.getPosition().y - Math.random() * 50);
 	        this.screen.addChild(particle3);
 		}
-		
-        // this.kill = true
-		// if(this.collidable){
-		var self = this;
-	// 	this.updateable = true;
-	// 	this.collidable = false;
-	// 	this.fall = true;
-	// 	this.velocity = {x:0, y:0};
-		TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
-
-		// }
+		this.kill = true;
+		// var self = this;
+		// TweenLite.to(this.getContent(), 0.3, {alpha:0, onComplete:function(){self.kill = true;}});
 	},
 	pointDistance: function(x, y, x0, y0){
 		return Math.sqrt((x -= x0) * x + (y -= y0) * y);
