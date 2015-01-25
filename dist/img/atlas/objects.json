@@ -1,8 +1,44 @@
 {"frames": {
 
+"colide_cacto1.png":
+{
+	"frame": {"x":2,"y":2,"w":167,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":167,"h":160},
+	"sourceSize": {"w":167,"h":160},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"colide_cacto2.png":
+{
+	"frame": {"x":171,"y":2,"w":160,"h":160},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":160,"h":160},
+	"sourceSize": {"w":160,"h":160},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"colide_espinho1.png":
+{
+	"frame": {"x":2,"y":164,"w":149,"h":129},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":149,"h":129},
+	"sourceSize": {"w":149,"h":129},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"colide_espinho2.png":
+{
+	"frame": {"x":153,"y":164,"w":167,"h":128},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":167,"h":128},
+	"sourceSize": {"w":167,"h":128},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "ice1.png":
 {
-	"frame": {"x":2,"y":2,"w":367,"h":266},
+	"frame": {"x":2,"y":295,"w":367,"h":266},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":367,"h":266},
@@ -11,11 +47,29 @@
 },
 "ice2.png":
 {
-	"frame": {"x":371,"y":2,"w":309,"h":289},
+	"frame": {"x":2,"y":563,"w":309,"h":289},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":309,"h":289},
 	"sourceSize": {"w":309,"h":289},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"rock1.png":
+{
+	"frame": {"x":2,"y":854,"w":399,"h":287},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":399,"h":287},
+	"sourceSize": {"w":399,"h":287},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"rock2.png":
+{
+	"frame": {"x":2,"y":1143,"w":330,"h":287},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":330,"h":287},
+	"sourceSize": {"w":330,"h":287},
 	"pivot": {"x":0.5,"y":0.5}
 }},
 "meta": {
@@ -23,8 +77,8 @@
 	"version": "1.0",
 	"image": "objects.png",
 	"format": "RGBA8888",
-	"size": {"w":682,"h":293},
+	"size": {"w":403,"h":1432},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:1d33ff2be2ef8f9e7c6821f2f9644702:2681cb8f3599d38dc114b5f7219b8d18:8d6d12ff4d5234f2a4b19e0a906dbf52$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c388652b9aa0880e767d5e48ec696262:a22c8c2a39f1a1f3cc199a2bbe6bfd5d:8d6d12ff4d5234f2a4b19e0a906dbf52$"
 }
 }

@@ -16,7 +16,7 @@ var Bullet = Entity.extend({
         this.timeLive = timeLive;
         this.power = 1;
         this.defaultVelocity = 1;
-        this.imgSource = 'bullet.png';
+        this.imgSource = 'cow0001.png';
 
     },
     build: function(){
@@ -34,7 +34,12 @@ var Bullet = Entity.extend({
     },
     update: function(){
         this._super();
+        this.velocity.x *= 1.01;
+        this.velocity.y *= 1.01;
         this.layer.collideChilds(this);
+        if(this.getPosition().y > windowHeight - 80){
+            this.preKill();
+        }
         this.timeLive --;
         if(this.timeLive <= 0){
             this.preKill();
@@ -45,7 +50,7 @@ var Bullet = Entity.extend({
         // }
     },
     collide:function(arrayCollide){
-        console.log('fireCollide', arrayCollide[0]);
+        console.log('ENEMY BATEU AQUI', arrayCollide[0]);
         if(this.collidable){
             if(arrayCollide[0].type === 'bird'){
                 console.log(arrayCollide[0].type);

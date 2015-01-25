@@ -41,6 +41,7 @@ var Obstacle = Entity.extend({
 		if(this.collidable){
 			if(arrayCollide[0].type === 'player' && arrayCollide[0].isFirst){
 				this.kill = this.brekeable;//preKill();
+				console.log(this.kill);
 				// arrayCollide[0].preKill();
 				this.collidable = false;
 				arrayCollide[0].hurt(this.idType);

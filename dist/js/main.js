@@ -379,7 +379,7 @@ var Application = AbstractApplication.extend({
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.velocity.x = vel.x, this.velocity.y = vel.y, this.timeLive = timeLive, 
-        this.power = 1, this.defaultVelocity = 1, this.imgSource = "bullet.png";
+        this.power = 1, this.defaultVelocity = 1, this.imgSource = "cow0001.png";
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -389,11 +389,12 @@ var Application = AbstractApplication.extend({
         });
     },
     update: function() {
-        this._super(), this.layer.collideChilds(this), this.timeLive--, this.timeLive <= 0 && this.preKill(), 
+        this._super(), this.velocity.x *= 1.01, this.velocity.y *= 1.01, this.layer.collideChilds(this), 
+        this.getPosition().y > windowHeight - 80 && this.preKill(), this.timeLive--, this.timeLive <= 0 && this.preKill(), 
         this.range = this.width;
     },
     collide: function(arrayCollide) {
-        console.log("fireCollide", arrayCollide[0]), this.collidable && "bird" === arrayCollide[0].type && (console.log(arrayCollide[0].type), 
+        console.log("ENEMY BATEU AQUI", arrayCollide[0]), this.collidable && "bird" === arrayCollide[0].type && (console.log(arrayCollide[0].type), 
         this.kill = !0, arrayCollide[0].preKill());
     },
     preKill: function() {
@@ -569,7 +570,7 @@ var Application = AbstractApplication.extend({
     },
     collide: function(arrayCollide) {
         this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = this.brekeable, 
-        this.collidable = !1, arrayCollide[0].hurt(this.idType));
+        console.log(this.kill), this.collidable = !1, arrayCollide[0].hurt(this.idType));
     },
     preKill: function() {
         if (this.collidable) {
@@ -669,6 +670,7 @@ var Application = AbstractApplication.extend({
 }), AppModel = Class.extend({
     init: function() {
         this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, 1.15, 1), new PlayerModel(.04, .7, 1.5, 1.2, 2) ], 
+        this.objects = [ [ "ice1.png", 1, !0 ], [ "ice2.png", 1, !0 ], [ "rock1.png", 2, !0 ], [ "rock2.png", 2, !0 ], [ "colide_cacto1.png", 3, !1 ], [ "colide_cacto2.png", 3, !1 ], [ "colide_espinho1.png", 3, !1 ], [ "colide_espinho2.png", 3, !1 ] ], 
         this.setModel(0);
     },
     setModel: function(id) {
@@ -812,7 +814,8 @@ var Application = AbstractApplication.extend({
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
-        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1;
+        this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1, 
+        this.levelCounter = 0, this.waitTuUp = !1;
     },
     onProgress: function() {
         this._super(), this.textAcc.setText(this.loadPercent);
@@ -822,12 +825,15 @@ var Application = AbstractApplication.extend({
     },
     update: function() {
         if (this.updateable) {
-            this._super();
+            this.labelPoints && (this.levelCounter++, this.labelPoints.setText(Math.floor(this.levelCounter)), 
+            this.waitTuUp && !this.onDash && (this.waitTuUp = !1, this.maxVel++, this.vel = this.maxVel), 
+            this.levelCounter % 100 === 0 && (console.log(this.levelCounter % 100 && this.maxVel < 10), 
+            this.onDash ? this.waitTuUp = !0 : (this.maxVel++, this.vel = this.maxVel))), this._super();
             var i;
             if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             if (this.gameOver) return void this.endModal.show();
-            if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
-            this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+            if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles(), 
+            this.updateEnemies()), this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
             this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
             this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
             if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
@@ -865,12 +871,12 @@ var Application = AbstractApplication.extend({
         if (!(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast)) {
             this.first.playerModel.currentBulletEnergy -= this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast, 
             this.first.playerModel.currentBulletEnergy < 0 && (this.first.playerModel.currentBulletEnergy = 0), 
-            this.vel = 6 * this.maxVel, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
+            this.vel = 6 * this.maxDash, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
             this.first.dash(!0);
             var self = this;
             setTimeout(function() {
                 self.second.dash(!1);
-            }, 100);
+            }, 400);
         }
     },
     change: function() {
@@ -895,16 +901,21 @@ var Application = AbstractApplication.extend({
             var self = this;
             setTimeout(function() {
                 self.second.jump();
-            }, 100);
+            }, 400);
         }
     },
+    updateEnemies: function() {
+        if (this.enemiesAccum < 0) {
+            var angle = (70 + 70 * Math.random()) * Math.PI / 180, bulletVel = 7, bullet = new Bullet({
+                x: Math.cos(angle) * bulletVel - this.vel / 2,
+                y: Math.sin(angle) * bulletVel
+            });
+            bullet.build(), bullet.setPosition(windowWidth, .05 * windowHeight), this.layer.addChild(bullet), 
+            this.enemiesAccum = 500;
+        } else this.enemiesAccum--;
+    },
     updateObstacles: function() {
-        if (this.obstaclesAccum < 0) {
-            this.obstaclesAccum = 200 + 20 * Math.random();
-            var tempObstacles = new Obstacle(1, "ice1.png", !0);
-            this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
-            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80);
-        } else this.obstaclesAccum--;
+        return;
     },
     updateParticles: function() {
         if (this.particleAccum < 0) {
@@ -930,12 +941,13 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.obstaclesAccum = 200, this.background = new SimpleSprite("sky.png"), this.addChild(this.background), 
-        this.debugChildsText = new PIXI.Text("", {
+        this.levelCounter = 0, this.obstaclesAccum = 200, this.enemiesAccum = 200, this.waitTuUp = !1, 
+        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.debugChildsText = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.debugChildsText), this.debugChildsText.position.y = 20, this.debugChildsText.position.x = windowWidth - 350, 
-        this.accel = .1, this.maxVel = 7, this.vel = .5 * this.maxVel, this.envArray = [], 
-        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
+        this.accel = .1, this.maxVel = 7, this.maxDash = 7, this.vel = .5 * this.maxVel, 
+        this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
+        this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .012, 
@@ -992,19 +1004,32 @@ var Application = AbstractApplication.extend({
             onComplete: function() {
                 self.addListenners();
             }
+        }), this.container.alpha = 0, TweenLite.to(this.container, .3, {
+            alpha: 1
         }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent()), 
         this.endModal = new EndModal(this), this.addChild(this.endModal.getContent());
+        for (var i = 3; i >= 0; i--) {
+            var particle = new Particles({
+                x: .3 - .6 * Math.random(),
+                y: -(.2 * Math.random() + .3)
+            }, 300 * Math.random() + 300, "particle.png", -.01);
+            particle.build(), particle.setPosition(windowWidth * Math.random(), windowHeight - 60), 
+            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
+        }
+        this.interval = setInterval(function() {
+            var particle = new Particles({
+                x: .3 - .6 * Math.random(),
+                y: -(.2 * Math.random() + .3)
+            }, 300 * Math.random() + 300, "particle.png", -.01);
+            particle.build(), particle.setPosition(windowWidth * Math.random(), (windowHeight - 80) * Math.random() + 80), 
+            particle.alphadecress = .01, particle.scaledecress = Math.random(), self.addChild(particle);
+        }, 1300);
     },
     addListenners: function() {
-        function tapLeft() {
-            self.leftDown || (self.leftDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
-            self.tapAccum = 0);
-        }
-        function tapRight() {
-            self.rightDown || (self.rightDown = !0, (!self.onDash || self.onDash && self.vel < self.maxVel) && (self.vel = self.maxVel), 
-            self.tapAccum = 0);
-        }
-        this.vel = this.maxVel;
+        this.vel = this.maxVel, this.labelPoints = new PIXI.Text("", {
+            font: "50px Arial"
+        }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 80, 
+        this.labelPoints.position.x = windowWidth - 80, this.labelPoints.setText(0);
         var self = this;
         TweenLite.to(this.dino.getContent().position, 1.8, {
             x: -600,

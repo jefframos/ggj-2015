@@ -64,8 +64,10 @@ var GameScreen = AbstractScreen.extend({
         this.tapAccum = 0;
 
         this.updateable = false;
-        
 
+        this.levelCounter = 0;
+        
+        this.waitTuUp = false;
     },
     onProgress:function(){
 
@@ -81,6 +83,24 @@ var GameScreen = AbstractScreen.extend({
         //console.log('update', this.updateable);
         if(!this.updateable){
             return;
+        }
+        if(this.labelPoints){
+            this.levelCounter ++;
+            this.labelPoints.setText(Math.floor(this.levelCounter));
+            if(this.waitTuUp && !this.onDash){
+                this.waitTuUp = false;
+                this.maxVel ++;
+                this.vel = this.maxVel;
+            }
+            if(this.levelCounter % 100 === 0){
+                console.log(this.levelCounter % 100 && this.maxVel < 10);
+                if(this.onDash ){
+                    this.waitTuUp = true;
+                }else{
+                    this.maxVel ++;
+                    this.vel = this.maxVel;
+                }
+            }
         }
         this._super();
 
@@ -103,6 +123,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.cowDashBar || this.pigDashBar){
             this.updateParticles();
             this.updateObstacles();
+            this.updateEnemies();
         }
 
         if(this.vel > this.maxVel){
@@ -197,7 +218,7 @@ var GameScreen = AbstractScreen.extend({
         if(this.first.playerModel.currentBulletEnergy < 0){
             this.first.playerModel.currentBulletEnergy = 0;
         }
-        this.vel = this.maxVel * 6;
+        this.vel = this.maxDash * 6;
         this.onDash = true;
         this.leftDown = false;
         this.rightDown = false;
@@ -205,7 +226,7 @@ var GameScreen = AbstractScreen.extend({
         var self = this;
         setTimeout(function(){
             self.second.dash(false);
-        }, 100);
+        }, 400);
         // }
     },
     change:function(){
@@ -233,18 +254,39 @@ var GameScreen = AbstractScreen.extend({
         var self = this;
         setTimeout(function(){
             self.second.jump();
-        }, 100);
+        }, 400);
         // }
     },
+    updateEnemies:function(){
+        if(this.enemiesAccum < 0){
+            var angle = (70 + Math.random()* 70) * Math.PI / 180;
+            var bulletVel = 7;
+            var bullet = new Bullet({x:Math.cos(angle) * bulletVel - this.vel/2,
+                y:Math.sin(angle) * bulletVel});
+            bullet.build();
+            //UTILIZAR O ANGULO PARA CALCULAR A POSIÇÃO CORRETA DO TIRO
+            bullet.setPosition(windowWidth, windowHeight * 0.05);
+            this.layer.addChild(bullet);
+            this.enemiesAccum = 500;
+        }else{
+            this.enemiesAccum --;
+        }
+    },
     updateObstacles:function(){
+        if(true){
+            return;
+        }
         if(this.obstaclesAccum < 0){
-            this.obstaclesAccum = 200 + Math.random() * 20;
-            var tempObstacles = new Obstacle(1, 'ice1.png', true);
+            var id = Math.floor(APP.getGameModel().objects.length * Math.random());
+            console.log(APP.getGameModel().objects, id);
+            var tempModel = APP.getGameModel().objects[id];
+            var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
             this.envObjects.push(tempObstacles);
             tempObstacles.build();
             this.layer.addChild(tempObstacles);
             tempObstacles.velFactor = 1;
             tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
+            this.obstaclesAccum = 200 + Math.random() * 20 - (tempModel[0] === 3?Math.random() * 100:0);
         }else{
             this.obstaclesAccum --;
         }
@@ -289,9 +331,10 @@ var GameScreen = AbstractScreen.extend({
             this.hammer.off('swipeleft');
         }
 
-
+        this.levelCounter = 0;
         this.obstaclesAccum = 200;
-
+        this.enemiesAccum = 200;
+        this.waitTuUp = false;
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
 
@@ -302,6 +345,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.accel = 0.1;
         this.maxVel = 7;
+        this.maxDash = 7;
         this.vel = this.maxVel * 0.5;
         this.envArray = [];
 
@@ -458,6 +502,8 @@ var GameScreen = AbstractScreen.extend({
             self.addListenners();
         }});
 
+        this.container.alpha = 0;
+        TweenLite.to(this.container, 0.3, {alpha:1});
         // this.addListenners();
 
         this.updateable = true;
@@ -469,10 +515,35 @@ var GameScreen = AbstractScreen.extend({
         this.endModal = new EndModal(this);
         this.addChild(this.endModal.getContent());
 
+        
 
+        for (var i = 3; i >= 0; i--) {
+            var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
+            particle.build();
+            particle.setPosition(windowWidth * Math.random(),(windowHeight - 60));
+            // particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
+            particle.alphadecress = 0.01;
+            particle.scaledecress = Math.random();
+            self.addChild(particle);
+        }
+        this.interval = setInterval(function(){
+            var particle = new Particles({x:0.3 - (Math.random() * 0.6), y:-(Math.random() * 0.2 + 0.3)}, 300 * Math.random() + 300, 'particle.png', -0.01);
+            particle.build();
+            particle.setPosition(windowWidth * Math.random(),(windowHeight - 80) * Math.random() + 80);
+            particle.alphadecress = 0.01;
+            particle.scaledecress = Math.random();
+            self.addChild(particle);
+        }, 1300);
     },
     addListenners:function(){
         this.vel = this.maxVel;
+
+        this.labelPoints = new PIXI.Text('', {font:'50px Arial'});
+        this.addChild(this.labelPoints);
+        this.labelPoints.position.y = windowHeight - 80;
+        this.labelPoints.position.x = windowWidth - 80;
+        this.labelPoints.setText(0);
+
         var self = this;
         TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, y: - 500, ease:'easeInCubic', onComplete:function(){
             self.dino.kill = true;
@@ -552,30 +623,30 @@ var GameScreen = AbstractScreen.extend({
 
         });
 
-        function tapLeft(){
-            if(self.leftDown){
-                return;
-            }
-            self.leftDown = true;
-            if(!self.onDash || self.onDash && self.vel < self.maxVel){
-                self.vel = self.maxVel;
-            }
-            // self.testJump();
-            self.tapAccum = 0;
-            // self.rightDown = false;
-        }
-        function tapRight(){
-            if(self.rightDown){
-                return;
-            }
-            self.rightDown = true;
-            if(!self.onDash || self.onDash && self.vel < self.maxVel){
-                self.vel = self.maxVel;
-            }
-            // self.testJump();
-            self.tapAccum = 0;
-            // self.leftDown = false;
-        }
+        // function tapLeft(){
+        //     if(self.leftDown){
+        //         return;
+        //     }
+        //     self.leftDown = true;
+        //     if(!self.onDash || self.onDash && self.vel < self.maxVel){
+        //         self.vel = self.maxVel;
+        //     }
+        //     // self.testJump();
+        //     self.tapAccum = 0;
+        //     // self.rightDown = false;
+        // }
+        // function tapRight(){
+        //     if(self.rightDown){
+        //         return;
+        //     }
+        //     self.rightDown = true;
+        //     if(!self.onDash || self.onDash && self.vel < self.maxVel){
+        //         self.vel = self.maxVel;
+        //     }
+        //     // self.testJump();
+        //     self.tapAccum = 0;
+        //     // self.leftDown = false;
+        // }
 
 
         // this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
