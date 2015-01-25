@@ -15,10 +15,8 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.x = windowWidth - 150;
 
         var assetsToLoader = ['dist/img/atlas/cow.json',
-        'dist/img/atlas/effects.json',
-        'dist/img/atlas/fx2.json',
         'dist/img/atlas/pig.json',
-        'dist/img/atlas/UI.json',
+        'dist/img/atlas/UINew.json',
         'dist/img/atlas/dino.json',
         'dist/img/atlas/objects.json',
         'dist/img/atlas/environment.json'];
@@ -32,32 +30,32 @@ var GameScreen = AbstractScreen.extend({
             this.onAssetsLoaded();
         }
        
-        this.accelerometer = {};
+        // this.accelerometer = {};
 
-        this.hitTouchRight = new PIXI.Graphics();
-        // this.hitTouchRight.setInteractive(true);
-        this.hitTouchRight.interactive = true;
+        // this.hitTouchRight = new PIXI.Graphics();
+        // // this.hitTouchRight.setInteractive(true);
+        // this.hitTouchRight.interactive = true;
 
-        this.hitTouchRight.beginFill(0);
-        this.hitTouchRight.drawRect(0,0,windowWidth, windowHeight);
-        this.addChild(this.hitTouchRight);
-        this.hitTouchRight.alpha = 0;
-        this.hitTouchRight.hitArea = new PIXI.Rectangle(windowWidth * 0.5, 0, windowWidth, windowHeight);
+        // this.hitTouchRight.beginFill(0);
+        // this.hitTouchRight.drawRect(0,0,windowWidth, windowHeight);
+        // this.addChild(this.hitTouchRight);
+        // this.hitTouchRight.alpha = 0;
+        // this.hitTouchRight.hitArea = new PIXI.Rectangle(windowWidth * 0.5, 0, windowWidth, windowHeight);
 
-        this.hitTouchLeft = new PIXI.Graphics();
-        // this.hitTouchLeft.setInteractive(true);
-        this.hitTouchLeft.interactive = true;
-        this.hitTouchLeft.beginFill(0);
-        this.hitTouchLeft.drawRect(0,0,windowWidth, windowHeight);
-        this.addChild(this.hitTouchLeft);
-        this.hitTouchLeft.alpha = 0;
-        this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.5, windowHeight);
+        // this.hitTouchLeft = new PIXI.Graphics();
+        // // this.hitTouchLeft.setInteractive(true);
+        // this.hitTouchLeft.interactive = true;
+        // this.hitTouchLeft.beginFill(0);
+        // this.hitTouchLeft.drawRect(0,0,windowWidth, windowHeight);
+        // this.addChild(this.hitTouchLeft);
+        // this.hitTouchLeft.alpha = 0;
+        // this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, windowWidth * 0.5, windowHeight);
         
 
         
         this.particleAccum = 50;
         this.particleAccum2 = 40;
-        this.obstaclesAccum = 200;
+        
         this.gameOver = false;
         var self = this;
         this.leftDown = false;
@@ -70,8 +68,8 @@ var GameScreen = AbstractScreen.extend({
     },
     onProgress:function(){
 
-        this.textAcc.setText(this.textAcc.text+'\nonProgress');
         this._super();
+        this.textAcc.setText(this.loadPercent);
     },
     onAssetsLoaded:function()
     {
@@ -79,6 +77,10 @@ var GameScreen = AbstractScreen.extend({
         this.initApplication();
     },
     update:function() {
+        //console.log('update', this.updateable);
+        if(!this.updateable){
+            return;
+        }
         this._super();
 
         var i;
@@ -89,7 +91,7 @@ var GameScreen = AbstractScreen.extend({
         }
 
         if(this.gameOver){
-            this.screenManager.change('Game');
+            this.resetGame();
             return;
         }
         // if(!this.playerModel)
@@ -151,7 +153,38 @@ var GameScreen = AbstractScreen.extend({
             this.first.isFirst = true;
             this.second.isFirst = false;
         }
+        if(this.debugChildsText){
+            var k;
+            var j;
+            this.childsCounter = 0;
+            for (k = this.childs.length - 1; k >= 0; k--) {
+                this.recursiveCounter(this.childs[k]);
+                this.childsCounter ++;
+            }
+            this.debugChildsText.setText(this.childs.length + ' - ' + this.childsCounter);
+        }
         // this.textAcc.setText(this.childs.length);
+    },
+    resetGame:function(){
+        this.destroy();
+        this.initApplication();
+    },
+    recursiveCounter:function(obj){
+        if(obj.children){
+            for (j = obj.children.length - 1; j >= 0; j--) {
+                this.childsCounter ++;
+                this.recursiveCounter(obj.children[j]);
+
+            }
+        }
+        else if(obj.childs){
+            for (j = obj.childs.length - 1; j >= 0; j--) {
+                this.childsCounter ++;
+                this.recursiveCounter(obj.childs[j]);
+            }
+        }else{
+            return;
+        }
     },
     dash:function(){
         if(this.first.playerModel.currentBulletEnergy < this.first.playerModel.maxBulletEnergy * this.first.playerModel.bulletCoast){
@@ -254,8 +287,16 @@ var GameScreen = AbstractScreen.extend({
             this.hammer.off('swipeleft');
         }
 
+
+        this.obstaclesAccum = 200;
+
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
+
+        this.debugChildsText = new PIXI.Text('', {font:'15px Arial'});
+        this.addChild(this.debugChildsText);
+        this.debugChildsText.position.y = 20;
+        this.debugChildsText.position.x = windowWidth - 350;
 
         this.accel = 0.1;
         this.maxVel = 7;
@@ -390,14 +431,15 @@ var GameScreen = AbstractScreen.extend({
 
 
 
-        // this.returnButton = new DefaultButton('simpleButtonUp.png', 'simpleButtonOver.png');
-        // this.returnButton.build(60, 50);
-        // this.returnButton.setPosition( windowWidth * 0.95 - 20,windowHeight * 0.95 - 65);
-        // this.addChild(this.returnButton);
-        // this.returnButton.addLabel(new PIXI.Text('<', {font:'40px Arial'}),5,5);
-        // this.returnButton.clickCallback = function(){
-        //     self.screenManager.prevScreen();
-        // };
+        this.pauseButton = new DefaultButton('pause.png', 'pause.png');
+        this.pauseButton.build();
+        this.pauseButton.setPosition( windowWidth  - 20 - this.pauseButton.width, -200);
+        this.addChild(this.pauseButton);
+        this.pauseButton.clickCallback = function(){
+            self.updateable = false;
+            self.pauseModal.show();
+        };
+
         this.textAcc.setText(this.textAcc.text+'\nendinitApplication');
 
         this.dino = new Dino();
@@ -418,6 +460,10 @@ var GameScreen = AbstractScreen.extend({
 
         this.updateable = true;
 
+
+        this.pauseModal = new PauseModal(this);
+        this.addChild(this.pauseModal.getContent());
+
     },
     addListenners:function(){
         this.vel = this.maxVel;
@@ -427,10 +473,11 @@ var GameScreen = AbstractScreen.extend({
         }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});
         TweenLite.to(this.second.spritesheet.position, 1, {delay:0.5, x:this.secondPos, ease:'easeOutCubic'});
-        TweenLite.to(this.cowEnergyBar.getContent().position, 0.8, {delay:0.2, y:50, ease:'easeOutBack'});
-        TweenLite.to(this.pigEnergyBar.getContent().position, 0.8, {delay:0.4,y:50, ease:'easeOutBack'});
-        TweenLite.to(this.cowDashBar.getContent().position, 0.8, {delay:0.6, y:100, ease:'easeOutBack'});
-        TweenLite.to(this.pigDashBar.getContent().position, 0.8, {delay:0.8, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.cowDashBar.getContent().position, 0.8, {delay:0.7, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.pigDashBar.getContent().position, 0.8, {delay:0.9, y:100, ease:'easeOutBack'});
+        TweenLite.to(this.cowEnergyBar.getContent().position, 0.6, {delay:1.0, y:50, ease:'easeOutBack'});
+        TweenLite.to(this.pigEnergyBar.getContent().position, 0.6, {delay:1.2,y:50, ease:'easeOutBack'});
+        TweenLite.to(this.pauseButton.getContent().position, 0.8, {delay:1.4,y:20, ease:'easeOutBack'});
 
 
 
@@ -525,36 +572,36 @@ var GameScreen = AbstractScreen.extend({
         }
 
 
-        this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            tapLeft();
-        };
+        // this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+        //     if(self.gameOver){
+        //         return;
+        //     }
+        //     tapLeft();
+        // };
         
-        this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            // console.log('hitTouchLeft');
-            self.leftDown = false;
-        };
+        // this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
+        //     if(self.gameOver){
+        //         return;
+        //     }
+        //     // console.log('hitTouchLeft');
+        //     self.leftDown = false;
+        // };
 
         
-        this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            tapRight();
-        };
+        // this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+        //     if(self.gameOver){
+        //         return;
+        //     }
+        //     tapRight();
+        // };
          
-        this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
-            if(self.gameOver){
-                return;
-            }
-            // console.log('hitTouchRight');
-            self.rightDown = false;
-        };
+        // this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
+        //     if(self.gameOver){
+        //         return;
+        //     }
+        //     // console.log('hitTouchRight');
+        //     self.rightDown = false;
+        // };
 
         this.textAcc.setText(this.textAcc.text+'\nbuild');
     }

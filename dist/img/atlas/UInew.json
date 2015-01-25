@@ -90,9 +90,27 @@
 	"sourceSize": {"w":61,"h":52},
 	"pivot": {"x":0,"y":0}
 },
+"dashpig.png":
+{
+	"frame": {"x":2,"y":570,"w":347,"h":148},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
+	"sourceSize": {"w":347,"h":148},
+	"pivot": {"x":0,"y":0}
+},
+"dashvaca.png":
+{
+	"frame": {"x":351,"y":570,"w":347,"h":148},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
+	"sourceSize": {"w":347,"h":148},
+	"pivot": {"x":0,"y":0}
+},
 "energyBackBar.png":
 {
-	"frame": {"x":2,"y":570,"w":223,"h":35},
+	"frame": {"x":700,"y":570,"w":223,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":223,"h":35},
@@ -101,7 +119,7 @@
 },
 "goldBar.png":
 {
-	"frame": {"x":227,"y":570,"w":124,"h":12},
+	"frame": {"x":2,"y":720,"w":124,"h":12},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":12},
@@ -110,7 +128,7 @@
 },
 "iceBar.png":
 {
-	"frame": {"x":353,"y":570,"w":124,"h":12},
+	"frame": {"x":128,"y":720,"w":124,"h":12},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":124,"h":12},
@@ -119,7 +137,7 @@
 },
 "jalapeno.png":
 {
-	"frame": {"x":479,"y":570,"w":198,"h":207},
+	"frame": {"x":254,"y":720,"w":198,"h":207},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":207},
@@ -128,7 +146,7 @@
 },
 "pause.png":
 {
-	"frame": {"x":679,"y":570,"w":86,"h":78},
+	"frame": {"x":454,"y":720,"w":86,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":78},
@@ -137,7 +155,7 @@
 },
 "pauseLabel.png":
 {
-	"frame": {"x":2,"y":779,"w":296,"h":47},
+	"frame": {"x":542,"y":720,"w":296,"h":47},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":296,"h":47},
@@ -146,7 +164,7 @@
 },
 "pigface.png":
 {
-	"frame": {"x":300,"y":779,"w":84,"h":86},
+	"frame": {"x":840,"y":720,"w":84,"h":86},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":86},
@@ -155,7 +173,7 @@
 },
 "redBar.png":
 {
-	"frame": {"x":386,"y":779,"w":210,"h":17},
+	"frame": {"x":2,"y":929,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -164,7 +182,7 @@
 },
 "retryButton.png":
 {
-	"frame": {"x":598,"y":779,"w":245,"h":78},
+	"frame": {"x":214,"y":929,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -173,7 +191,7 @@
 },
 "retryButtonOver.png":
 {
-	"frame": {"x":2,"y":867,"w":245,"h":78},
+	"frame": {"x":461,"y":929,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -183,10 +201,10 @@
 "meta": {
 	"app": "http://www.codeandweb.com/texturepacker",
 	"version": "1.0",
-	"image": "UI.png",
+	"image": "UInew.png",
 	"format": "RGBA8888",
 	"size": {"w":1024,"h":1024},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f89b23fcf2e62cc698b1693f8ec25fd8:7a21c9f696b3026a663e3776d5051d26:4b774b923918ecd961888279dba3ffad$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3764bf1b2cab10b1e0281c1f123cfd1f:67aee76b071734a8d934655ad5b187a7:a48d2d4b3a843ea79998eb499e253f3a$"
 }
 }

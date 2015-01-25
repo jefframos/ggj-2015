@@ -811,45 +811,57 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/pig.json", "dist/img/atlas/UINew.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
-        this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
-        this.hitTouchRight.beginFill(0), this.hitTouchRight.drawRect(0, 0, windowWidth, windowHeight), 
-        this.addChild(this.hitTouchRight), this.hitTouchRight.alpha = 0, this.hitTouchRight.hitArea = new PIXI.Rectangle(.5 * windowWidth, 0, windowWidth, windowHeight), 
-        this.hitTouchLeft = new PIXI.Graphics(), this.hitTouchLeft.interactive = !0, this.hitTouchLeft.beginFill(0), 
-        this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
-        this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
-        this.particleAccum = 50, this.particleAccum2 = 40, this.obstaclesAccum = 200, this.gameOver = !1;
+        this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
         this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1;
     },
     onProgress: function() {
-        this.textAcc.setText(this.textAcc.text + "\nonProgress"), this._super();
+        this._super(), this.textAcc.setText(this.loadPercent);
     },
     onAssetsLoaded: function() {
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        this._super();
-        var i;
-        if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-        if (this.gameOver) return void this.screenManager.change("Game");
-        if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
-        this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
-        this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
-        this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
-        if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
-        this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
-        this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
-        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
-        this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
-        this.first) {
-            if (this.first.dead && !this.second.dead) {
-                var temp = this.first;
-                this.first = this.second, this.second = temp;
+        if (this.updateable) {
+            this._super();
+            var i;
+            if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+            if (this.gameOver) return void this.resetGame();
+            if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
+            this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+            this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
+            this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
+            if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+            this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
+            this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
+            this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
+            this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+            this.first) {
+                if (this.first.dead && !this.second.dead) {
+                    var temp = this.first;
+                    this.first = this.second, this.second = temp;
+                }
+                this.first.dead && this.second.dead && (this.gameOver = !0), this.first.isFirst = !0, 
+                this.second.isFirst = !1;
             }
-            this.first.dead && this.second.dead && (this.gameOver = !0), this.first.isFirst = !0, 
-            this.second.isFirst = !1;
+            if (this.debugChildsText) {
+                var k;
+                for (this.childsCounter = 0, k = this.childs.length - 1; k >= 0; k--) this.recursiveCounter(this.childs[k]), 
+                this.childsCounter++;
+                this.debugChildsText.setText(this.childs.length + " - " + this.childsCounter);
+            }
+        }
+    },
+    resetGame: function() {
+        this.destroy(), this.initApplication();
+    },
+    recursiveCounter: function(obj) {
+        if (obj.children) for (j = obj.children.length - 1; j >= 0; j--) this.childsCounter++, 
+        this.recursiveCounter(obj.children[j]); else {
+            if (!obj.childs) return;
+            for (j = obj.childs.length - 1; j >= 0; j--) this.childsCounter++, this.recursiveCounter(obj.childs[j]);
         }
     },
     dash: function() {
@@ -921,9 +933,12 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.maxVel = 7, this.vel = .5 * this.maxVel, this.envArray = [], this.envArray.push(new Environment(windowWidth, windowHeight)), 
-        this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
+        this.obstaclesAccum = 200, this.background = new SimpleSprite("sky.png"), this.addChild(this.background), 
+        this.debugChildsText = new PIXI.Text("", {
+            font: "15px Arial"
+        }), this.addChild(this.debugChildsText), this.debugChildsText.position.y = 20, this.debugChildsText.position.x = windowWidth - 350, 
+        this.accel = .1, this.maxVel = 7, this.vel = .5 * this.maxVel, this.envArray = [], 
+        this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .012, 
@@ -958,8 +973,12 @@ var Application = AbstractApplication.extend({
         this.addChild(this.pigEnergyBar), this.pigEnergyBar.setPosition(70, -70), this.cowDashBar = new EnergyBar("dashBackBar.png", "iceBar.png", "dashIco2.png"), 
         this.addChild(this.cowDashBar), this.cowDashBar.setPosition(70 + this.cowEnergyBar.getContent().width + 80, -120), 
         this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
-        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(130, -120), this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), 
-        this.dino = new Dino(), this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
+        this.addChild(this.pigDashBar), this.pigDashBar.setPosition(130, -120), this.pauseButton = new DefaultButton("pause.png", "pause.png"), 
+        this.pauseButton.build(), this.pauseButton.setPosition(windowWidth - 20 - this.pauseButton.width, -200), 
+        this.addChild(this.pauseButton), this.pauseButton.clickCallback = function() {
+            self.updateable = !1, self.pauseModal.show();
+        }, this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), this.dino = new Dino(), 
+        this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
         this.dino.getContent().position.y = -200, this.first.spritesheet.position.x = this.firstPos - 500, 
         this.second.spritesheet.position.x = this.secondPos - 500, TweenLite.to(this.first.spritesheet.position, 1, {
             delay: .5,
@@ -976,7 +995,7 @@ var Application = AbstractApplication.extend({
             onComplete: function() {
                 self.addListenners();
             }
-        }), this.updateable = !0;
+        }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent());
     },
     addListenners: function() {
         function tapLeft() {
@@ -1004,21 +1023,25 @@ var Application = AbstractApplication.extend({
             delay: .5,
             x: this.secondPos,
             ease: "easeOutCubic"
-        }), TweenLite.to(this.cowEnergyBar.getContent().position, .8, {
-            delay: .2,
-            y: 50,
-            ease: "easeOutBack"
-        }), TweenLite.to(this.pigEnergyBar.getContent().position, .8, {
-            delay: .4,
-            y: 50,
-            ease: "easeOutBack"
         }), TweenLite.to(this.cowDashBar.getContent().position, .8, {
-            delay: .6,
+            delay: .7,
             y: 100,
             ease: "easeOutBack"
         }), TweenLite.to(this.pigDashBar.getContent().position, .8, {
-            delay: .8,
+            delay: .9,
             y: 100,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.cowEnergyBar.getContent().position, .6, {
+            delay: 1,
+            y: 50,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.pigEnergyBar.getContent().position, .6, {
+            delay: 1.2,
+            y: 50,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.pauseButton.getContent().position, .8, {
+            delay: 1.4,
+            y: 20,
             ease: "easeOutBack"
         });
         var swipe = new Hammer.Swipe();
@@ -1032,15 +1055,7 @@ var Application = AbstractApplication.extend({
             self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? self.leftDown = !1 : (68 === e.keyCode || 39 === e.keyCode) && (self.rightDown = !1));
         }), document.body.addEventListener("keydown", function(e) {
             self.gameOver || 87 === e.keyCode || 38 === e.keyCode || 83 === e.keyCode || 40 === e.keyCode || (65 === e.keyCode || 37 === e.keyCode ? tapLeft() : (68 === e.keyCode || 39 === e.keyCode) && tapRight());
-        }), this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function() {
-            self.gameOver || tapLeft();
-        }, this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function() {
-            self.gameOver || (self.leftDown = !1);
-        }, this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function() {
-            self.gameOver || tapRight();
-        }, this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function() {
-            self.gameOver || (self.rightDown = !1);
-        }, this.textAcc.setText(this.textAcc.text + "\nbuild");
+        }), this.textAcc.setText(this.textAcc.text + "\nbuild");
     }
 }), WaitScreen = AbstractScreen.extend({
     init: function(label) {
@@ -1081,6 +1096,59 @@ var Application = AbstractApplication.extend({
         }), 5, 5), this.fullScreen.clickCallback = function() {
             fullscreen();
         });
+    }
+}), PauseModal = Class.extend({
+    init: function(screen) {
+        this.screen = screen, this.container = new PIXI.DisplayObjectContainer(), this.boxContainer = new PIXI.DisplayObjectContainer(), 
+        this.bg = new PIXI.Graphics(), this.bg.beginFill(19784), this.bg.drawRect(0, 0, windowWidth, windowHeight), 
+        this.bg.alpha = 0, this.container.addChild(this.bg), this.container.addChild(this.boxContainer), 
+        this.background = new SimpleSprite("backPauseModal.png"), this.boxContainer.addChild(this.background.container), 
+        this.background.container.position.x = windowWidth / 2 - this.background.getContent().width / 2, 
+        this.background.container.position.y = windowHeight / 2 - this.background.getContent().height / 2;
+        var bgPos = {
+            x: this.background.container.position.x,
+            y: this.background.container.position.y
+        };
+        this.retryButton = new DefaultButton("retryButton.png", "retryButtonOver.png"), 
+        this.retryButton.build(), this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 193), 
+        this.boxContainer.addChild(this.retryButton.getContent());
+        var self = this;
+        this.retryButton.clickCallback = function() {
+            self.hide(self.screen.resetGame());
+        }, this.continueButton = new DefaultButton("continueButton.png", "continueButtonOver.png"), 
+        this.continueButton.build(), this.continueButton.setPosition(bgPos.x + 135, bgPos.y + 288), 
+        this.boxContainer.addChild(this.continueButton.getContent()), this.continueButton.clickCallback = function() {
+            self.hide(function() {
+                self.screen.updateable = !0;
+            });
+        }, this.pauseLabel = new SimpleSprite("pauseLabel.png"), this.boxContainer.addChild(this.pauseLabel.container), 
+        this.pauseLabel.setPosition(bgPos.x + 105, bgPos.y + 91), this.boxContainer.position.y = 1.5 * -this.boxContainer.height;
+    },
+    show: function() {
+        TweenLite.to(this.bg, .5, {
+            alpha: .8
+        }), TweenLite.to(this.boxContainer.position, 1, {
+            y: 0,
+            ease: "easeOutBack"
+        }), TweenLite.to(this.boxContainer, .5, {
+            alpha: 1
+        });
+    },
+    hide: function(callback) {
+        TweenLite.to(this.bg, .5, {
+            alpha: 0,
+            onComplete: function() {
+                callback && callback();
+            }
+        }), TweenLite.to(this.boxContainer.position, 1, {
+            y: -this.boxContainer.height,
+            ease: "easeInBack"
+        }), TweenLite.to(this.boxContainer, .5, {
+            alpha: 0
+        });
+    },
+    getContent: function() {
+        return this.container;
     }
 }), FirebaseSocket = SmartSocket.extend({
     init: function(url) {
