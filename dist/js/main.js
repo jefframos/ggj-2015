@@ -523,14 +523,19 @@ var Application = AbstractApplication.extend({
 }), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
         this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 40, 
-        this.type = "player";
+        this.type = "player", this.isFirst = !1;
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
     },
     hurt: function(type) {
-        this.onDash && type === this.idType || (this.playerModel.currentEnergy -= this.onDash ? this.playerModel.maxEnergy * (this.playerModel.demage / 5) : this.playerModel.maxEnergy * this.playerModel.demage, 
-        this.playerModel.currentEnergy <= 0 && (this.dead = !0, this.collidable = !1, this.velocity.x = -3));
+        if (!this.onDash || type !== this.idType) {
+            if (this.onDash) {
+                var val = this.playerModel.maxEnergy * (this.playerModel.demage / 5);
+                this.playerModel.currentEnergy -= val, this.playerModel.currentEnergy <= val && (this.playerModel.currentEnergy = val);
+            } else this.playerModel.currentEnergy -= this.playerModel.maxEnergy * this.playerModel.demage;
+            this.playerModel.currentEnergy <= 0 && (this.dead = !0, this.collidable = !1, this.velocity.x = -3);
+        }
     },
     dash: function() {
         this.spritesheet.play("dash"), this.onDash = !0;
@@ -566,7 +571,7 @@ var Application = AbstractApplication.extend({
         this.range = this.sprite.width / 2;
     },
     collide: function(arrayCollide) {
-        this.collidable && "player" === arrayCollide[0].type && (this.kill = this.brekeable, 
+        this.collidable && "player" === arrayCollide[0].type && arrayCollide[0].isFirst && (this.kill = this.brekeable, 
         this.collidable = !1, arrayCollide[0].hurt(this.idType));
     },
     preKill: function() {
@@ -828,23 +833,23 @@ var Application = AbstractApplication.extend({
         this._super();
         var i;
         if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
-        if (!this.gameOver) {
-            if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
-            this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
-            this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
-            this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
-            if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
-            this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
-            this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
-            this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
-            this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
-            this.first) {
-                if (this.first.dead && !this.second.dead) {
-                    var temp = this.first;
-                    this.first = this.second, this.second = temp;
-                }
-                this.first.dead && this.second.dead && (this.gameOver = !0);
+        if (this.gameOver) return void this.screenManager.change("Game");
+        if ((this.cowDashBar || this.pigDashBar) && (this.updateParticles(), this.updateObstacles()), 
+        this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+        this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
+        this.second.onDash = !1)), this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
+        if (this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+        this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
+        this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
+        this.pigEnergyBar && this.pigEnergyBar.updateBar(this.pig.playerModel.currentEnergy, this.pig.playerModel.maxEnergy), 
+        this.energyBar && this.energyBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
+        this.first) {
+            if (this.first.dead && !this.second.dead) {
+                var temp = this.first;
+                this.first = this.second, this.second = temp;
             }
+            this.first.dead && this.second.dead && (this.gameOver = !0), this.first.isFirst = !0, 
+            this.second.isFirst = !1;
         }
     },
     dash: function() {
@@ -954,7 +959,7 @@ var Application = AbstractApplication.extend({
         this.pigDashBar = new EnergyBar("dashBackBar.png", "goldBar.png", "dashIco.png"), 
         this.addChild(this.pigDashBar), this.pigDashBar.setPosition(130, -120), this.textAcc.setText(this.textAcc.text + "\nendinitApplication"), 
         this.dino = new Dino(), this.dino.build(), this.addChild(this.dino), this.dino.getContent().position.x = -600, 
-        this.dino.getContent().position.y = -300, this.first.spritesheet.position.x = this.firstPos - 500, 
+        this.dino.getContent().position.y = -200, this.first.spritesheet.position.x = this.firstPos - 500, 
         this.second.spritesheet.position.x = this.secondPos - 500, TweenLite.to(this.first.spritesheet.position, 1, {
             delay: .5,
             x: this.firstPos - 150,
@@ -986,7 +991,7 @@ var Application = AbstractApplication.extend({
         TweenLite.to(this.dino.getContent().position, 1.8, {
             x: -600,
             y: -500,
-            ease: "easeOutCubic",
+            ease: "easeInCubic",
             onComplete: function() {
                 self.dino.kill = !0;
             }

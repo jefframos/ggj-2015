@@ -89,6 +89,7 @@ var GameScreen = AbstractScreen.extend({
         }
 
         if(this.gameOver){
+            this.screenManager.change('Game');
             return;
         }
         // if(!this.playerModel)
@@ -147,6 +148,8 @@ var GameScreen = AbstractScreen.extend({
             if(this.first.dead && this.second.dead){
                 this.gameOver = true;
             }
+            this.first.isFirst = true;
+            this.second.isFirst = false;
         }
         // this.textAcc.setText(this.childs.length);
     },
@@ -183,6 +186,7 @@ var GameScreen = AbstractScreen.extend({
         // this.second.spritesheet.position.x = tempPos;
         TweenLite.to(this.first.spritesheet.position, 0.5, {x:this.firstPos, ease:'easeOutCubic'});
         TweenLite.to(this.second.spritesheet.position, 0.5, {x:this.secondPos, ease:'easeInCubic'});
+
     },
     jump:function(){
         // if(this.leftDown && this.rightDown){
@@ -391,7 +395,7 @@ var GameScreen = AbstractScreen.extend({
         this.dino.build();
         this.addChild(this.dino);
         this.dino.getContent().position.x = -600;
-        this.dino.getContent().position.y = -300;
+        this.dino.getContent().position.y = -200;
 
         this.first.spritesheet.position.x = this.firstPos - 500;
         this.second.spritesheet.position.x = this.secondPos - 500;
@@ -409,7 +413,7 @@ var GameScreen = AbstractScreen.extend({
     addListenners:function(){
         this.vel = this.maxVel;
         var self = this;
-        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, y: - 500, ease:'easeOutCubic', onComplete:function(){
+        TweenLite.to(this.dino.getContent().position, 1.8, {x:-600, y: - 500, ease:'easeInCubic', onComplete:function(){
             self.dino.kill = true;
         }});
         TweenLite.to(this.first.spritesheet.position, 1, {delay:0.5, x:this.firstPos, ease:'easeOutCubic'});

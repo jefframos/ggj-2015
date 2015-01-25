@@ -39,7 +39,7 @@ var Obstacle = Entity.extend({
 	},
 	collide:function(arrayCollide){
 		if(this.collidable){
-			if(arrayCollide[0].type === 'player'){
+			if(arrayCollide[0].type === 'player' && arrayCollide[0].isFirst){
 				this.kill = this.brekeable;//preKill();
 				// arrayCollide[0].preKill();
 				this.collidable = false;

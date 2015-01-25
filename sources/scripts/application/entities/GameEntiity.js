@@ -6,6 +6,7 @@ var GameEntiity = SpritesheetEntity.extend({
         this.collidable = true;
         this.range = 40;
         this.type = 'player';
+        this.isFirst = false;
     },
    
     setTarget:function(pos){
@@ -25,7 +26,12 @@ var GameEntiity = SpritesheetEntity.extend({
             return;
         }
         else if(this.onDash){
-            this.playerModel.currentEnergy -= this.playerModel.maxEnergy * (this.playerModel.demage / 5);
+            var val = this.playerModel.maxEnergy * (this.playerModel.demage / 5);
+            this.playerModel.currentEnergy -= val;
+            if(this.playerModel.currentEnergy <= val){
+                this.playerModel.currentEnergy = val;
+            }
+
         }else{
             this.playerModel.currentEnergy -= this.playerModel.maxEnergy * this.playerModel.demage;
         }
