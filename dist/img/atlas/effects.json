@@ -1,8 +1,17 @@
 {"frames": {
 
-"dashvaca.png":
+"dashpig.png":
 {
 	"frame": {"x":2,"y":2,"w":347,"h":148},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
+	"sourceSize": {"w":347,"h":148},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"dashvaca.png":
+{
+	"frame": {"x":351,"y":2,"w":347,"h":148},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":347,"h":148},
@@ -14,8 +23,8 @@
 	"version": "1.0",
 	"image": "effects.png",
 	"format": "RGBA8888",
-	"size": {"w":351,"h":152},
+	"size": {"w":700,"h":152},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:f0edfed33159558d88ac4f0990712970:9b246fdf3f6956b32111d0f65bf6efa4:05d3c1256da5d10ff4f36ef2966c3322$"
+	"smartupdate": "$TexturePacker:SmartUpdate:f04c1d5b4c517156c2c568386df25922:99ea76a2316d4e6eb8c8ae6fa6a06131:05d3c1256da5d10ff4f36ef2966c3322$"
 }
 }

@@ -15,6 +15,7 @@ var GameScreen = AbstractScreen.extend({
         this.textAcc.position.x = windowWidth - 150;
 
         var assetsToLoader = ['dist/img/atlas/cow.json',
+        'dist/img/atlas/effects.json',
         'dist/img/atlas/pig.json',
         'dist/img/atlas/UI.json',
         'dist/img/atlas/dino.json',

@@ -476,14 +476,11 @@ var Application = AbstractApplication.extend({
             onComplete: repeatTimeline
         });
         tl.append(TweenLite.to(this.dinoMouth, 2, {
-            rotation: .05,
-            ease: "easeOutCubic"
-        })), tl.append(TweenLite.to(this.dinoMouth, 4, {
-            rotation: -.05,
-            ease: "easeInCubic"
+            rotation: .1,
+            ease: "easeInOutCubic"
         })), tl.append(TweenLite.to(this.dinoMouth, 2, {
-            rotation: 0,
-            ease: "easeOutCubic"
+            rotation: -.1,
+            ease: "easeInOutCubic"
         }));
         var tlBody = new TimelineLite({
             onComplete: repeatTimeline2
@@ -811,7 +808,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
