@@ -603,7 +603,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.endModal = new EndModal(this);
         this.addChild(this.endModal.getContent());
-        this.endModal.show(50);
+        // this.endModal.show(50);
 
         this.invencibleGraph = new SimpleSprite('burning.png');
 
