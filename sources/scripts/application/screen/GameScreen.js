@@ -430,18 +430,30 @@ var GameScreen = AbstractScreen.extend({
         hammer.add(swipe);
 
         hammer.on('swipeup', function() {
+            if(self.gameOver){
+                return;
+            }
             self.jump();
         });
 
         hammer.on('swiperight', function() {
+            if(self.gameOver){
+                return;
+            }
             self.dash();
         });
 
         hammer.on('swipeleft', function() {
+            if(self.gameOver){
+                return;
+            }
             self.change();
         });
 
         document.body.addEventListener('keyup', function(e){
+            if(self.gameOver){
+                return;
+            }
             if(e.keyCode === 87 || e.keyCode === 38){
                 // self.removePosition('up');
             }
@@ -459,6 +471,9 @@ var GameScreen = AbstractScreen.extend({
         });
 
         document.body.addEventListener('keydown', function(e){
+            if(self.gameOver){
+                return;
+            }
             if(e.keyCode === 87 || e.keyCode === 38){
                 // self.removePosition('up');
             }
@@ -502,20 +517,32 @@ var GameScreen = AbstractScreen.extend({
 
 
         this.hitTouchLeft.mousedown = this.hitTouchLeft.touchstart = function(touchData){
+            if(self.gameOver){
+                return;
+            }
             tapLeft();
         };
         
         this.hitTouchLeft.mouseup = this.hitTouchLeft.touchend = function(touchData){
+            if(self.gameOver){
+                return;
+            }
             // console.log('hitTouchLeft');
             self.leftDown = false;
         };
 
         
         this.hitTouchRight.mousedown = this.hitTouchRight.touchstart = function(touchData){
+            if(self.gameOver){
+                return;
+            }
             tapRight();
         };
          
         this.hitTouchRight.mouseup = this.hitTouchRight.touchend = function(touchData){
+            if(self.gameOver){
+                return;
+            }
             // console.log('hitTouchRight');
             self.rightDown = false;
         };
