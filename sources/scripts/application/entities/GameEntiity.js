@@ -3,6 +3,9 @@ var GameEntiity = SpritesheetEntity.extend({
     init:function(playerModel){
         this.playerModel = playerModel;
         this._super( true );
+        this.collidable = true;
+        this.range = 80;
+        this.type = 'player';
     },
    
     setTarget:function(pos){

@@ -1,4 +1,4 @@
-/*! jefframos 24-01-2015 */
+/*! jefframos 25-01-2015 */
 function rgbToHsl(r, g, b) {
     r /= 255, g /= 255, b /= 255;
     var h, s, max = Math.max(r, g, b), min = Math.min(r, g, b), l = (max + min) / 2;
@@ -522,7 +522,8 @@ var Application = AbstractApplication.extend({
     update: function() {}
 }), GameEntiity = SpritesheetEntity.extend({
     init: function(playerModel) {
-        this.playerModel = playerModel, this._super(!0);
+        this.playerModel = playerModel, this._super(!0), this.collidable = !0, this.range = 80, 
+        this.type = "player";
     },
     setTarget: function(pos) {
         this.target = pos, pointDistance(0, this.getPosition().y, 0, this.target) < 4 || (this.target < this.getPosition().y ? this.velocity.y = -this.upVel : this.target > this.getPosition().y && (this.velocity.y = this.upVel));
@@ -543,6 +544,44 @@ var Application = AbstractApplication.extend({
     },
     destroy: function() {
         this._super();
+    }
+}), Obstacle = Entity.extend({
+    init: function(type, source) {
+        this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
+        this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
+        this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
+        this.velFactor = 1;
+    },
+    build: function() {
+        this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
+        this.sprite.anchor.y = 1, this.updateable = !0, this.collidable = !0;
+    },
+    update: function() {
+        this._super(), this.layer.collideChilds(this), this.range = this.width;
+    },
+    collide: function(arrayCollide) {
+        console.log("fireCollide", arrayCollide[0]), this.collidable && "player" === arrayCollide[0].type && (this.kill = !0);
+    },
+    preKill: function() {
+        if (this.collidable) {
+            var self = this;
+            this.updateable = !0, this.collidable = !1, this.fall = !0, this.velocity = {
+                x: 0,
+                y: 0
+            }, TweenLite.to(this.getContent(), .3, {
+                alpha: 0,
+                onComplete: function() {
+                    self.kill = !0;
+                }
+            });
+        }
+    },
+    pointDistance: function(x, y, x0, y0) {
+        return Math.sqrt((x -= x0) * x + (y -= y0) * y);
+    },
+    touch: function(collection) {
+        collection.object && "environment" === collection.object.type && collection.object.fireCollide(), 
+        this.preKill();
     }
 }), Cow = GameEntiity.extend({
     build: function(screen, floorPos) {
@@ -760,7 +799,7 @@ var Application = AbstractApplication.extend({
         this._super(), this.textAcc = new PIXI.Text("", {
             font: "15px Arial"
         }), this.addChild(this.textAcc), this.textAcc.position.y = 20, this.textAcc.position.x = windowWidth - 150;
-        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/environment.json" ];
+        var assetsToLoader = [ "dist/img/atlas/cow.json", "dist/img/atlas/effects.json", "dist/img/atlas/fx2.json", "dist/img/atlas/pig.json", "dist/img/atlas/UI.json", "dist/img/atlas/dino.json", "dist/img/atlas/objects.json", "dist/img/atlas/environment.json" ];
         assetsToLoader.length > 0 ? (this.loader = new PIXI.AssetLoader(assetsToLoader), 
         this.textAcc.setText(this.textAcc.text + "\ninitLoad"), this.initLoad()) : this.onAssetsLoaded(), 
         this.accelerometer = {}, this.hitTouchRight = new PIXI.Graphics(), this.hitTouchRight.interactive = !0, 
@@ -769,7 +808,7 @@ var Application = AbstractApplication.extend({
         this.hitTouchLeft = new PIXI.Graphics(), this.hitTouchLeft.interactive = !0, this.hitTouchLeft.beginFill(0), 
         this.hitTouchLeft.drawRect(0, 0, windowWidth, windowHeight), this.addChild(this.hitTouchLeft), 
         this.hitTouchLeft.alpha = 0, this.hitTouchLeft.hitArea = new PIXI.Rectangle(0, 0, .5 * windowWidth, windowHeight), 
-        this.particleAccum = 50, this.particleAccum2 = 40, this.gameOver = !1;
+        this.particleAccum = 50, this.particleAccum2 = 40, this.obstaclesAccum = 200, this.gameOver = !1;
         this.leftDown = !1, this.rightDown = !1, this.tapAccum = 0, this.updateable = !1;
     },
     onProgress: function() {
@@ -779,10 +818,13 @@ var Application = AbstractApplication.extend({
         this.textAcc.setText(this.textAcc.text + "\nAssetsLoaded"), this.initApplication();
     },
     update: function() {
-        if (this._super(), (this.cowDashBar || this.pigDashBar) && this.updateParticles(), 
-        this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
+        this._super(), (this.cowDashBar || this.pigDashBar) && (this.updateParticles(), 
+        this.updateObstacles()), this.vel > this.maxVel && (this.vel -= this.accel, this.onDash && (this.vel -= 5 * this.accel), 
         this.vel < this.maxVel && (this.vel = this.maxVel, this.onDash = !1, this.first.onDash = !1, 
-        this.second.onDash = !1)), this.envArray) for (var i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+        this.second.onDash = !1));
+        var i;
+        if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
+        if (this.envObjects) for (i = this.envObjects.length - 1; i >= 0; i--) this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
         this.cowDashBar && this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy), 
         this.cowEnergyBar && this.cowEnergyBar.updateBar(this.cow.playerModel.currentEnergy, this.cow.playerModel.maxEnergy), 
         this.pigDashBar && this.pigDashBar.updateBar(this.pig.playerModel.currentBulletEnergy, this.pig.playerModel.maxBulletEnergy), 
@@ -821,6 +863,14 @@ var Application = AbstractApplication.extend({
                 self.second.jump();
             }, 100);
         }
+    },
+    updateObstacles: function() {
+        if (this.obstaclesAccum < 0) {
+            this.obstaclesAccum = 200 + 20 * Math.random();
+            var tempObstacles = new Obstacle(1, "ice1.png");
+            this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
+            tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80);
+        } else this.obstaclesAccum--;
     },
     updateParticles: function() {
         if (this.particleAccum < 0) {
@@ -861,9 +911,9 @@ var Application = AbstractApplication.extend({
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = 1, 
         this.layerManager = new LayerManager(), this.layerManager.build("Main"), this.addChild(this.layerManager), 
         this.layer = new Layer(), this.layer.build("EntityLayer"), this.layerManager.addLayer(this.layer), 
-        this.playerModelCow = APP.getGameModel().playerModels[0], this.playerModelCow.reset(), 
-        this.cow = new Cow(this.playerModelCow), this.cow.build(this), this.layer.addChild(this.cow), 
-        this.cow.rotation = -1;
+        this.envObjects = [], this.playerModelCow = APP.getGameModel().playerModels[0], 
+        this.playerModelCow.reset(), this.cow = new Cow(this.playerModelCow), this.cow.build(this), 
+        this.layer.addChild(this.cow), this.cow.rotation = -1;
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
@@ -900,7 +950,7 @@ var Application = AbstractApplication.extend({
             onComplete: function() {
                 self.addListenners();
             }
-        }), this.updateable = !0;
+        }), this.addListenners(), this.updateable = !0;
     },
     addListenners: function() {
         function tapLeft() {

@@ -20,6 +20,7 @@ var GameScreen = AbstractScreen.extend({
         'dist/img/atlas/pig.json',
         'dist/img/atlas/UI.json',
         'dist/img/atlas/dino.json',
+        'dist/img/atlas/objects.json',
         'dist/img/atlas/environment.json'];
 
 
@@ -56,6 +57,7 @@ var GameScreen = AbstractScreen.extend({
         
         this.particleAccum = 50;
         this.particleAccum2 = 40;
+        this.obstaclesAccum = 200;
         this.gameOver = false;
         var self = this;
         this.leftDown = false;
@@ -84,6 +86,7 @@ var GameScreen = AbstractScreen.extend({
         // }
         if(this.cowDashBar || this.pigDashBar){
             this.updateParticles();
+            this.updateObstacles();
         }
 
         if(this.vel > this.maxVel){
@@ -98,12 +101,18 @@ var GameScreen = AbstractScreen.extend({
                 this.second.onDash = false;
             }
         }
+        var i;
         if(this.envArray){
-            for (var i = this.envArray.length - 1; i >= 0; i--) {
+            for (i = this.envArray.length - 1; i >= 0; i--) {
                 this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             }
         }
         
+        if(this.envObjects){
+            for (i = this.envObjects.length - 1; i >= 0; i--) {
+                this.envObjects[i].velocity.x = -this.vel * this.envObjects[i].velFactor;
+            }
+        }
         
         if(this.cowDashBar){
             this.cowDashBar.updateBar(this.cow.playerModel.currentBulletEnergy, this.cow.playerModel.maxBulletEnergy);
@@ -167,6 +176,19 @@ var GameScreen = AbstractScreen.extend({
             self.second.jump();
         }, 100);
         // }
+    },
+    updateObstacles:function(){
+        if(this.obstaclesAccum < 0){
+            this.obstaclesAccum = 200 + Math.random() * 20;
+            var tempObstacles = new Obstacle(1, 'ice1.png');
+            this.envObjects.push(tempObstacles);
+            tempObstacles.build();
+            this.layer.addChild(tempObstacles);
+            tempObstacles.velFactor = 1;
+            tempObstacles.setPosition(windowWidth + windowWidth * 0.2 , windowHeight - 80);
+        }else{
+            this.obstaclesAccum --;
+        }
     },
     updateParticles:function(){
         if(this.particleAccum < 0){
@@ -262,6 +284,9 @@ var GameScreen = AbstractScreen.extend({
         this.layer.build('EntityLayer');
         this.layerManager.addLayer(this.layer);
 
+        this.envObjects = [];
+        
+
 
         this.playerModelCow = APP.getGameModel().playerModels[0];
         this.playerModelCow.reset();
@@ -355,7 +380,8 @@ var GameScreen = AbstractScreen.extend({
         TweenLite.to(this.dino.getContent().position, 2, {delay:0.8, x:-100, ease:'easeOutCubic', onComplete:function(){
             self.addListenners();
         }});
-        // this.addListenners();
+
+        this.addListenners();
 
         this.updateable = true;
 
