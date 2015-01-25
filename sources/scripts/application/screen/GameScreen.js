@@ -94,7 +94,7 @@ var GameScreen = AbstractScreen.extend({
                 this.vel = this.maxVel;
             }
             if(this.levelCounter % 100 === 0  && this.maxVel < 15){
-                console.log(this.levelCounter % 100 && this.maxVel < 8);
+                // console.log(this.levelCounter % 100 && this.maxVel < 8);
                 if(this.onDash ){
                     this.waitTuUp = true;
                 }else{
@@ -102,7 +102,7 @@ var GameScreen = AbstractScreen.extend({
                     this.vel = this.maxVel;
                 }
             }
-            console.log(this.maxVel);
+            // console.log(this.maxVel);
         }
         this._super();
 
@@ -281,7 +281,7 @@ var GameScreen = AbstractScreen.extend({
     updateEnemies:function(){
         if(this.enemiesAccum < 0){
             var angle = (30 + Math.random()* 70) * Math.PI / 180;
-            console.log('AGULO', angle);
+            // console.log('AGULO', angle);
             var bulletVel = 2;
             var bullet = new Bullet({x:Math.cos(angle) * bulletVel - this.vel/2,
                 y:Math.sin(angle) * bulletVel}, this);
@@ -297,7 +297,7 @@ var GameScreen = AbstractScreen.extend({
     updateObstacles:function(){
         if(this.obstaclesAccum < 0){
             var id = Math.floor(APP.getGameModel().objects.length * Math.random());
-            console.log(APP.getGameModel().objects, id);
+            // console.log(APP.getGameModel().objects, id);
             var tempModel = APP.getGameModel().objects[id];
             var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
             this.envObjects.push(tempObstacles);
@@ -368,7 +368,7 @@ var GameScreen = AbstractScreen.extend({
         
         this.obstaclesAccum = 300;
         this.enemiesAccum = 600;
-        this.itensAcum = 1200;
+        this.itensAcum = 100;
         this.waitTuUp = false;
         this.background = new SimpleSprite('sky.png');
         this.addChild(this.background);
@@ -458,7 +458,7 @@ var GameScreen = AbstractScreen.extend({
 
         var refPos = windowHeight - 73  - this.cow.getContent().height / 2;
         this.firstPos = windowWidth * 0.33;
-        console.log(this.firstPos);
+        // console.log(this.firstPos);
         this.cow.setPosition(this.firstPos,refPos);
         this.cow.floorPos = refPos;
 

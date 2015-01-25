@@ -525,7 +525,7 @@ var Application = AbstractApplication.extend({
                     y: -(1 * Math.random() + .3)
                 }, 120, "particleGreen.png", 0);
                 particle3.build(), particle3.setPosition(this.getPosition().x - this.getContent().width / 2 + Math.random() * this.getContent().width, this.getPosition().y + this.getContent().height / 2 - 40 * Math.random()), 
-                console.log(this.getContent().parent), this.screen.addChild(particle3);
+                this.screen.addChild(particle3);
             }
         } else 2 === type && (this.invencibleAccum = value);
     },
@@ -871,9 +871,8 @@ var Application = AbstractApplication.extend({
         if (this.updateable) {
             this.labelPoints && (this.levelCounter++, this.labelPoints.setText(Math.floor(this.levelCounter)), 
             this.waitTuUp && !this.onDash && (this.waitTuUp = !1, this.maxVel++, this.vel = this.maxVel), 
-            this.levelCounter % 100 === 0 && this.maxVel < 15 && (console.log(this.levelCounter % 100 && this.maxVel < 8), 
-            this.onDash ? this.waitTuUp = !0 : (this.maxVel++, this.vel = this.maxVel)), console.log(this.maxVel)), 
-            this._super();
+            this.levelCounter % 100 === 0 && this.maxVel < 15 && (this.onDash ? this.waitTuUp = !0 : (this.maxVel++, 
+            this.vel = this.maxVel))), this._super();
             var i;
             if (this.envArray) for (i = this.envArray.length - 1; i >= 0; i--) this.envArray[i].velocity.x = -this.vel * this.envArray[i].velFactor;
             if (this.gameOver) return void this.endModal.show(this.levelCounter);
@@ -954,9 +953,7 @@ var Application = AbstractApplication.extend({
     },
     updateEnemies: function() {
         if (this.enemiesAccum < 0) {
-            var angle = (30 + 70 * Math.random()) * Math.PI / 180;
-            console.log("AGULO", angle);
-            var bulletVel = 2, bullet = new Bullet({
+            var angle = (30 + 70 * Math.random()) * Math.PI / 180, bulletVel = 2, bullet = new Bullet({
                 x: Math.cos(angle) * bulletVel - this.vel / 2,
                 y: Math.sin(angle) * bulletVel
             }, this);
@@ -966,9 +963,7 @@ var Application = AbstractApplication.extend({
     },
     updateObstacles: function() {
         if (this.obstaclesAccum < 0) {
-            var id = Math.floor(APP.getGameModel().objects.length * Math.random());
-            console.log(APP.getGameModel().objects, id);
-            var tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
+            var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2]);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
             this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0);
@@ -1006,7 +1001,7 @@ var Application = AbstractApplication.extend({
     },
     initApplication: function() {
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
-        this.obstaclesAccum = 300, this.enemiesAccum = 600, this.itensAcum = 1200, this.waitTuUp = !1, 
+        this.obstaclesAccum = 300, this.enemiesAccum = 600, this.itensAcum = 100, this.waitTuUp = !1, 
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
         this.maxVel = 6, this.maxDash = 7, this.vel = .5 * this.maxVel, this.envArray = [], 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
@@ -1029,7 +1024,7 @@ var Application = AbstractApplication.extend({
         var scale = scaleConverter(this.cow.getContent().height, windowHeight, .25);
         this.cow.setScale(scale, scale);
         var refPos = windowHeight - 73 - this.cow.getContent().height / 2;
-        this.firstPos = .33 * windowWidth, console.log(this.firstPos), this.cow.setPosition(this.firstPos, refPos), 
+        this.firstPos = .33 * windowWidth, this.cow.setPosition(this.firstPos, refPos), 
         this.cow.floorPos = refPos, this.first = this.cow, this.playerModelPig = APP.getGameModel().playerModels[1], 
         this.playerModelPig.reset(), this.pig = new Pig(this.playerModelPig, this), this.pig.build(this);
         var refPosPig = windowHeight - 50 - this.pig.getContent().height / 2;
