@@ -16,7 +16,7 @@ var GameScreen = AbstractScreen.extend({
 
         var assetsToLoader = ['dist/img/atlas/cow.json',
         'dist/img/atlas/pig.json',
-        // 'dist/img/atlas/UINew.json',
+        'dist/img/atlas/UI.json',
         'dist/img/atlas/dino.json',
         'dist/img/atlas/objects.json',
         'dist/img/atlas/environment.json'];
