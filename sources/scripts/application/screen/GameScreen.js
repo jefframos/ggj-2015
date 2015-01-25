@@ -263,9 +263,9 @@ var GameScreen = AbstractScreen.extend({
         this.first.dash(true);
         this.first.invencibleAccum = 0;
         var self = this;
-        setTimeout(function(){
-            self.second.dash(false);
-        }, 400);
+        // setTimeout(function(){
+        //     self.second.dash(false);
+        // }, 400);
         // }
     },
     change:function(){
@@ -333,7 +333,7 @@ var GameScreen = AbstractScreen.extend({
             var id = Math.floor(APP.getGameModel().objects.length * Math.random());
             // console.log(APP.getGameModel().objects, id);
             var tempModel = APP.getGameModel().objects[id];
-            var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this);
+            var tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this, tempModel[3]);
             this.envObjects.push(tempObstacles);
             tempObstacles.build();
             this.layer.addChild(tempObstacles);
@@ -373,6 +373,12 @@ var GameScreen = AbstractScreen.extend({
 
         if(this.first.invencibleAccum > 0 ){
             if(!this.invencibleGraph.container.parent ){
+                
+                this.vel = this.maxVel;
+                this.onDash = false;
+                this.first.onDash = false;
+                this.second.onDash = false;
+
                 this.invencibleGraph.container.anchor.x = 0.5;
                 this.invencibleGraph.container.anchor.y = 1;
                 this.invencibleGraph.container.scale.y = 0.2;
@@ -382,7 +388,7 @@ var GameScreen = AbstractScreen.extend({
                 TweenLite.to(this.invencibleGraph.container.scale, 1,{y:1, ease:'easeOutElastic'});
             }
             this.vel = this.maxVel * 1.1;
-            if(this.first.invencibleAccum % 5 === 0){
+            if(this.first.invencibleAccum % 8 === 0){
                 // console.log('cade a porra');
 
                 var particle3 = new Particles({x:-0.3, y:-(Math.random() * 0.2 + 0.3)}, 50, 'nacho.png', Math.random()*0.05);
@@ -429,7 +435,7 @@ var GameScreen = AbstractScreen.extend({
         this.accel = 0.1;
         this.maxVel = 6;
         this.maxDash = 7;
-        this.vel = this.maxVel * 0.5;
+        this.vel = this.maxVel * 0.8;
         this.envArray = [];
 
         this.envArray.push(new Environment(windowWidth, windowHeight));
@@ -597,6 +603,7 @@ var GameScreen = AbstractScreen.extend({
 
         this.endModal = new EndModal(this);
         this.addChild(this.endModal.getContent());
+        this.endModal.show(50);
 
         this.invencibleGraph = new SimpleSprite('burning.png');
 
@@ -622,10 +629,10 @@ var GameScreen = AbstractScreen.extend({
     addListenners:function(){
         this.vel = this.maxVel;
         this.levelCounter = 0;
-        this.labelPoints = new PIXI.Text('', {font:'50px Arial'});
+        this.labelPoints = new PIXI.Text('', {font:'50px Arial', fill:'white'});
         this.addChild(this.labelPoints);
-        this.labelPoints.position.y = windowHeight - 80;
-        this.labelPoints.position.x = windowWidth - 80;
+        this.labelPoints.position.y = windowHeight - 70;
+        this.labelPoints.position.x = windowWidth - 100;
         this.labelPoints.setText(0);
 
         var self = this;

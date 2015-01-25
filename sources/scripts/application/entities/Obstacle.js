@@ -1,6 +1,6 @@
 /*jshint undef:false */
 var Obstacle = Entity.extend({
-	init:function(type, source, brekeable, screen){
+	init:function(type, source, brekeable, screen, particle){
 		this._super( true );
 		this.updateable = false;
 		this.deading = false;
@@ -18,6 +18,7 @@ var Obstacle = Entity.extend({
 		this.idType = type;
 		this.brekeable = brekeable;
 		this.screen = screen;
+		this.particle = particle;
 	},
 	build: function(){
 
@@ -51,10 +52,10 @@ var Obstacle = Entity.extend({
 	},
 	preKill:function(){
 		for (var i = 4; i >= 0; i--) {
-			var particle3 = new Particles({x:-this.screen.vel * Math.random() - 3, y:-(Math.random() * 5 + 2)}, 120, 'hp.png', 0);
+			var particle3 = new Particles({x:-this.screen.vel * Math.random() - 3, y:-(Math.random() * 5 + 7)}, 120, this.particle, Math.random() * 0.1);
 	        particle3.build();
-	        particle3.gravity = 0.1;
-	        particle3.alphadecres = 0.1;
+	        particle3.gravity = 0.2 + Math.random();
+	        particle3.alphadecres = 0.08;
 	        particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + this.getContent().width * 0.1) / 2,
 	            this.getPosition().y - Math.random() * 50);
 	        this.screen.addChild(particle3);

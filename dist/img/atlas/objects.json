@@ -54,9 +54,36 @@
 	"sourceSize": {"w":309,"h":289},
 	"pivot": {"x":0.5,"y":0.5}
 },
+"particula_espinhos.png":
+{
+	"frame": {"x":2,"y":854,"w":89,"h":96},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":89,"h":96},
+	"sourceSize": {"w":89,"h":96},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"particula_gelo.png":
+{
+	"frame": {"x":93,"y":854,"w":80,"h":104},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":80,"h":104},
+	"sourceSize": {"w":80,"h":104},
+	"pivot": {"x":0.5,"y":0.5}
+},
+"particula_pedra.png":
+{
+	"frame": {"x":175,"y":854,"w":107,"h":95},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":107,"h":95},
+	"sourceSize": {"w":107,"h":95},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "rock1.png":
 {
-	"frame": {"x":2,"y":854,"w":399,"h":287},
+	"frame": {"x":2,"y":960,"w":399,"h":287},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":399,"h":287},
@@ -65,7 +92,7 @@
 },
 "rock2.png":
 {
-	"frame": {"x":2,"y":1143,"w":330,"h":287},
+	"frame": {"x":2,"y":1249,"w":330,"h":287},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":330,"h":287},
@@ -77,8 +104,8 @@
 	"version": "1.0",
 	"image": "objects.png",
 	"format": "RGBA8888",
-	"size": {"w":403,"h":1432},
+	"size": {"w":403,"h":1538},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c388652b9aa0880e767d5e48ec696262:a22c8c2a39f1a1f3cc199a2bbe6bfd5d:8d6d12ff4d5234f2a4b19e0a906dbf52$"
+	"smartupdate": "$TexturePacker:SmartUpdate:b8b6f355a9a13017cd45cdb4b545e5b9:e557c341a04665e245e5a3ff202618da:8d6d12ff4d5234f2a4b19e0a906dbf52$"
 }
 }

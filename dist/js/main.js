@@ -461,9 +461,6 @@ var Application = AbstractApplication.extend({
     },
     build: function() {
         function repeatTimeline() {}
-        function repeatTimeline2() {
-            tlBody.restart();
-        }
         function repeatTimeline3() {
             tlRun.restart();
         }
@@ -484,21 +481,6 @@ var Application = AbstractApplication.extend({
             rotation: -.2,
             ease: "easeInOutCubic"
         }));
-        var tlBody = new TimelineLite({
-            onComplete: repeatTimeline2
-        });
-        tlBody.append(TweenLite.to(this.dinoContainer, 2, {
-            rotation: .05,
-            ease: "easeOutCubic"
-        })), tlBody.append(TweenLite.to(this.dinoContainer, 4, {
-            rotation: -.05,
-            ease: "easeInCubic"
-        })), tlBody.append(TweenLite.to(this.dinoContainer, 2, {
-            rotation: 0,
-            ease: "easeOutCubic"
-        })), tlBody.append(TweenLite.to(this.dinoContainer, 3, {
-            rotation: .05
-        }));
         var tlRun = new TimelineLite({
             onComplete: repeatTimeline3
         });
@@ -507,10 +489,10 @@ var Application = AbstractApplication.extend({
             ease: "easeOutCubic"
         })), tlRun.append(TweenLite.to(this.dinoContainer.position, 1.2, {
             y: -10,
-            ease: "easeInCubic"
+            ease: "easeInOutCubic"
         })), tlRun.append(TweenLite.to(this.dinoContainer.position, .6, {
             y: 20,
-            ease: "easeOutCubic"
+            ease: "easeInOutCubic"
         })), tlRun.append(TweenLite.to(this.dinoContainer.position, .6, {
             y: -10
         })), this.container.addChild(this.dinoContainer);
@@ -606,11 +588,12 @@ var Application = AbstractApplication.extend({
         this.preKill();
     }
 }), Obstacle = Entity.extend({
-    init: function(type, source, brekeable, screen) {
+    init: function(type, source, brekeable, screen, particle) {
         this._super(!0), this.updateable = !1, this.deading = !1, this.range = 80, this.width = 1, 
         this.height = 1, this.type = "bullet", this.target = "enemy", this.fireType = "physical", 
         this.node = null, this.power = 1, this.defaultVelocity = 1, this.imgSource = source, 
-        this.velFactor = 1, this.idType = type, this.brekeable = brekeable, this.screen = screen;
+        this.velFactor = 1, this.idType = type, this.brekeable = brekeable, this.screen = screen, 
+        this.particle = particle;
     },
     build: function() {
         this.sprite = new PIXI.Sprite.fromFrame(this.imgSource), this.sprite.anchor.x = .5, 
@@ -628,9 +611,10 @@ var Application = AbstractApplication.extend({
         for (var i = 4; i >= 0; i--) {
             var particle3 = new Particles({
                 x: -this.screen.vel * Math.random() - 3,
-                y: -(5 * Math.random() + 2)
-            }, 120, "hp.png", 0);
-            particle3.build(), particle3.gravity = .1, particle3.alphadecres = .1, particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + .1 * this.getContent().width) / 2, this.getPosition().y - 50 * Math.random()), 
+                y: -(5 * Math.random() + 7)
+            }, 120, this.particle, .1 * Math.random());
+            particle3.build(), particle3.gravity = .2 + Math.random(), particle3.alphadecres = .08, 
+            particle3.setPosition(this.getPosition().x - (Math.random() * this.getContent().width + .1 * this.getContent().width) / 2, this.getPosition().y - 50 * Math.random()), 
             this.screen.addChild(particle3);
         }
         this.kill = !0;
@@ -661,10 +645,10 @@ var Application = AbstractApplication.extend({
     },
     dash: function(isFirst) {
         this._super(), isFirst && (this.dashGraphic = new PIXI.Sprite(PIXI.Texture.fromFrame("dashvaca.png")), 
-        this.dashGraphic.anchor.x = .9, this.dashGraphic.anchor.y = .5, console.log(this.dashGraphic), 
-        this.getContent().parent.addChild(this.dashGraphic), this.dashGraphic.scale.x = this.getContent().scale.x - .5, 
-        this.dashGraphic.scale.y = this.getContent().scale.y - .2, this.dashGraphic.position.x = this.getPosition().x, 
-        this.dashGraphic.position.y = this.getPosition().y, TweenLite.to(this.dashGraphic.scale, .2, {
+        this.dashGraphic.anchor.x = .9, this.dashGraphic.anchor.y = .5, this.getContent().parent.addChild(this.dashGraphic), 
+        this.dashGraphic.scale.x = this.getContent().scale.x - .5, this.dashGraphic.scale.y = this.getContent().scale.y - .2, 
+        this.dashGraphic.position.x = this.getPosition().x, this.dashGraphic.position.y = this.getPosition().y, 
+        TweenLite.to(this.dashGraphic.scale, .2, {
             x: this.getContent().scale.x,
             y: this.getContent().scale.y
         }), TweenLite.to(this.dashGraphic.scale, .3, {
@@ -719,7 +703,7 @@ var Application = AbstractApplication.extend({
 }), AppModel = Class.extend({
     init: function() {
         this.currentPlayerModel = {}, this.playerModels = [ new PlayerModel(.04, .8, 2, .15, 1), new PlayerModel(.04, .7, 1.5, .2, 2) ], 
-        this.objects = [ [ "ice1.png", 1, !0 ], [ "ice2.png", 1, !0 ], [ "rock1.png", 2, !0 ], [ "rock2.png", 2, !0 ], [ "colide_cacto1.png", 3, !1 ], [ "colide_cacto2.png", 3, !1 ], [ "colide_espinho1.png", 3, !1 ], [ "colide_espinho2.png", 3, !1 ] ], 
+        this.objects = [ [ "ice1.png", 1, !0, "bacon.png" ], [ "ice2.png", 1, !0, "bacon.png" ], [ "rock1.png", 2, !0, "bacon.png" ], [ "rock2.png", 2, !0, "bacon.png" ], [ "colide_cacto1.png", 3, !1, "bacon.png" ], [ "colide_cacto2.png", 3, !1, "bacon.png" ], [ "colide_espinho1.png", 3, !1, "bacon.png" ], [ "colide_espinho2.png", 3, !1, "bacon.png" ] ], 
         this.itens = [ [ "jalapeno.png", 2, 300 ], [ "bacon.png", 1, .2 ] ], this.enemies = [ [ "et.png", 2, 300 ], [ "dinovoador.png", 1, .5 ] ], 
         this.setModel(0);
     },
@@ -936,10 +920,6 @@ var Application = AbstractApplication.extend({
             this.first.playerModel.currentBulletEnergy < 0 && (this.first.playerModel.currentBulletEnergy = 0), 
             this.vel = 6 * this.maxDash, this.onDash = !0, this.leftDown = !1, this.rightDown = !1, 
             this.first.dash(!0), this.first.invencibleAccum = 0;
-            var self = this;
-            setTimeout(function() {
-                self.second.dash(!1);
-            }, 400);
         }
     },
     change: function() {
@@ -988,7 +968,7 @@ var Application = AbstractApplication.extend({
     },
     updateObstacles: function() {
         if (this.obstaclesAccum < 0) {
-            var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this);
+            var id = Math.floor(APP.getGameModel().objects.length * Math.random()), tempModel = APP.getGameModel().objects[id], tempObstacles = new Obstacle(tempModel[1], tempModel[0], tempModel[2], this, tempModel[3]);
             this.envObjects.push(tempObstacles), tempObstacles.build(), this.layer.addChild(tempObstacles), 
             tempObstacles.velFactor = 1, tempObstacles.setPosition(windowWidth + .2 * windowWidth, windowHeight - 80), 
             this.obstaclesAccum = 200 + 20 * Math.random() - (3 === tempModel[0] ? 100 * Math.random() : 0);
@@ -1016,13 +996,14 @@ var Application = AbstractApplication.extend({
             }
         } else this.particleAccum2--;
         if (this.first.invencibleAccum > 0) {
-            if (this.invencibleGraph.container.parent || (this.invencibleGraph.container.anchor.x = .5, 
+            if (this.invencibleGraph.container.parent || (this.vel = this.maxVel, this.onDash = !1, 
+            this.first.onDash = !1, this.second.onDash = !1, this.invencibleGraph.container.anchor.x = .5, 
             this.invencibleGraph.container.anchor.y = 1, this.invencibleGraph.container.scale.y = .2, 
             this.invencibleGraph.container.position.x = windowWidth / 2, this.invencibleGraph.container.position.y = windowHeight / 2 + 80, 
             this.addChild(this.invencibleGraph.container), TweenLite.to(this.invencibleGraph.container.scale, 1, {
                 y: 1,
                 ease: "easeOutElastic"
-            })), this.vel = 1.1 * this.maxVel, this.first.invencibleAccum % 5 === 0) {
+            })), this.vel = 1.1 * this.maxVel, this.first.invencibleAccum % 8 === 0) {
                 var particle3 = new Particles({
                     x: -.3,
                     y: -(.2 * Math.random() + .3)
@@ -1038,7 +1019,7 @@ var Application = AbstractApplication.extend({
         this.hammer && (this.hammer.off("swipeup"), this.hammer.off("swiperight"), this.hammer.off("swipeleft")), 
         this.obstaclesAccum = 300, this.enemiesAccum = 600, this.itensAcum = 100, this.waitTuUp = !1, 
         this.background = new SimpleSprite("sky.png"), this.addChild(this.background), this.accel = .1, 
-        this.maxVel = 6, this.maxDash = 7, this.vel = .5 * this.maxVel, this.envArray = [], 
+        this.maxVel = 6, this.maxDash = 7, this.vel = .8 * this.maxVel, this.envArray = [], 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem2.png" ], 600, .7 * windowHeight), 
         this.addChild(this.envArray[this.envArray.length - 1]), this.envArray[this.envArray.length - 1].velFactor = .01, 
         this.envArray.push(new Environment(windowWidth, windowHeight)), this.envArray[this.envArray.length - 1].build([ "nuvem1.png" ], 750, .6 * windowHeight), 
@@ -1099,13 +1080,15 @@ var Application = AbstractApplication.extend({
         }), this.container.alpha = 0, TweenLite.to(this.container, .3, {
             alpha: 1
         }), this.updateable = !0, this.pauseModal = new PauseModal(this), this.addChild(this.pauseModal.getContent()), 
-        this.endModal = new EndModal(this), this.addChild(this.endModal.getContent()), this.invencibleGraph = new SimpleSprite("burning.png");
+        this.endModal = new EndModal(this), this.addChild(this.endModal.getContent()), this.endModal.show(50), 
+        this.invencibleGraph = new SimpleSprite("burning.png");
     },
     addListenners: function() {
         this.vel = this.maxVel, this.levelCounter = 0, this.labelPoints = new PIXI.Text("", {
-            font: "50px Arial"
-        }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 80, 
-        this.labelPoints.position.x = windowWidth - 80, this.labelPoints.setText(0);
+            font: "50px Arial",
+            fill: "white"
+        }), this.addChild(this.labelPoints), this.labelPoints.position.y = windowHeight - 70, 
+        this.labelPoints.position.x = windowWidth - 100, this.labelPoints.setText(0);
         var self = this;
         TweenLite.to(this.dino.getContent().position, 1.6, {
             x: -600,
@@ -1273,11 +1256,11 @@ var Application = AbstractApplication.extend({
         this.bg = new PIXI.Graphics(), this.bg.beginFill(19784), this.bg.drawRect(0, 0, windowWidth, windowHeight), 
         this.bg.alpha = 0, this.container.addChild(this.bg), this.container.addChild(this.boxContainer), 
         this.background = new SimpleSprite("backEndModal.png"), this.boxContainer.addChild(this.background.container), 
-        this.background.container.position.x = windowWidth / 2 - this.background.getContent().width / 2, 
-        this.background.container.position.y = windowHeight / 2 - this.background.getContent().height / 2;
+        this.background.container.position.x = windowWidth / 2 - this.background.getContent().width / 2 - 30, 
+        this.background.container.position.y = windowHeight / 2 - this.background.getContent().height / 2 - 20;
         var bgPos = {
-            x: this.background.container.position.x,
-            y: this.background.container.position.y
+            x: this.background.container.position.x + 70,
+            y: this.background.container.position.y + 14
         };
         this.retryButton = new DefaultButton("retryButton.png", "retryButtonOver.png"), 
         this.retryButton.build(), this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 268), 

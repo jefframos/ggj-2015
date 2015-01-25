@@ -16,10 +16,10 @@ var EndModal = Class.extend({
 		// this.background.setPosition(windowWidth / 2 - this.background.getContent().width /2,
 		// 	windowHeight / 2 - this.background.getContent().height /2);
 		// console.log(windowWidth / 2 - this.background.getContent().width /2);
-		this.background.container.position.x = windowWidth / 2 - this.background.getContent().width /2;
-		this.background.container.position.y = windowHeight / 2 - this.background.getContent().height /2;
+		this.background.container.position.x = windowWidth / 2 - this.background.getContent().width /2 - 30;
+		this.background.container.position.y = windowHeight / 2 - this.background.getContent().height /2 - 20;
 
-		var bgPos = {x:this.background.container.position.x, y:this.background.container.position.y};
+		var bgPos = {x:this.background.container.position.x+70, y:this.background.container.position.y+14};
 		this.retryButton = new DefaultButton('retryButton.png', 'retryButtonOver.png');
         this.retryButton.build();
         this.retryButton.setPosition(bgPos.x + 135, bgPos.y + 268);
@@ -61,7 +61,7 @@ var EndModal = Class.extend({
 	show:function(points){
 		// console.log(points,'pointspointspointspointspointspointspointspointspointspointspointspointspoints');
 		this.container.parent.setChildIndex(this.container,this.container.parent.children.length -1);
-		
+
 		this.points.setText(points);
 		this.screen.updateable = false;
 		TweenLite.to(this.bg, 0.5, {alpha:0.8});

@@ -47,14 +47,14 @@ var Dino = Entity.extend({
 		tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: -0.2, ease:'easeInOutCubic'}));
 		// tl.append(TweenLite.to(this.dinoMouth, 2, {rotation: 0, ease:'easeOutCubic'}));
 
-		function repeatTimeline2(){
-			tlBody.restart();
-		}
-		var tlBody = new TimelineLite({onComplete:repeatTimeline2});
-		tlBody.append(TweenLite.to(this.dinoContainer, 2, {rotation: 0.05, ease:'easeOutCubic'}));
-		tlBody.append(TweenLite.to(this.dinoContainer, 4, {rotation: -0.05, ease:'easeInCubic'}));
-		tlBody.append(TweenLite.to(this.dinoContainer, 2, {rotation: 0, ease:'easeOutCubic'}));
-		tlBody.append(TweenLite.to(this.dinoContainer, 3, {rotation: 0.05}));
+		// function repeatTimeline2(){
+		// 	tlBody.restart();
+		// }
+		// var tlBody = new TimelineLite({onComplete:repeatTimeline2});
+		// tlBody.append(TweenLite.to(this.dinoContainer, 2, {rotation: 0.05, ease:'easeOutCubic'}));
+		// tlBody.append(TweenLite.to(this.dinoContainer, 4, {rotation: -0.05, ease:'easeInCubic'}));
+		// tlBody.append(TweenLite.to(this.dinoContainer, 2, {rotation: 0, ease:'easeOutCubic'}));
+		// tlBody.append(TweenLite.to(this.dinoContainer, 3, {rotation: 0.05}));
 
 
 		function repeatTimeline3(){
@@ -62,8 +62,8 @@ var Dino = Entity.extend({
 		}
 		var tlRun = new TimelineLite({onComplete:repeatTimeline3});
 		tlRun.append(TweenLite.to(this.dinoContainer.position, 0.3, {y: 20, ease:'easeOutCubic'}));
-		tlRun.append(TweenLite.to(this.dinoContainer.position, 1.2, {y: -10, ease:'easeInCubic'}));
-		tlRun.append(TweenLite.to(this.dinoContainer.position, 0.6, {y: 20, ease:'easeOutCubic'}));
+		tlRun.append(TweenLite.to(this.dinoContainer.position, 1.2, {y: -10, ease:'easeInOutCubic'}));
+		tlRun.append(TweenLite.to(this.dinoContainer.position, 0.6, {y: 20, ease:'easeInOutCubic'}));
 		tlRun.append(TweenLite.to(this.dinoContainer.position, 0.6, {y: -10}));
 
 		this.container.addChild(this.dinoContainer);

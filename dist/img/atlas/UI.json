@@ -2,16 +2,16 @@
 
 "backEndModal.png":
 {
-	"frame": {"x":2,"y":1441,"w":499,"h":595},
+	"frame": {"x":903,"y":338,"w":569,"h":552},
 	"rotated": false,
-	"trimmed": false,
-	"spriteSourceSize": {"x":0,"y":0,"w":499,"h":595},
-	"sourceSize": {"w":499,"h":595},
+	"trimmed": true,
+	"spriteSourceSize": {"x":0,"y":0,"w":569,"h":552},
+	"sourceSize": {"w":570,"h":552},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "backPauseModal.png":
 {
-	"frame": {"x":2,"y":953,"w":499,"h":486},
+	"frame": {"x":402,"y":338,"w":499,"h":486},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":499,"h":486},
@@ -20,7 +20,7 @@
 },
 "bacon.png":
 {
-	"frame": {"x":2,"y":542,"w":198,"h":207},
+	"frame": {"x":202,"y":338,"w":198,"h":207},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":207},
@@ -29,7 +29,7 @@
 },
 "blueBar.png":
 {
-	"frame": {"x":140,"y":56,"w":210,"h":17},
+	"frame": {"x":490,"y":2,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -38,7 +38,7 @@
 },
 "burning.png":
 {
-	"frame": {"x":2,"y":751,"w":480,"h":200},
+	"frame": {"x":1006,"y":136,"w":480,"h":200},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":480,"h":200},
@@ -47,7 +47,7 @@
 },
 "close.png":
 {
-	"frame": {"x":390,"y":85,"w":86,"h":78},
+	"frame": {"x":982,"y":56,"w":86,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":78},
@@ -56,7 +56,7 @@
 },
 "continueButton.png":
 {
-	"frame": {"x":2,"y":462,"w":245,"h":78},
+	"frame": {"x":1070,"y":56,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -65,7 +65,7 @@
 },
 "continueButtonOver.png":
 {
-	"frame": {"x":249,"y":382,"w":245,"h":78},
+	"frame": {"x":249,"y":136,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -74,7 +74,7 @@
 },
 "cowFace.png":
 {
-	"frame": {"x":214,"y":85,"w":86,"h":77},
+	"frame": {"x":65,"y":56,"w":86,"h":77},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":77},
@@ -83,7 +83,7 @@
 },
 "dashBackBar.png":
 {
-	"frame": {"x":2,"y":56,"w":136,"h":27},
+	"frame": {"x":702,"y":2,"w":136,"h":27},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":136,"h":27},
@@ -92,7 +92,7 @@
 },
 "dashIco.png":
 {
-	"frame": {"x":349,"y":2,"w":61,"h":52},
+	"frame": {"x":2,"y":56,"w":61,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
@@ -101,7 +101,7 @@
 },
 "dashIco2.png":
 {
-	"frame": {"x":412,"y":2,"w":61,"h":52},
+	"frame": {"x":1363,"y":2,"w":61,"h":52},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":61,"h":52},
@@ -110,7 +110,7 @@
 },
 "energyBackBar.png":
 {
-	"frame": {"x":88,"y":165,"w":223,"h":35},
+	"frame": {"x":840,"y":2,"w":223,"h":35},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":223,"h":35},
@@ -119,7 +119,7 @@
 },
 "exitButton.png":
 {
-	"frame": {"x":249,"y":302,"w":245,"h":78},
+	"frame": {"x":735,"y":56,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -128,7 +128,7 @@
 },
 "exitButtonOver.png":
 {
-	"frame": {"x":249,"y":462,"w":245,"h":78},
+	"frame": {"x":488,"y":56,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -146,11 +146,11 @@
 },
 "hp.png":
 {
-	"frame": {"x":278,"y":2,"w":69,"h":35},
+	"frame": {"x":582,"y":136,"w":189,"h":148},
 	"rotated": false,
 	"trimmed": true,
-	"spriteSourceSize": {"x":0,"y":0,"w":69,"h":35},
-	"sourceSize": {"w":99,"h":35},
+	"spriteSourceSize": {"x":4,"y":3,"w":189,"h":148},
+	"sourceSize": {"w":197,"h":156},
 	"pivot": {"x":0.5,"y":0.5}
 },
 "iceBar.png":
@@ -164,7 +164,7 @@
 },
 "jalapeno.png":
 {
-	"frame": {"x":202,"y":542,"w":198,"h":207},
+	"frame": {"x":2,"y":338,"w":198,"h":207},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":198,"h":207},
@@ -180,9 +180,18 @@
 	"sourceSize": {"w":22,"h":11},
 	"pivot": {"x":0.5,"y":0.5}
 },
+"ouch.png":
+{
+	"frame": {"x":773,"y":136,"w":231,"h":164},
+	"rotated": false,
+	"trimmed": true,
+	"spriteSourceSize": {"x":3,"y":5,"w":231,"h":164},
+	"sourceSize": {"w":242,"h":174},
+	"pivot": {"x":0.5,"y":0.5}
+},
 "pause.png":
 {
-	"frame": {"x":302,"y":85,"w":86,"h":78},
+	"frame": {"x":400,"y":56,"w":86,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":86,"h":78},
@@ -191,7 +200,7 @@
 },
 "pauseLabel.png":
 {
-	"frame": {"x":2,"y":253,"w":296,"h":47},
+	"frame": {"x":1065,"y":2,"w":296,"h":47},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":296,"h":47},
@@ -200,7 +209,7 @@
 },
 "pigface.png":
 {
-	"frame": {"x":2,"y":165,"w":84,"h":86},
+	"frame": {"x":496,"y":136,"w":84,"h":86},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":84,"h":86},
@@ -209,7 +218,7 @@
 },
 "redBar.png":
 {
-	"frame": {"x":2,"y":85,"w":210,"h":17},
+	"frame": {"x":278,"y":2,"w":210,"h":17},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":210,"h":17},
@@ -218,7 +227,7 @@
 },
 "retryButton.png":
 {
-	"frame": {"x":2,"y":302,"w":245,"h":78},
+	"frame": {"x":153,"y":56,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -227,7 +236,7 @@
 },
 "retryButtonOver.png":
 {
-	"frame": {"x":2,"y":382,"w":245,"h":78},
+	"frame": {"x":2,"y":136,"w":245,"h":78},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":245,"h":78},
@@ -239,8 +248,8 @@
 	"version": "1.0",
 	"image": "UI.png",
 	"format": "RGBA8888",
-	"size": {"w":503,"h":2038},
+	"size": {"w":1488,"h":892},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:48986035b09e91e335fe26ababd5bb88:ca8890fdd468ed5c069ec946c93b1db2:4b774b923918ecd961888279dba3ffad$"
+	"smartupdate": "$TexturePacker:SmartUpdate:abd0c1f96101344a298a98ef50667e59:bd30808008b30b11bab3bf9351d8e77b:4b774b923918ecd961888279dba3ffad$"
 }
 }
